@@ -74,7 +74,7 @@ export const books: Book[] = [
     title: 'Mexican Gothic',
     author: 'Silvia Moreno-Garcia',
     description: 'After receiving a disturbing letter from her newlywed cousin, a glamorous socialite heads to the Mexican countryside to investigate a crumbling gothic mansion.',
-    genres: ['Horror', 'Historical', 'Mystery'],
+    genres: ['Horror', 'Historical', 'Crime'],
     moods: ['Dark', 'Suspenseful'],
     tags: ['Gothic', '1950s Mexico', 'Atmospheric'],
     year: 2020,
