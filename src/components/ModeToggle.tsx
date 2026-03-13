@@ -19,7 +19,7 @@ export function ModeToggle({ mode, onModeChange, tbrCount }: ModeToggleProps) {
   const count = (key: Mode) => key === 'tbr' ? tbrCount : 0;
 
   return (
-    <div className="relative inline-flex bg-secondary rounded-full p-1 min-w-[560px]">
+    <div className="relative inline-flex bg-secondary rounded-full p-1 w-full max-w-[560px]">
       <motion.div
         className="absolute top-1 bottom-1 rounded-full bg-card shadow-card"
         layout
