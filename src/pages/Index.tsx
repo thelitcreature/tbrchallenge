@@ -66,7 +66,7 @@ const Index = () => {
       setIsRevealing(true);
       setRevealedBook(null);
       try {
-        const lang = discoverLang || "en";
+        const lang = discoverLang;
         const isNonFiction = selectedGenres.includes("Non-Fiction");
         
         // Build a reader-friendly query biased toward trending/new releases
