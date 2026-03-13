@@ -47,6 +47,36 @@ const Index = () => {
   const wantToReadBooks = shelvedBooks.filter((b) => b.shelf === "want-to-read");
   const readBooks = shelvedBooks.filter((b) => b.shelf === "read");
 
+  const revealNewBook = (book: UnifiedBook) => {
+    setBookHistory((prev) => {
+      const trimmed = prev.slice(0, historyIndex + 1);
+      return [...trimmed, book];
+    });
+    setHistoryIndex((prev) => prev + 1);
+    setRevealedBook(book);
+  };
+
+  const goBack = () => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      setRevealedBook(bookHistory[newIndex]);
+    }
+  };
+
+  const goForward = () => {
+    if (historyIndex < bookHistory.length - 1) {
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      setRevealedBook(bookHistory[newIndex]);
+    } else {
+      pullBook();
+    }
+  };
+
+  const canGoBack = historyIndex > 0;
+  const canGoForward = historyIndex < bookHistory.length - 1;
+
   const toggleGenre = (g: Genre) => {
     setSelectedGenres((prev) => prev.includes(g) ? [] : [g]);
     if (hasPulled) setFilterChangeKey((k) => k + 1);
