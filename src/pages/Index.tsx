@@ -16,6 +16,7 @@ import { ModeToggle } from "@/components/ModeToggle";
 import { BookSearch } from "@/components/BookSearch";
 import { ManualEntry } from "@/components/ManualEntry";
 import { Challenges } from "@/components/Challenges";
+import { ReasonPicker } from "@/components/ReasonPicker";
 import { PhotoBookAdd } from "@/components/PhotoBookAdd";
 import { searchGoogleBooks } from "@/lib/api/googleBooks";
 import { googleBookToUnified } from "@/data/bookTypes";
