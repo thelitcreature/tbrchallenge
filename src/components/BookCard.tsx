@@ -51,7 +51,7 @@ interface BookCardProps {
   isRead?: boolean;
 }
 
-export function BookCard({ book, onPullAgain, onDismiss, onAddToWantToRead, onMarkAsRead, onNotInterested, isInWantToRead, isRead }: BookCardProps) {
+export function BookCard({ book, onPullAgain, onDismiss, onMarkAsRead, onNotInterested, isRead }: BookCardProps) {
   const [showSparkles, setShowSparkles] = useState(true);
   const [showConfirm, setShowConfirm] = useState(false);
 
