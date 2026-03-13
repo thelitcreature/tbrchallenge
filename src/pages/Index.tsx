@@ -15,6 +15,7 @@ import { ModeToggle } from "@/components/ModeToggle";
 import { BookSearch } from "@/components/BookSearch";
 import { ManualEntry } from "@/components/ManualEntry";
 import { Wishlist } from "@/components/Wishlist";
+import { PhotoBookAdd } from "@/components/PhotoBookAdd";
 import { searchGoogleBooks } from "@/lib/api/googleBooks";
 import { googleBookToUnified } from "@/data/bookTypes";
 
@@ -417,6 +418,7 @@ const Index = () => {
         className="w-full max-w-lg space-y-6">
         
           <BookSearch onAddBook={addToOwned} existingIds={shelvedIds} />
+          <PhotoBookAdd onAddBook={addToOwned} existingIds={shelvedIds} />
           <ManualEntry onAdd={addToOwned} />
           <TBRList books={ownedBooks} onRemove={removeFromShelves} />
         </motion.div> :
