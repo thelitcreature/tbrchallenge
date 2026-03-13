@@ -6,7 +6,10 @@ export type Genre =
 export type Mood =
   | 'Adventurous' | 'Cozy' | 'Reflective' | 'Dark' | 'Heartwarming'
   | 'Suspenseful' | 'Whimsical' | 'Thought-Provoking' | 'Romantic'
-  | 'Empowering' | 'Nostalgic' | 'Intense' | 'Calming';
+  | 'Empowering' | 'Nostalgic' | 'Intense' | 'Calming'
+  | 'Hopeful' | 'Informative' | 'Inspiring' | 'Lighthearted'
+  | 'Mysterious' | 'Challenging' | 'Emotional' | 'Funny'
+  | 'Sad' | 'Tense';
 
 export interface Book {
   id: string;
@@ -26,8 +29,10 @@ export const GENRES: Genre[] = [
 ];
 
 export const MOODS: Mood[] = [
-  'Adventurous', 'Cozy', 'Reflective', 'Dark', 'Heartwarming',
-  'Suspenseful', 'Whimsical', 'Thought-Provoking', 'Romantic',
+  'Adventurous', 'Challenging', 'Dark', 'Emotional', 'Funny',
+  'Hopeful', 'Informative', 'Inspiring', 'Lighthearted', 'Mysterious',
+  'Reflective', 'Romantic', 'Sad', 'Tense',
+  'Cozy', 'Heartwarming', 'Suspenseful', 'Whimsical', 'Thought-Provoking',
   'Empowering', 'Nostalgic', 'Intense', 'Calming',
 ];
 
