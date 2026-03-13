@@ -96,9 +96,20 @@ const Index = () => {
         }
         
         const startIndex = Math.floor(Math.random() * 10);
-        const { books } = await searchGoogleBooks(query, lang, 20, startIndex);
-        if (books.length > 0) {
-          const randomBook = books[Math.floor(Math.random() * books.length)];
+        const { books } = await searchGoogleBooks(query, lang, 40, startIndex);
+        
+        // Filter out non-fiction results unless user wants non-fiction
+        const NON_FICTION_CATS = ["periodicals", "education", "history", "science", "business", "reference", "law", "mathematics", "technology", "medical", "computers"];
+        const filtered = isNonFiction
+          ? books
+          : books.filter((b) => {
+              const cats = (b.categories || []).join(" ").toLowerCase();
+              return !NON_FICTION_CATS.some((nf) => cats.includes(nf)) && b.author !== "Unknown Author" && (b.description?.length || 0) > 20;
+            });
+        
+        const pool = filtered.length > 0 ? filtered : books;
+        if (pool.length > 0) {
+          const randomBook = pool[Math.floor(Math.random() * pool.length)];
           setRevealedBook(googleBookToUnified(randomBook));
         }
       } catch (err) {
