@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 
-export type Mode = 'discover' | 'tbr' | 'wishlist';
+export type Mode = 'discover' | 'tbr' | 'challenges';
 
 interface ModeToggleProps {
   mode: Mode;
