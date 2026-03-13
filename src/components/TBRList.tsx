@@ -167,7 +167,7 @@ export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdat
                 </span>
               )}
               {book.isRead && (
-                <span className="px-2 py-0.5 rounded-full bg-green-500/10 text-green-700 text-xs font-body font-medium flex items-center gap-1">
+                <span className="px-2 py-0.5 rounded-full bg-accent/10 text-accent text-xs font-body font-medium flex items-center gap-1">
                   <Check className="w-3 h-3" /> Read
                 </span>
               )}
