@@ -311,7 +311,7 @@ const Index = () => {
       </motion.div>
 
       {/* Mode Toggle */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }} className="mb-8 mt-4">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }} className="mb-8 mt-4 w-full max-w-lg px-2">
         <ModeToggle mode={mode} onModeChange={setMode} tbrCount={shelvedBooks.filter(b => !b.isRead).length} />
       </motion.div>
 
