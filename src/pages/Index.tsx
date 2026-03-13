@@ -1,9 +1,9 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import type { BookFormat, ReasonForAdding } from "@/data/bookTypes";
+import type { BookFormat, ReasonForAdding, UnifiedBook } from "@/data/bookTypes";
 import { SlidersHorizontal, ChevronUp, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { books as curatedBooks, GENRES, MOODS, type Genre, type Mood } from "@/data/books";
-import type { UnifiedBook } from "@/data/bookTypes";
+import type { TBRBook } from "@/components/TBRList";
 import { getAIRecommendations } from "@/lib/api/recommendations";
 import { aiBookToUnified } from "@/data/bookTypes";
 import { FilterChips } from "@/components/FilterChips";
