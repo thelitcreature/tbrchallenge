@@ -1,26 +1,36 @@
 import { motion } from 'framer-motion';
 import type { UnifiedBook } from '@/data/bookTypes';
-import { Heart, RotateCcw, BookCheck, BookOpenText } from 'lucide-react';
+import { Heart, RotateCcw, BookCheck, BookOpenText, X } from 'lucide-react';
 
 interface BookCardProps {
   book: UnifiedBook;
   onPullAgain: () => void;
+  onDismiss: () => void;
   onAddToWantToRead?: (book: UnifiedBook) => void;
   onMarkAsRead?: (book: UnifiedBook) => void;
   isInWantToRead?: boolean;
   isRead?: boolean;
 }
 
-export function BookCard({ book, onPullAgain, onAddToWantToRead, onMarkAsRead, isInWantToRead, isRead }: BookCardProps) {
+export function BookCard({ book, onPullAgain, onDismiss, onAddToWantToRead, onMarkAsRead, isInWantToRead, isRead }: BookCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 40, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -20, scale: 0.95 }}
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-      className="w-full max-w-md bg-card rounded-2xl p-8 shadow-elevated text-center space-y-5"
+      className="w-full max-w-md bg-card rounded-2xl p-8 shadow-elevated text-center space-y-5 relative"
     >
-      {/* Always show cover */}
+      {/* Dismiss button */}
+      <button
+        onClick={onDismiss}
+        className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+        title="Back to slot machine"
+      >
+        <X className="w-4 h-4" />
+      </button>
+
+      {/* Cover */}
       <div className="flex justify-center">
         {book.thumbnail ? (
           <img
