@@ -18,6 +18,7 @@ import { ManualEntry } from "@/components/ManualEntry";
 import { Challenges } from "@/components/Challenges";
 import { ReasonPicker } from "@/components/ReasonPicker";
 import { PhotoBookAdd } from "@/components/PhotoBookAdd";
+import { Onboarding } from "@/components/Onboarding";
 import { searchGoogleBooks } from "@/lib/api/googleBooks";
 import { googleBookToUnified } from "@/data/bookTypes";
 
