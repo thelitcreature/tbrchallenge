@@ -81,9 +81,9 @@ const Index = () => {
     }
   }, [bookHistory, selectedGenres, selectedMoods, discoverLangs, dismissedIds]);
 
-  const ownedBooks = shelvedBooks.filter((b) => b.shelf === "owned");
+  const ownedBooks = shelvedBooks.filter((b) => !b.isRead);
   
-  const readBooks = shelvedBooks.filter((b) => b.shelf === "read");
+  const readBooks = shelvedBooks.filter((b) => b.isRead);
 
   const revealNewBook = (book: UnifiedBook) => {
     setBookHistory((prev) => {
