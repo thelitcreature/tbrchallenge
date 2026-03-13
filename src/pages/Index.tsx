@@ -150,7 +150,25 @@ const Index = () => {
         }
         
         const startIndex = Math.floor(Math.random() * 10);
-        const { books } = await searchGoogleBooks(query, lang, 40, startIndex);
+        let { books } = await searchGoogleBooks(query, lang, 40, startIndex);
+        
+        // Fallback for cs/sk: retry with simpler query if no results
+        if (books.length === 0 && isLocalLang) {
+          const fallbackQueries = [
+            selectedGenres.length > 0 ? selectedGenres.map((g) => genreMap[g] || g.toLowerCase()).join(" ") : "román",
+            "kniha fiction",
+            "bestseller",
+          ];
+          for (const fq of fallbackQueries) {
+            const fallback = await searchGoogleBooks(fq, lang, 40, 0);
+            if (fallback.books.length > 0) { books = fallback.books; break; }
+          }
+          // Last resort: search without language restriction
+          if (books.length === 0) {
+            const lastResort = await searchGoogleBooks(query.replace(trendBoost, "").trim(), "en", 40, 0);
+            books = lastResort.books;
+          }
+        }
         
         // Filter: prefer standalone novels, known authors, recent books
         const NON_FICTION_CATS = ["periodicals", "education", "history", "science", "business", "reference", "law", "mathematics", "technology", "medical", "computers"];

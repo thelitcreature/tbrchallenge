@@ -194,7 +194,7 @@ export function BookCard({ book, onPullAgain, onDismiss, onAddToWantToRead, onMa
             className="mt-2 rounded-xl border border-border bg-secondary/50 p-4 space-y-3"
           >
             <div className="flex items-start gap-2 text-left">
-              <Info className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+              <span className="w-4 h-4 rounded-full bg-muted-foreground/20 flex items-center justify-center text-muted-foreground text-[10px] font-bold mt-0.5 shrink-0">i</span>
               <p className="font-body text-xs text-muted-foreground leading-relaxed">
                 This book will be permanently hidden from your recommendations. You won't see it again in future pulls.
               </p>
