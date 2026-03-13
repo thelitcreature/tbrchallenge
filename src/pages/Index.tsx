@@ -3,6 +3,8 @@ import { SlidersHorizontal, ChevronUp, ChevronLeft, ChevronRight } from "lucide-
 import { AnimatePresence, motion } from "framer-motion";
 import { books as curatedBooks, GENRES, MOODS, type Genre, type Mood } from "@/data/books";
 import type { UnifiedBook } from "@/data/bookTypes";
+import { getAIRecommendations } from "@/lib/api/recommendations";
+import { aiBookToUnified } from "@/data/bookTypes";
 import { FilterChips } from "@/components/FilterChips";
 import { LanguageFilter, type BookLanguage } from "@/components/LanguageFilter";
 import { PullLever } from "@/components/PullLever";
@@ -43,6 +45,9 @@ const Index = () => {
   const [bookHistory, setBookHistory] = useState<UnifiedBook[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
+  const [aiPool, setAiPool] = useState<UnifiedBook[]>([]);
+  const [aiPoolIndex, setAiPoolIndex] = useState(0);
+
   const ownedBooks = shelvedBooks.filter((b) => b.shelf === "owned");
   const wantToReadBooks = shelvedBooks.filter((b) => b.shelf === "want-to-read");
   const readBooks = shelvedBooks.filter((b) => b.shelf === "read");
@@ -79,12 +84,14 @@ const Index = () => {
 
   const toggleGenre = (g: Genre) => {
     setSelectedGenres((prev) => prev.includes(g) ? [] : [g]);
+    setAiPool([]); setAiPoolIndex(0);
     if (hasPulled) setFilterChangeKey((k) => k + 1);
     else setRevealedBook(null);
   };
 
   const toggleMood = (m: Mood) => {
     setSelectedMoods((prev) => prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]);
+    setAiPool([]); setAiPoolIndex(0);
     if (hasPulled) setFilterChangeKey((k) => k + 1);
     else setRevealedBook(null);
   };
@@ -104,131 +111,64 @@ const Index = () => {
       setIsRevealing(true);
       setRevealedBook(null);
       try {
-        const lang = discoverLang;
-        const isNonFiction = selectedGenres.includes("Non-Fiction");
-        
-        // Build query based on language
-        const isLocalLang = lang === "cs" || lang === "sk";
-        
-        const trendingTermsEn = ["bestseller", "booktok", "bookstagram", "trending", "new release", "2024", "2025", "2026"];
-        const trendingTermsCs = ["bestseller", "román", "novinka", "kniha", "oblíbená", "populární"];
-        const trendingTermsSk = ["bestseller", "román", "novinka", "kniha", "obľúbená", "populárna"];
-        const trendingTerms = lang === "cs" ? trendingTermsCs : lang === "sk" ? trendingTermsSk : trendingTermsEn;
-        const trendBoost = trendingTerms[Math.floor(Math.random() * trendingTerms.length)];
-        
-        const genreMapEn: Record<string, string> = {
-          "Contemporary": "contemporary fiction",
-          "Literary Fiction": "literary fiction",
-          "Romance": "romance",
-          "Romantasy": "romantasy fantasy romance",
-          "Fantasy": "fantasy",
-          "Sci-Fi": "science fiction",
-          "Historical": "historical fiction",
-          "Thriller": "thriller suspense",
-          "Horror": "horror fiction",
-          "Crime": "crime mystery detective",
-          "Humor": "comedy humor fiction",
-          "Classics": "classic literature",
-          "Young Adult": "young adult YA",
-          "Non-Fiction": "popular nonfiction",
-        };
-        
-        const genreMapCs: Record<string, string> = {
-          "Contemporary": "současná próza",
-          "Literary Fiction": "literární fikce",
-          "Romance": "romantika láska",
-          "Romantasy": "romantasy fantasy",
-          "Fantasy": "fantasy",
-          "Sci-Fi": "sci-fi vědeckofantastický",
-          "Historical": "historický román",
-          "Thriller": "thriller",
-          "Horror": "horor",
-          "Crime": "krimi detektivka",
-          "Humor": "humor satira",
-          "Classics": "klasika světová literatura",
-          "Young Adult": "pro mládež",
-          "Non-Fiction": "literatura faktu",
-        };
-        
-        const genreMapSk: Record<string, string> = {
-          "Contemporary": "súčasná próza",
-          "Literary Fiction": "literárna fikcia",
-          "Romance": "romantika láska",
-          "Romantasy": "romantasy fantasy",
-          "Fantasy": "fantasy",
-          "Sci-Fi": "sci-fi vedeckofantastický",
-          "Historical": "historický román",
-          "Thriller": "thriller",
-          "Horror": "horor",
-          "Crime": "krimi detektívka",
-          "Humor": "humor satira",
-          "Classics": "klasika svetová literatúra",
-          "Young Adult": "pre mládež",
-          "Non-Fiction": "literatúra faktu",
-        };
-        
-        const genreMap = lang === "cs" ? genreMapCs : lang === "sk" ? genreMapSk : genreMapEn;
-        
-        let query: string;
-        if (selectedGenres.length > 0) {
-          const mapped = selectedGenres.map((g) => genreMap[g] || g.toLowerCase()).join(" ");
-          query = isLocalLang ? `${mapped} ${trendBoost}` : (isNonFiction ? `${mapped} ${trendBoost}` : `subject:fiction ${mapped} ${trendBoost}`);
+        // Try to serve from existing AI pool first
+        const remainingPool = aiPool.filter((b) => !dismissedIds.has(b.id));
+        if (remainingPool.length > aiPoolIndex && aiPoolIndex < remainingPool.length) {
+          const picked = remainingPool[aiPoolIndex];
+          setAiPoolIndex((prev) => prev + 1);
+          revealNewBook(picked);
+          setIsRevealing(false);
+          return;
+        }
+
+        // Fetch new AI recommendations
+        const shownIds = bookHistory.map((b) => b.title);
+        const { books: aiBooks } = await getAIRecommendations(
+          selectedGenres,
+          selectedMoods,
+          discoverLang,
+          shownIds
+        );
+
+        const unified = aiBooks
+          .map(aiBookToUnified)
+          .filter((b) => !dismissedIds.has(b.id));
+
+        if (unified.length > 0) {
+          setAiPool(unified);
+          setAiPoolIndex(1);
+          revealNewBook(unified[0]);
         } else {
-          query = isLocalLang ? `${trendBoost} román beletrie` : `subject:fiction popular novels ${trendBoost}`;
-        }
-        
-        if (selectedMoods.length > 0) {
-          query += ` ${selectedMoods[0].toLowerCase()}`;
-        }
-        
-        const startIndex = Math.floor(Math.random() * 10);
-        let { books } = await searchGoogleBooks(query, lang, 40, startIndex);
-        
-        // Fallback for cs/sk: retry with simpler query if no results
-        if (books.length === 0 && isLocalLang) {
-          const fallbackQueries = [
-            selectedGenres.length > 0 ? selectedGenres.map((g) => genreMap[g] || g.toLowerCase()).join(" ") : "román",
-            "kniha fiction",
-            "bestseller",
-          ];
-          for (const fq of fallbackQueries) {
-            const fallback = await searchGoogleBooks(fq, lang, 40, 0);
-            if (fallback.books.length > 0) { books = fallback.books; break; }
+          // Fallback to Google Books if AI returns nothing
+          const { books } = await searchGoogleBooks(
+            "subject:fiction bestseller 2024",
+            discoverLang,
+            40,
+            0
+          );
+          if (books.length > 0) {
+            const picked = books[Math.floor(Math.random() * books.length)];
+            revealNewBook(googleBookToUnified(picked));
           }
-          // Last resort: search without language restriction
-          if (books.length === 0) {
-            const lastResort = await searchGoogleBooks(query.replace(trendBoost, "").trim(), "en", 40, 0);
-            books = lastResort.books;
-          }
-        }
-        
-        // Filter: prefer standalone novels, known authors, recent books
-        const NON_FICTION_CATS = ["periodicals", "education", "history", "science", "business", "reference", "law", "mathematics", "technology", "medical", "computers"];
-        const TITLE_BLACKLIST = ["best american", "anthology", "collected stories", "selected stories", "complete stories", "complete works", "collected poems", "encyclopedia", "handbook", "guide to", "introduction to", "textbook", "workbook", "study guide", "short stories", "year's best", "best of the year", "books 1-", "books 2-", "books 3-", "books 4-", "books 5-", "boxed set", "box set", "collection:", "bundle:", "omnibus", "3-in-1", "4-in-1", "2-in-1", "writer's market", "writers market", "how to write", "writing guide", "market guide", "masterclass", "for dummies", "for beginners"];
-        const filtered = (isNonFiction ? books : books.filter((b) => {
-          if (dismissedIds.has(b.id)) return false;
-          const cats = (b.categories || []).join(" ").toLowerCase();
-          const titleLower = b.title.toLowerCase();
-          const isBlacklisted = TITLE_BLACKLIST.some((bl) => titleLower.includes(bl));
-          return !isBlacklisted && !NON_FICTION_CATS.some((nf) => cats.includes(nf)) && b.author !== "Unknown Author" && (b.description?.length || 0) > 20;
-        }));
-        
-        // Sort by recency — newer books first
-        const sorted = [...filtered].sort((a, b) => {
-          const yearA = parseInt(a.publishedDate?.match(/(\d{4})/)?.[1] || "0");
-          const yearB = parseInt(b.publishedDate?.match(/(\d{4})/)?.[1] || "0");
-          return yearB - yearA;
-        });
-        
-        // Weight toward newer books: pick from top half more often
-        const pool = sorted.length > 0 ? sorted : books;
-        if (pool.length > 0) {
-          const weightedIndex = Math.floor(Math.pow(Math.random(), 1.5) * pool.length);
-          const picked = pool[weightedIndex];
-          revealNewBook(googleBookToUnified(picked));
         }
       } catch (err) {
         console.error("Discovery fetch error:", err);
+        // Fallback to Google Books on AI failure
+        try {
+          const { books } = await searchGoogleBooks(
+            "subject:fiction popular novels bestseller",
+            discoverLang,
+            40,
+            Math.floor(Math.random() * 10)
+          );
+          const filtered = books.filter((b) => !dismissedIds.has(`google-${b.id}`) && b.author !== "Unknown Author" && (b.description?.length || 0) > 20);
+          if (filtered.length > 0) {
+            const picked = filtered[Math.floor(Math.random() * filtered.length)];
+            revealNewBook(googleBookToUnified(picked));
+          }
+        } catch (fallbackErr) {
+          console.error("Fallback fetch error:", fallbackErr);
+        }
       } finally {
         setIsRevealing(false);
       }
@@ -366,6 +306,7 @@ const Index = () => {
                 selected={discoverLang}
                 onChange={(l) => {
                   setDiscoverLang(l);
+                  setAiPool([]); setAiPoolIndex(0);
                   if (hasPulled) setFilterChangeKey((k) => k + 1);
                   else setRevealedBook(null);
                 }} />

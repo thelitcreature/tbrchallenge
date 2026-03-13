@@ -23,11 +23,13 @@ export interface UnifiedBook {
   genres: Genre[];
   moods: Mood[];
   year: number;
-  source: 'curated' | 'google' | 'manual';
+  source: 'curated' | 'google' | 'manual' | 'ai';
   thumbnail?: string | null;
   language?: string;
   publisher?: string;
   isbn?: string | null;
+  whyTrending?: string;
+  publishedDate?: string;
 }
 
 export function googleBookToUnified(gb: GoogleBook): UnifiedBook {
@@ -54,6 +56,46 @@ export function googleBookToUnified(gb: GoogleBook): UnifiedBook {
     isbn: gb.isbn,
   };
 }
+
+export interface AIBook {
+  id: string;
+  title: string;
+  author: string;
+  description: string;
+  thumbnail: string | null;
+  year: number;
+  genres: string[];
+  moods: string[];
+  whyTrending: string;
+  publishedDate: string;
+  pageCount: number | null;
+  categories: string[];
+  isbn: string | null;
+}
+
+export function aiBookToUnified(ab: AIBook): UnifiedBook {
+  const tags = [...(ab.genres || []).slice(0, 2)];
+  if (ab.whyTrending) tags.push(ab.whyTrending);
+
+  return {
+    id: ab.id.startsWith('ai-') || ab.id.startsWith('google-') ? ab.id : `ai-${ab.id}`,
+    title: ab.title,
+    author: ab.author,
+    description: ab.description?.slice(0, 300) || 'No description available.',
+    tags,
+    genres: (ab.genres || []).filter((g): g is Genre => VALID_GENRES.includes(g as Genre)) as Genre[],
+    moods: (ab.moods || []).filter((m): m is Mood => VALID_MOODS.includes(m as Mood)) as Mood[],
+    year: ab.year || new Date().getFullYear(),
+    source: 'ai',
+    thumbnail: ab.thumbnail,
+    isbn: ab.isbn,
+    whyTrending: ab.whyTrending,
+    publishedDate: ab.publishedDate,
+  };
+}
+
+const VALID_GENRES: string[] = ['Contemporary', 'Literary Fiction', 'Romance', 'Romantasy', 'Fantasy', 'Sci-Fi', 'Historical', 'Thriller', 'Horror', 'Crime', 'Humor', 'Classics', 'Young Adult', 'Non-Fiction'];
+const VALID_MOODS: string[] = ['Lighthearted', 'Emotional', 'Dark', 'Adventurous', 'Thought-provoking', 'Romantic', 'Mysterious', 'Funny', 'Inspiring'];
 
 function mapCategoriesToGenres(categories: string[]): Genre[] {
   const genres: Genre[] = [];
