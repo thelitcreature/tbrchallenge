@@ -134,7 +134,7 @@ export const books: Book[] = [
     title: 'Piranesi',
     author: 'Susanna Clarke',
     description: 'A man lives in a mysterious House whose infinite halls are lined with thousands of statues. The ocean fills the lower floors and clouds drift through the upper ones.',
-    genres: ['Fantasy', 'Mystery', 'Literary Fiction'],
+    genres: ['Fantasy', 'Crime', 'Literary Fiction'],
     moods: ['Whimsical', 'Reflective', 'Adventurous'],
     tags: ['Surreal', 'Labyrinths', 'Identity'],
     year: 2020,
