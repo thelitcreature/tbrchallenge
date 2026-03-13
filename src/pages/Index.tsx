@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import type { BookFormat } from "@/data/bookTypes";
-import { SlidersHorizontal, ChevronUp, ChevronLeft, ChevronRight } from "lucide-react";
+import { SlidersHorizontal, ChevronUp, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { books as curatedBooks, GENRES, MOODS, type Genre, type Mood } from "@/data/books";
 import type { UnifiedBook } from "@/data/bookTypes";
@@ -27,6 +27,7 @@ const curatedUnified: UnifiedBook[] = curatedBooks.map((b) => ({
 }));
 
 const Index = () => {
+  const [showAddTools, setShowAddTools] = useState(false);
   const [mode, setMode] = useState<Mode>("discover");
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
   const [selectedMoods, setSelectedMoods] = useState<Mood[]>([]);
@@ -427,9 +428,35 @@ const Index = () => {
         exit={{ opacity: 0 }}
         className="w-full max-w-lg space-y-6">
         
-          <BookSearch onAddBook={addToOwned} existingIds={shelvedIds} />
-          <PhotoBookAdd onAddBook={addToOwned} existingIds={shelvedIds} />
-          <ManualEntry onAdd={addToOwned} />
+          <div className="flex justify-center">
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowAddTools(!showAddTools)}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-body font-medium transition-colors ${
+                showAddTools
+                  ? 'bg-secondary text-foreground'
+                  : 'bg-primary text-primary-foreground hover:bg-primary/90'
+              }`}
+            >
+              <Plus className={`w-4 h-4 transition-transform ${showAddTools ? 'rotate-45' : ''}`} />
+              {showAddTools ? 'Close' : 'Add books'}
+            </motion.button>
+          </div>
+          <AnimatePresence>
+            {showAddTools && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden space-y-6"
+              >
+                <BookSearch onAddBook={(book) => { addToOwned(book); setShowAddTools(false); }} existingIds={shelvedIds} />
+                <PhotoBookAdd onAddBook={(book) => { addToOwned(book); setShowAddTools(false); }} existingIds={shelvedIds} />
+                <ManualEntry onAdd={(book) => { addToOwned(book); setShowAddTools(false); }} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <TBRList books={ownedBooks} onRemove={removeFromShelves} onUpdateFormat={updateBookFormat} />
           <TBRList books={ownedBooks} onRemove={removeFromShelves} onUpdateFormat={updateBookFormat} />
         </motion.div> :
 
