@@ -517,7 +517,7 @@ export const books: Book[] = [
     title: 'Démoni',
     author: 'Jozef Karika',
     description: 'Napínavý slovenský thriller o záhadných udalostiach v malej obci, kde sa mieša realita s nadprirodzenom.',
-    genres: ['Thriller', 'Horror', 'Mystery'],
+    genres: ['Thriller', 'Horror', 'Crime'],
     moods: ['Dark', 'Tense', 'Mysterious', 'Suspenseful'],
     tags: ['Slovenský thriller', 'Nadprirodzeno', 'Napätie'],
     year: 2012,
