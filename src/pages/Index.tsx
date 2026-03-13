@@ -18,6 +18,7 @@ import { ManualEntry } from "@/components/ManualEntry";
 import { Challenges } from "@/components/Challenges";
 import { ReasonPicker } from "@/components/ReasonPicker";
 import { PhotoBookAdd } from "@/components/PhotoBookAdd";
+import { Onboarding } from "@/components/Onboarding";
 import { searchGoogleBooks } from "@/lib/api/googleBooks";
 import { googleBookToUnified } from "@/data/bookTypes";
 
@@ -28,6 +29,7 @@ const curatedUnified: UnifiedBook[] = curatedBooks.map((b) => ({
 }));
 
 const Index = () => {
+  const [hasOnboarded, setHasOnboarded] = useState(() => localStorage.getItem('plottwist-onboarded') === '1');
   const [showAddTools, setShowAddTools] = useState(false);
   const [mode, setMode] = useState<Mode>("tbr");
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
@@ -292,6 +294,15 @@ const Index = () => {
   const shelvedIds = new Set(shelvedBooks.map((b) => b.id));
   
   const readIds = new Set(readBooks.map((b) => b.id));
+
+  if (!hasOnboarded) {
+    return (
+      <Onboarding onComplete={() => {
+        setHasOnboarded(true);
+        setShowAddTools(true);
+      }} />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center px-4 py-10 sm:py-16">
