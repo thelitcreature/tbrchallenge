@@ -59,14 +59,39 @@ const Index = () => {
       try {
         const lang = discoverLang || "en";
         const isNonFiction = selectedGenres.includes("Non-Fiction") || selectedGenres.includes("Self-Help") || selectedGenres.includes("Biography") || selectedGenres.includes("Memoir");
-        const genreParts = selectedGenres.length > 0
-          ? selectedGenres.map((g) => `subject:${g.toLowerCase()}`).join(" ")
-          : "";
-        const fictionHint = !isNonFiction ? " novel bestseller" : "";
-        const moodQuery = selectedMoods.length > 0 ? ` ${selectedMoods[0]}` : "";
-        const fallback = lang === "en" ? "bestselling novel fiction award-winning" : "nejlepší romány bestseller";
-        const query = genreParts ? `${genreParts}${fictionHint}${moodQuery}` : `${fallback}${moodQuery}`;
-        const startIndex = Math.floor(Math.random() * 20);
+        
+        // Build a reader-friendly query
+        const genreMap: Record<string, string> = {
+          "Sci-Fi": "science fiction novels",
+          "Fantasy": "fantasy novels",
+          "Romance": "romance novels",
+          "Thriller": "thriller novels",
+          "Horror": "horror fiction",
+          "Mystery": "mystery detective novels",
+          "Historical": "historical fiction novels",
+          "Literary Fiction": "literary fiction novels",
+          "Non-Fiction": "popular nonfiction",
+          "Memoir": "memoir autobiography",
+          "Self-Help": "self-help books",
+          "Biography": "biography",
+          "Poetry": "poetry collection",
+          "Humor": "comedy humor fiction",
+          "Young Adult": "young adult novels",
+        };
+        
+        let query: string;
+        if (selectedGenres.length > 0) {
+          const mapped = selectedGenres.map((g) => genreMap[g] || g.toLowerCase()).join(" ");
+          query = isNonFiction ? mapped : `subject:fiction ${mapped}`;
+        } else {
+          query = lang === "en" ? "subject:fiction popular novels" : "subject:fiction romány";
+        }
+        
+        if (selectedMoods.length > 0) {
+          query += ` ${selectedMoods[0].toLowerCase()}`;
+        }
+        
+        const startIndex = Math.floor(Math.random() * 10);
         const { books } = await searchGoogleBooks(query, lang, 20, startIndex);
         if (books.length > 0) {
           const randomBook = books[Math.floor(Math.random() * books.length)];
