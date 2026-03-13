@@ -80,7 +80,7 @@ const Index = () => {
   }, [bookHistory, selectedGenres, selectedMoods, discoverLangs, dismissedIds]);
 
   const ownedBooks = shelvedBooks.filter((b) => b.shelf === "owned");
-  const wantToReadBooks = shelvedBooks.filter((b) => b.shelf === "want-to-read");
+  
   const readBooks = shelvedBooks.filter((b) => b.shelf === "read");
 
   const revealNewBook = (book: UnifiedBook) => {
