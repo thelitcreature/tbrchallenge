@@ -385,28 +385,56 @@ const Index = () => {
           </AnimatePresence>
 
           {/* Main interaction */}
-          <div
-          className="py-8 flex flex-col items-center min-h-[280px] justify-center w-full">
-          
-            <AnimatePresence mode="wait">
-              {revealedBook && !isRevealing ?
-            <BookCard
-              key={revealedBook.id}
-              book={revealedBook}
-              onPullAgain={pullBook}
-              onDismiss={() => setRevealedBook(null)}
-              onAddToWantToRead={addToWantToRead}
-              onMarkAsRead={markAsRead}
-              onNotInterested={dismissBook}
-              isInWantToRead={wantToReadIds.has(revealedBook.id)}
-              isRead={readIds.has(revealedBook.id)} /> :
+          <div className="py-8 flex items-center min-h-[280px] justify-center w-full gap-2">
+            {/* Left arrow - go back */}
+            {revealedBook && !isRevealing && (
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: canGoBack ? 1 : 0.25 }}
+                whileTap={canGoBack ? { scale: 0.9 } : {}}
+                onClick={goBack}
+                disabled={!canGoBack}
+                className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors shrink-0 disabled:cursor-default"
+                aria-label="Previous book"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </motion.button>
+            )}
 
+            <div className="flex flex-col items-center justify-center flex-1 min-w-0">
+              <AnimatePresence mode="wait">
+                {revealedBook && !isRevealing ?
+              <BookCard
+                key={revealedBook.id}
+                book={revealedBook}
+                onPullAgain={pullBook}
+                onDismiss={() => setRevealedBook(null)}
+                onAddToWantToRead={addToWantToRead}
+                onMarkAsRead={markAsRead}
+                onNotInterested={dismissBook}
+                isInWantToRead={wantToReadIds.has(revealedBook.id)}
+                isRead={readIds.has(revealedBook.id)} /> :
 
-            <motion.div key="lever" exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.2 }}>
-                  <PullLever onPull={pullBook} isRevealing={isRevealing} />
-                </motion.div>
-            }
-            </AnimatePresence>
+              <motion.div key="lever" exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.2 }}>
+                    <PullLever onPull={pullBook} isRevealing={isRevealing} />
+                  </motion.div>
+              }
+              </AnimatePresence>
+            </div>
+
+            {/* Right arrow - next / pull new */}
+            {revealedBook && !isRevealing && (
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={goForward}
+                className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors shrink-0"
+                aria-label={canGoForward ? "Next book" : "Pull new book"}
+              >
+                <ChevronRight className="w-6 h-6" />
+              </motion.button>
+            )}
           </div>
         </motion.div> :
       mode === "tbr" ?
