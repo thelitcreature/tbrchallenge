@@ -265,7 +265,7 @@ export const books: Book[] = [
     title: 'Atomic Habits',
     author: 'James Clear',
     description: 'A practical guide to building good habits, breaking bad ones, and mastering the tiny behaviors that lead to remarkable results.',
-    genres: ['Self-Help', 'Non-Fiction'],
+    genres: ['Non-Fiction'],
     moods: ['Empowering', 'Thought-Provoking', 'Calming'],
     tags: ['Productivity', 'Psychology', 'Habits'],
     year: 2018,
