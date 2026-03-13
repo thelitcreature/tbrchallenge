@@ -23,11 +23,13 @@ export interface UnifiedBook {
   genres: Genre[];
   moods: Mood[];
   year: number;
-  source: 'curated' | 'google' | 'manual';
+  source: 'curated' | 'google' | 'manual' | 'ai';
   thumbnail?: string | null;
   language?: string;
   publisher?: string;
   isbn?: string | null;
+  whyTrending?: string;
+  publishedDate?: string;
 }
 
 export function googleBookToUnified(gb: GoogleBook): UnifiedBook {
