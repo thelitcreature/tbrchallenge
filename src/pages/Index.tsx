@@ -40,6 +40,8 @@ const Index = () => {
       return stored ? new Set(JSON.parse(stored)) : new Set();
     } catch { return new Set(); }
   });
+  const [bookHistory, setBookHistory] = useState<UnifiedBook[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
 
   const ownedBooks = shelvedBooks.filter((b) => b.shelf === "owned");
   const wantToReadBooks = shelvedBooks.filter((b) => b.shelf === "want-to-read");
