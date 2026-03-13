@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
 
     const prompt = `You are a book recommendation expert who stays up-to-date with BookTok trends, Bookstagram favorites, bestseller lists, and new releases from major publishers.
 
-Recommend exactly 15 books based on these criteria:
+Recommend exactly 8 books based on these criteria:
 ${genreText}
 ${moodText}
 ${yearConstraint}
@@ -59,7 +59,7 @@ For each book, provide a JSON array with objects containing:
 - "description": a compelling 2-3 sentence description that would make a reader want to pick it up (no spoilers)
 - "genres": array of 1-3 genre tags
 - "moods": array of 1-3 mood tags (e.g. "dark", "emotional", "lighthearted", "adventurous", "romantic", "thought-provoking")
-- "whyTrending": one short sentence about why this book is popular (e.g. "BookTok sensation with 2M+ views", "NYT #1 Bestseller 2024", "Winner of Booker Prize 2023")
+- "whyTrending": one short sentence about why this book is popular
 
 Respond ONLY with the JSON array, no markdown, no explanation.`;
 
@@ -72,7 +72,7 @@ Respond ONLY with the JSON array, no markdown, no explanation.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'google/gemini-2.5-flash-lite',
         messages: [
           { role: 'user', content: prompt },
         ],
@@ -83,6 +83,18 @@ Respond ONLY with the JSON array, no markdown, no explanation.`;
     if (!aiResponse.ok) {
       const errText = await aiResponse.text();
       console.error('AI gateway error:', aiResponse.status, errText);
+      if (aiResponse.status === 429) {
+        return new Response(
+          JSON.stringify({ success: false, error: 'Rate limit exceeded, please try again shortly.' }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      if (aiResponse.status === 402) {
+        return new Response(
+          JSON.stringify({ success: false, error: 'Payment required.' }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
       return new Response(
         JSON.stringify({ success: false, error: `AI request failed: ${aiResponse.status}` }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -92,7 +104,6 @@ Respond ONLY with the JSON array, no markdown, no explanation.`;
     const aiData = await aiResponse.json();
     const content = aiData.choices?.[0]?.message?.content || '';
 
-    // Parse JSON from response (handle potential markdown wrapping)
     let books;
     try {
       const jsonStr = content.replace(/^```json?\n?/i, '').replace(/\n?```$/i, '').trim();
@@ -112,12 +123,12 @@ Respond ONLY with the JSON array, no markdown, no explanation.`;
       );
     }
 
-    // Enrich with Google Books covers
+    // Enrich with Google Books covers - all in parallel
     const enriched = await Promise.all(
-      books.slice(0, 15).map(async (book: any) => {
+      books.slice(0, 8).map(async (book: any) => {
         try {
           const q = encodeURIComponent(`intitle:${book.title} inauthor:${book.author}`);
-          const gbUrl = `https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=1&printType=books`;
+          const gbUrl = `https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=1&printType=books&fields=items(id,volumeInfo(imageLinks,publishedDate,pageCount,categories,industryIdentifiers))`;
           const gbRes = await fetch(gbUrl);
           const gbData = await gbRes.json();
           const item = gbData.items?.[0];

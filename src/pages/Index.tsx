@@ -47,6 +47,34 @@ const Index = () => {
 
   const [aiPool, setAiPool] = useState<UnifiedBook[]>([]);
   const [aiPoolIndex, setAiPoolIndex] = useState(0);
+  const prefetchingRef = useRef(false);
+
+  // Pre-fetch next batch when pool is running low
+  const prefetchIfNeeded = useCallback(async (currentPool: UnifiedBook[], currentIndex: number) => {
+    const remaining = currentPool.filter((b) => !dismissedIds.has(b.id)).length - currentIndex;
+    if (remaining <= 2 && !prefetchingRef.current) {
+      prefetchingRef.current = true;
+      try {
+        const shownIds = bookHistory.map((b) => b.title);
+        const { books: aiBooks } = await getAIRecommendations(
+          selectedGenres,
+          selectedMoods,
+          discoverLang,
+          shownIds
+        );
+        const unified = aiBooks
+          .map(aiBookToUnified)
+          .filter((b) => !dismissedIds.has(b.id));
+        if (unified.length > 0) {
+          setAiPool((prev) => [...prev, ...unified]);
+        }
+      } catch (err) {
+        console.error("Prefetch error:", err);
+      } finally {
+        prefetchingRef.current = false;
+      }
+    }
+  }, [bookHistory, selectedGenres, selectedMoods, discoverLang, dismissedIds]);
 
   const ownedBooks = shelvedBooks.filter((b) => b.shelf === "owned");
   const wantToReadBooks = shelvedBooks.filter((b) => b.shelf === "want-to-read");
@@ -118,6 +146,8 @@ const Index = () => {
           setAiPoolIndex((prev) => prev + 1);
           revealNewBook(picked);
           setIsRevealing(false);
+          // Trigger background prefetch if pool is running low
+          prefetchIfNeeded(remainingPool, aiPoolIndex + 1);
           return;
         }
 
