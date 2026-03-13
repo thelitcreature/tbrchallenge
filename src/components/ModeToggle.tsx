@@ -6,7 +6,6 @@ interface ModeToggleProps {
   mode: Mode;
   onModeChange: (mode: Mode) => void;
   tbrCount: number;
-  wishlistCount: number;
 }
 
 const TABS: { key: Mode; label: string }[] = [
