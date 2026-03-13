@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { UnifiedBook } from '@/data/bookTypes';
-import { Heart, RotateCcw, BookCheck, BookOpenText, X, ThumbsDown, Info } from 'lucide-react';
+import { Heart, RotateCcw, BookCheck, BookOpenText, X, ThumbsDown } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface SparkleProps {
   count?: number;
