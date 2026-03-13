@@ -179,7 +179,7 @@ const Index = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="flex flex-col items-center w-full max-w-lg space-y-6">
+        className="flex flex-col items-center w-full max-w-lg space-y-6 relative z-50">
         
           {/* TBR-only toggle */}
           {ownedBooks.length > 0 &&
@@ -252,7 +252,7 @@ const Index = () => {
             />
           )}
           <div
-          className="py-8 flex flex-col items-center min-h-[280px] justify-center w-full relative z-50">
+          className="py-8 flex flex-col items-center min-h-[280px] justify-center w-full">
           
             <AnimatePresence mode="wait">
               {revealedBook && !isRevealing ?
