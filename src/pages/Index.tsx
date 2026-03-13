@@ -245,13 +245,11 @@ const Index = () => {
   const confirmAddWithReason = (book: UnifiedBook, reason: ReasonForAdding) => {
     setShelvedBooks((prev) => [...prev, { ...book, reasonForAdding: reason, dateAdded: new Date().toISOString(), isRead: false }]);
     setPendingBook(null);
-    setShowAddTools(false);
   };
 
   const skipReason = (book: UnifiedBook) => {
     setShelvedBooks((prev) => [...prev, { ...book, dateAdded: new Date().toISOString(), isRead: false }]);
     setPendingBook(null);
-    setShowAddTools(false);
   };
 
   const markAsRead = (book: UnifiedBook) => {
