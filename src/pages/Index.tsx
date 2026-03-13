@@ -69,11 +69,16 @@ const Index = () => {
         const lang = discoverLang;
         const isNonFiction = selectedGenres.includes("Non-Fiction");
         
-        // Build a reader-friendly query biased toward trending/new releases
-        const trendingTerms = ["bestseller", "booktok", "bookstagram", "trending", "new release", "2024", "2025", "2026"];
+        // Build query based on language
+        const isLocalLang = lang === "cs" || lang === "sk";
+        
+        const trendingTermsEn = ["bestseller", "booktok", "bookstagram", "trending", "new release", "2024", "2025", "2026"];
+        const trendingTermsCs = ["bestseller", "román", "novinka", "kniha", "oblíbená", "populární"];
+        const trendingTermsSk = ["bestseller", "román", "novinka", "kniha", "obľúbená", "populárna"];
+        const trendingTerms = lang === "cs" ? trendingTermsCs : lang === "sk" ? trendingTermsSk : trendingTermsEn;
         const trendBoost = trendingTerms[Math.floor(Math.random() * trendingTerms.length)];
         
-        const genreMap: Record<string, string> = {
+        const genreMapEn: Record<string, string> = {
           "Contemporary": "contemporary fiction",
           "Literary Fiction": "literary fiction",
           "Romance": "romance",
@@ -90,12 +95,48 @@ const Index = () => {
           "Non-Fiction": "popular nonfiction",
         };
         
+        const genreMapCs: Record<string, string> = {
+          "Contemporary": "současná próza",
+          "Literary Fiction": "literární fikce",
+          "Romance": "romantika láska",
+          "Romantasy": "romantasy fantasy",
+          "Fantasy": "fantasy",
+          "Sci-Fi": "sci-fi vědeckofantastický",
+          "Historical": "historický román",
+          "Thriller": "thriller",
+          "Horror": "horor",
+          "Crime": "krimi detektivka",
+          "Humor": "humor satira",
+          "Classics": "klasika světová literatura",
+          "Young Adult": "pro mládež",
+          "Non-Fiction": "literatura faktu",
+        };
+        
+        const genreMapSk: Record<string, string> = {
+          "Contemporary": "súčasná próza",
+          "Literary Fiction": "literárna fikcia",
+          "Romance": "romantika láska",
+          "Romantasy": "romantasy fantasy",
+          "Fantasy": "fantasy",
+          "Sci-Fi": "sci-fi vedeckofantastický",
+          "Historical": "historický román",
+          "Thriller": "thriller",
+          "Horror": "horor",
+          "Crime": "krimi detektívka",
+          "Humor": "humor satira",
+          "Classics": "klasika svetová literatúra",
+          "Young Adult": "pre mládež",
+          "Non-Fiction": "literatúra faktu",
+        };
+        
+        const genreMap = lang === "cs" ? genreMapCs : lang === "sk" ? genreMapSk : genreMapEn;
+        
         let query: string;
         if (selectedGenres.length > 0) {
           const mapped = selectedGenres.map((g) => genreMap[g] || g.toLowerCase()).join(" ");
-          query = isNonFiction ? `${mapped} ${trendBoost}` : `subject:fiction ${mapped} ${trendBoost}`;
+          query = isLocalLang ? `${mapped} ${trendBoost}` : (isNonFiction ? `${mapped} ${trendBoost}` : `subject:fiction ${mapped} ${trendBoost}`);
         } else {
-          query = lang === "en" ? `subject:fiction popular novels ${trendBoost}` : (lang === "cs" ? `subject:fiction romány beletrie ${trendBoost}` : `subject:fiction romány beletria ${trendBoost}`);
+          query = isLocalLang ? `${trendBoost} román beletrie` : `subject:fiction popular novels ${trendBoost}`;
         }
         
         if (selectedMoods.length > 0) {
