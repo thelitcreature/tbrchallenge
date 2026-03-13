@@ -386,10 +386,8 @@ const Index = () => {
                 book={revealedBook}
                 onPullAgain={pullBook}
                 onDismiss={() => setRevealedBook(null)}
-                onAddToWantToRead={addToWantToRead}
                 onMarkAsRead={markAsRead}
                 onNotInterested={dismissBook}
-                isInWantToRead={wantToReadIds.has(revealedBook.id)}
                 isRead={readIds.has(revealedBook.id)} /> :
 
               <motion.div key="lever" exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.2 }}>
