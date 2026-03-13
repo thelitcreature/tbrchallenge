@@ -333,9 +333,9 @@ const Index = () => {
             <div className="space-y-2 w-full">
                     <p className="text-sm font-body font-medium text-muted-foreground text-center">Book Language</p>
                     <LanguageFilter
-                selected={discoverLang}
-                onChange={(l) => {
-                  setDiscoverLang(l);
+                selected={discoverLangs}
+                onChange={(langs) => {
+                  setDiscoverLangs(langs);
                   setAiPool([]); setAiPoolIndex(0);
                   if (hasPulled) setFilterChangeKey((k) => k + 1);
                   else setRevealedBook(null);
