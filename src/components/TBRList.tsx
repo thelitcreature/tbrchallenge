@@ -249,8 +249,8 @@ export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdat
   return (
     <div className="space-y-4 w-full max-w-md mx-auto">
       {/* Stats bar */}
-      <div className="bg-card rounded-xl p-4 shadow-card">
-        <div className="flex items-center justify-between gap-4">
+      <div className="bg-card rounded-xl p-3 sm:p-4 shadow-card">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-4">
           <div className="flex items-center gap-2">
             <BookMarked className="w-4 h-4 text-primary" />
             <span className="font-body text-sm font-medium text-foreground">
@@ -263,7 +263,7 @@ export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdat
             )}
           </div>
           {oldestBook && (
-            <span className="font-body text-[11px] text-muted-foreground truncate max-w-[180px]" title={`Oldest: ${oldestBook.title}`}>
+            <span className="font-body text-[11px] text-muted-foreground truncate" title={`Oldest: ${oldestBook.title}`}>
               Oldest: <span className="font-medium text-foreground">{format(new Date(oldestBook.dateAdded), 'MMM d')}</span> — {oldestBook.title}
             </span>
           )}
