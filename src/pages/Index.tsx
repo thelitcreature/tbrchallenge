@@ -69,30 +69,33 @@ const Index = () => {
         const lang = discoverLang || "en";
         const isNonFiction = selectedGenres.includes("Non-Fiction");
         
-        // Build a reader-friendly query
+        // Build a reader-friendly query biased toward trending/new releases
+        const trendingTerms = ["bestseller", "booktok", "bookstagram", "trending", "new release", "2024", "2025", "2026"];
+        const trendBoost = trendingTerms[Math.floor(Math.random() * trendingTerms.length)];
+        
         const genreMap: Record<string, string> = {
-          "Contemporary": "contemporary fiction novels",
-          "Literary Fiction": "literary fiction novels",
-          "Romance": "romance novels",
-          "Romantasy": "romantasy fantasy romance novels",
-          "Fantasy": "fantasy novels",
-          "Sci-Fi": "science fiction novels",
-          "Historical": "historical fiction novels",
-          "Thriller": "thriller suspense novels",
-          "Horror": "horror fiction novels",
-          "Crime": "crime mystery detective novels",
-          "Humor": "comedy humor fiction novels",
-          "Classics": "classic literature novels",
-          "Young Adult": "young adult YA novels",
-          "Non-Fiction": "popular nonfiction bestseller",
+          "Contemporary": "contemporary fiction",
+          "Literary Fiction": "literary fiction",
+          "Romance": "romance",
+          "Romantasy": "romantasy fantasy romance",
+          "Fantasy": "fantasy",
+          "Sci-Fi": "science fiction",
+          "Historical": "historical fiction",
+          "Thriller": "thriller suspense",
+          "Horror": "horror fiction",
+          "Crime": "crime mystery detective",
+          "Humor": "comedy humor fiction",
+          "Classics": "classic literature",
+          "Young Adult": "young adult YA",
+          "Non-Fiction": "popular nonfiction",
         };
         
         let query: string;
         if (selectedGenres.length > 0) {
           const mapped = selectedGenres.map((g) => genreMap[g] || g.toLowerCase()).join(" ");
-          query = isNonFiction ? mapped : `subject:fiction ${mapped}`;
+          query = isNonFiction ? `${mapped} ${trendBoost}` : `subject:fiction ${mapped} ${trendBoost}`;
         } else {
-          query = lang === "en" ? "subject:fiction popular novels" : "subject:fiction romány";
+          query = lang === "en" ? `subject:fiction popular novels ${trendBoost}` : `subject:fiction romány ${trendBoost}`;
         }
         
         if (selectedMoods.length > 0) {
@@ -102,19 +105,27 @@ const Index = () => {
         const startIndex = Math.floor(Math.random() * 10);
         const { books } = await searchGoogleBooks(query, lang, 40, startIndex);
         
-        // Filter out non-fiction results unless user wants non-fiction
+        // Filter: prefer fiction, known authors, recent books
         const NON_FICTION_CATS = ["periodicals", "education", "history", "science", "business", "reference", "law", "mathematics", "technology", "medical", "computers"];
-        const filtered = isNonFiction
-          ? books
-          : books.filter((b) => {
-              const cats = (b.categories || []).join(" ").toLowerCase();
-              return !NON_FICTION_CATS.some((nf) => cats.includes(nf)) && b.author !== "Unknown Author" && (b.description?.length || 0) > 20;
-            });
+        const currentYear = new Date().getFullYear();
+        const filtered = (isNonFiction ? books : books.filter((b) => {
+          const cats = (b.categories || []).join(" ").toLowerCase();
+          return !NON_FICTION_CATS.some((nf) => cats.includes(nf)) && b.author !== "Unknown Author" && (b.description?.length || 0) > 20;
+        }));
         
-        const pool = filtered.length > 0 ? filtered : books;
+        // Sort by recency — newer books first
+        const sorted = [...filtered].sort((a, b) => {
+          const yearA = parseInt(a.publishedDate?.match(/(\d{4})/)?.[1] || "0");
+          const yearB = parseInt(b.publishedDate?.match(/(\d{4})/)?.[1] || "0");
+          return yearB - yearA;
+        });
+        
+        // Weight toward newer books: pick from top half more often
+        const pool = sorted.length > 0 ? sorted : books;
         if (pool.length > 0) {
-          const randomBook = pool[Math.floor(Math.random() * pool.length)];
-          setRevealedBook(googleBookToUnified(randomBook));
+          const weightedIndex = Math.floor(Math.pow(Math.random(), 1.5) * pool.length);
+          const picked = pool[weightedIndex];
+          setRevealedBook(googleBookToUnified(picked));
         }
       } catch (err) {
         console.error("Discovery fetch error:", err);
