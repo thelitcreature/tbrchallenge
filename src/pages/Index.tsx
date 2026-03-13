@@ -45,6 +45,9 @@ const Index = () => {
   const [bookHistory, setBookHistory] = useState<UnifiedBook[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
+  const [aiPool, setAiPool] = useState<UnifiedBook[]>([]);
+  const [aiPoolIndex, setAiPoolIndex] = useState(0);
+
   const ownedBooks = shelvedBooks.filter((b) => b.shelf === "owned");
   const wantToReadBooks = shelvedBooks.filter((b) => b.shelf === "want-to-read");
   const readBooks = shelvedBooks.filter((b) => b.shelf === "read");
