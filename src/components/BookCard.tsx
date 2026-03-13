@@ -173,7 +173,7 @@ export function BookCard({ book, onPullAgain, onDismiss, onAddToWantToRead, onMa
             </motion.button>
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-muted-foreground/20 flex items-center justify-center text-muted-foreground text-[9px] font-bold cursor-help select-none">
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-muted border border-card flex items-center justify-center text-muted-foreground text-[9px] font-bold cursor-help select-none z-10">
                   i
                 </span>
               </TooltipTrigger>
