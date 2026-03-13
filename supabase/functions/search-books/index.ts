@@ -63,6 +63,26 @@ Deno.serve(async (req) => {
 
     const books = (data.items || []).map((item: any) => {
       const info = item.volumeInfo || {};
+      const sale = item.saleInfo || {};
+      const isEbook = sale.isEbook === true;
+      const printType = info.printType || '';
+
+      // Detect format from available signals
+      let format: string | null = null;
+      if (isEbook) {
+        format = 'ebook';
+      } else if (printType === 'BOOK') {
+        // Check description/title hints for binding type
+        const allText = `${info.title || ''} ${info.subtitle || ''} ${info.description || ''}`.toLowerCase();
+        if (allText.includes('hardcover') || allText.includes('hardback')) {
+          format = 'hardback';
+        } else if (allText.includes('paperback') || allText.includes('softcover')) {
+          format = 'paperback';
+        } else if (allText.includes('audiobook') || allText.includes('audio book')) {
+          format = 'audiobook';
+        }
+      }
+
       return {
         id: item.id,
         title: info.title || 'Unknown Title',
@@ -76,6 +96,7 @@ Deno.serve(async (req) => {
         categories: info.categories || [],
         isbn: ((info.industryIdentifiers || []).find((id: any) => id.type === 'ISBN_13') ||
                (info.industryIdentifiers || []).find((id: any) => id.type === 'ISBN_10'))?.identifier || null,
+        format,
       };
     });
 

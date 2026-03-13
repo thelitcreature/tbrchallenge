@@ -12,6 +12,7 @@ export interface GoogleBook {
   pageCount: number | null;
   categories: string[];
   isbn: string | null;
+  format: string | null;
 }
 
 export type BookFormat = 'paperback' | 'hardback' | 'ebook' | 'audiobook';
