@@ -119,8 +119,7 @@ const Index = () => {
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
         <h1 className="font-display text-5xl sm:text-6xl font-bold text-foreground tracking-tight">Plot Twist</h1>
-        <p className="font-body text-base text-muted-foreground mt-2">One pull. One book. No regrets.</p>
-        <p className="font-body text-sm text-muted-foreground/60 italic mt-1">Let the book choose you</p>
+        <p className="font-body text-base text-muted-foreground mt-2">Let the book choose you</p>
       </motion.div>
 
       {/* Mode Toggle */}
