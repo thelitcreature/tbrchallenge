@@ -105,12 +105,14 @@ const Index = () => {
         const startIndex = Math.floor(Math.random() * 10);
         const { books } = await searchGoogleBooks(query, lang, 40, startIndex);
         
-        // Filter: prefer fiction, known authors, recent books
+        // Filter: prefer standalone novels, known authors, recent books
         const NON_FICTION_CATS = ["periodicals", "education", "history", "science", "business", "reference", "law", "mathematics", "technology", "medical", "computers"];
-        const currentYear = new Date().getFullYear();
+        const TITLE_BLACKLIST = ["best american", "anthology", "collected stories", "selected stories", "complete stories", "complete works", "collected poems", "encyclopedia", "handbook", "guide to", "introduction to", "textbook", "workbook", "study guide", "short stories", "year's best", "best of the year"];
         const filtered = (isNonFiction ? books : books.filter((b) => {
           const cats = (b.categories || []).join(" ").toLowerCase();
-          return !NON_FICTION_CATS.some((nf) => cats.includes(nf)) && b.author !== "Unknown Author" && (b.description?.length || 0) > 20;
+          const titleLower = b.title.toLowerCase();
+          const isBlacklisted = TITLE_BLACKLIST.some((bl) => titleLower.includes(bl));
+          return !isBlacklisted && !NON_FICTION_CATS.some((nf) => cats.includes(nf)) && b.author !== "Unknown Author" && (b.description?.length || 0) > 20;
         }));
         
         // Sort by recency — newer books first
