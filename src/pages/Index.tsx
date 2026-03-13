@@ -30,7 +30,7 @@ const Index = () => {
   const [isRevealing, setIsRevealing] = useState(false);
   const [shelvedBooks, setShelvedBooks] = useState<(UnifiedBook & {shelf: 'owned' | 'want-to-read' | 'read';})[]>([]);
   const [tbrMode, setTbrMode] = useState(false);
-  const [discoverLang, setDiscoverLang] = useState<BookLanguage>("");
+  const [discoverLang, setDiscoverLang] = useState<BookLanguage>("en");
   const [showFilters, setShowFilters] = useState(false);
   const [hasPulled, setHasPulled] = useState(false);
   const [filterChangeKey, setFilterChangeKey] = useState(0);
@@ -66,7 +66,7 @@ const Index = () => {
       setIsRevealing(true);
       setRevealedBook(null);
       try {
-        const lang = discoverLang || "en";
+        const lang = discoverLang;
         const isNonFiction = selectedGenres.includes("Non-Fiction");
         
         // Build a reader-friendly query biased toward trending/new releases
@@ -95,7 +95,7 @@ const Index = () => {
           const mapped = selectedGenres.map((g) => genreMap[g] || g.toLowerCase()).join(" ");
           query = isNonFiction ? `${mapped} ${trendBoost}` : `subject:fiction ${mapped} ${trendBoost}`;
         } else {
-          query = lang === "en" ? `subject:fiction popular novels ${trendBoost}` : `subject:fiction romány ${trendBoost}`;
+          query = lang === "en" ? `subject:fiction popular novels ${trendBoost}` : (lang === "cs" ? `subject:fiction romány beletrie ${trendBoost}` : `subject:fiction romány beletria ${trendBoost}`);
         }
         
         if (selectedMoods.length > 0) {
@@ -232,9 +232,9 @@ const Index = () => {
           
             {showFilters ? <ChevronUp className="w-4 h-4" /> : <SlidersHorizontal className="w-4 h-4" />}
             {showFilters ? "Hide filters" : "Add filters"}
-            {(selectedGenres.length > 0 || selectedMoods.length > 0 || discoverLang) &&
+            {(selectedGenres.length > 0 || selectedMoods.length > 0 || discoverLang !== "en") &&
           <span className="bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold">
-                {selectedGenres.length + selectedMoods.length + (discoverLang ? 1 : 0)}
+                {selectedGenres.length + selectedMoods.length + (discoverLang !== "en" ? 1 : 0)}
               </span>
           }
           </button>
