@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import type { UnifiedBook } from '@/data/bookTypes';
-import { X, BookOpen, BookOpenText } from 'lucide-react';
+import { X, BookOpen, BookOpenText, Book, Headphones, Tablet } from 'lucide-react';
 
 interface TBRListProps {
   books: UnifiedBook[];
@@ -51,6 +51,15 @@ export function TBRList({ books, onRemove }: TBRListProps) {
                 {book.source === 'manual' && (
                   <span className="px-2 py-0.5 rounded-full bg-accent/10 text-accent text-xs font-body font-medium">
                     Manual
+                  </span>
+                )}
+                {book.format && (
+                  <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-body font-medium flex items-center gap-1">
+                    {book.format === 'hardback' && <Book className="w-3 h-3" />}
+                    {book.format === 'paperback' && <BookOpen className="w-3 h-3" />}
+                    {book.format === 'ebook' && <Tablet className="w-3 h-3" />}
+                    {book.format === 'audiobook' && <Headphones className="w-3 h-3" />}
+                    {book.format.charAt(0).toUpperCase() + book.format.slice(1)}
                   </span>
                 )}
               </div>

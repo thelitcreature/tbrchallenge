@@ -14,6 +14,8 @@ export interface GoogleBook {
   isbn: string | null;
 }
 
+export type BookFormat = 'paperback' | 'hardback' | 'ebook' | 'audiobook';
+
 export interface UnifiedBook {
   id: string;
   title: string;
@@ -30,6 +32,7 @@ export interface UnifiedBook {
   isbn?: string | null;
   whyTrending?: string;
   publishedDate?: string;
+  format?: BookFormat;
 }
 
 export function googleBookToUnified(gb: GoogleBook): UnifiedBook {
