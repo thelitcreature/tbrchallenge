@@ -174,7 +174,7 @@ export const books: Book[] = [
     title: 'The Cartographers',
     author: 'Peng Shepherd',
     description: 'A young cartographer investigates the mystery behind her father\'s death and discovers a secret about a high-value high-stakes high-society map world.',
-    genres: ['Mystery', 'Thriller'],
+    genres: ['Crime', 'Thriller'],
     moods: ['Adventurous', 'Suspenseful'],
     tags: ['Maps', 'Secrets', 'Academic'],
     year: 2022,
