@@ -252,7 +252,7 @@ const Index = () => {
             />
           )}
           <div
-          className="py-8 flex flex-col items-center min-h-[280px] justify-center w-full relative z-50">
+          className="py-8 flex flex-col items-center min-h-[280px] justify-center w-full">
           
             <AnimatePresence mode="wait">
               {revealedBook && !isRevealing ?
