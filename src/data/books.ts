@@ -1,7 +1,8 @@
 export type Genre =
-  | 'Sci-Fi' | 'Romance' | 'Thriller' | 'Fantasy' | 'Literary Fiction'
-  | 'Horror' | 'Mystery' | 'Historical' | 'Non-Fiction' | 'Memoir'
-  | 'Self-Help' | 'Biography' | 'Poetry' | 'Humor' | 'Young Adult';
+  | 'Contemporary' | 'Literary Fiction' | 'Romance' | 'Romantasy'
+  | 'Fantasy' | 'Sci-Fi' | 'Historical' | 'Thriller'
+  | 'Horror' | 'Crime' | 'Humor' | 'Classics'
+  | 'Young Adult' | 'Non-Fiction';
 
 export type Mood =
   | 'Adventurous' | 'Cozy' | 'Reflective' | 'Dark' | 'Heartwarming'
