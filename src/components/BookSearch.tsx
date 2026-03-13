@@ -30,7 +30,7 @@ export function BookSearch({ onAddBook, existingIds }: BookSearchProps) {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     const trimmed = query.trim();
-    if (!trimmed || trimmed.length < 2) {
+    if (!trimmed || trimmed.length < 3) {
       setResults([]);
       setSearched(false);
       return;
@@ -49,7 +49,7 @@ export function BookSearch({ onAddBook, existingIds }: BookSearchProps) {
       } finally {
         setIsLoading(false);
       }
-    }, 350);
+    }, 500);
 
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [query]);

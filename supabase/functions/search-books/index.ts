@@ -37,16 +37,27 @@ Deno.serve(async (req) => {
     const url = `https://www.googleapis.com/books/v1/volumes?${params.toString()}`;
     console.log('Fetching Google Books:', url);
 
-    const response = await fetch(url, {
-      headers: { 'Accept': 'application/json' },
-    });
-    const data = await response.json();
+    let response: Response | null = null;
+    let data: any = null;
 
-    if (!response.ok) {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      response = await fetch(url, {
+        headers: { 'Accept': 'application/json' },
+      });
+      data = await response.json();
+
+      if (response.ok || response.status !== 503) break;
+
+      // Retry on 503 with exponential backoff
+      console.warn(`Google Books API 503, retry ${attempt + 1}/3`);
+      await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
+    }
+
+    if (!response!.ok) {
       console.error('Google Books API error:', data);
       return new Response(
-        JSON.stringify({ success: false, error: data.error?.message || 'API request failed' }),
-        { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ success: false, error: data?.error?.message || 'API request failed' }),
+        { status: response!.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
