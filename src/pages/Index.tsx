@@ -357,7 +357,12 @@ const Index = () => {
           </AnimatePresence>
 
           {/* Main interaction */}
-          <div className="py-8 flex items-center min-h-[280px] justify-center w-full gap-2">
+          <div
+            className="py-8 flex items-center min-h-[280px] justify-center w-full gap-2"
+            onClick={(e) => {
+              if (revealedBook && e.target === e.currentTarget) setRevealedBook(null);
+            }}
+          >
             {/* Left arrow - go back */}
             {revealedBook && !isRevealing && (
               <motion.button
