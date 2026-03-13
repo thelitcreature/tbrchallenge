@@ -126,7 +126,7 @@ export function BookCard({ book, onPullAgain, onDismiss, onAddToWantToRead, onMa
           className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-secondary text-foreground text-sm font-body font-medium hover:bg-secondary/80 transition-colors"
         >
           <RotateCcw className="w-4 h-4" />
-          Pull again
+          Choose again
         </motion.button>
 
         {onAddToWantToRead && (
