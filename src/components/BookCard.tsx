@@ -162,7 +162,7 @@ export function BookCard({ book, onPullAgain, onDismiss, onAddToWantToRead, onMa
         )}
 
         {onNotInterested && (
-          <div className="flex items-center gap-1.5">
+          <div className="relative">
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowConfirm(true)}
@@ -173,7 +173,7 @@ export function BookCard({ book, onPullAgain, onDismiss, onAddToWantToRead, onMa
             </motion.button>
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="w-5 h-5 rounded-full bg-muted flex items-center justify-center text-muted-foreground text-xs font-bold cursor-help select-none shrink-0">
+                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-muted-foreground/20 flex items-center justify-center text-muted-foreground text-[9px] font-bold cursor-help select-none">
                   i
                 </span>
               </TooltipTrigger>
