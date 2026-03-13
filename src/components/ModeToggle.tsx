@@ -11,7 +11,7 @@ interface ModeToggleProps {
 
 const TABS: { key: Mode; label: string }[] = [
   { key: 'discover', label: 'Discover' },
-  { key: 'tbr', label: 'My TBR' },
+  { key: 'tbr', label: 'Choose from my TBR' },
   { key: 'wishlist', label: 'Want to Read' },
 ];
 
@@ -34,7 +34,7 @@ export function ModeToggle({ mode, onModeChange, tbrCount, wishlistCount }: Mode
         <button
           key={tab.key}
           onClick={() => onModeChange(tab.key)}
-          className={`relative z-10 px-4 sm:px-5 py-2 rounded-full text-sm font-body font-medium transition-colors flex items-center gap-1.5 ${
+          className={`relative z-10 flex-1 px-3 sm:px-5 py-2 rounded-full text-sm font-body font-medium transition-colors flex items-center justify-center gap-1.5 text-center ${
             mode === tab.key ? 'text-foreground' : 'text-muted-foreground'
           }`}
         >
