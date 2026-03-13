@@ -40,8 +40,8 @@ export function BookSearch({ onAddBook, existingIds }: BookSearchProps) {
       setIsLoading(true);
       setSearched(true);
       try {
-        const { books } = await searchGoogleBooks(trimmed, undefined, 20);
-        const filtered = books.filter(b => !b.language || ALLOWED_LANGS.has(b.language));
+        const { books } = await searchGoogleBooks(trimmed, undefined, 12);
+        const filtered = books.filter(b => b.language && ALLOWED_LANGS.has(b.language));
         setResults(filtered);
       } catch (err) {
         console.error('Search error:', err);
@@ -59,6 +59,11 @@ export function BookSearch({ onAddBook, existingIds }: BookSearchProps) {
     const format = selectedFormats[book.id];
     if (format) unified.format = format;
     onAddBook(unified);
+    // Close results after adding
+    setQuery('');
+    setResults([]);
+    setSearched(false);
+    setSelectedFormats({});
   };
 
   return (
