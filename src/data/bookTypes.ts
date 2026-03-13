@@ -50,6 +50,7 @@ export interface UnifiedBook {
   whyTrending?: string;
   publishedDate?: string;
   format?: BookFormat;
+  reasonForAdding?: ReasonForAdding;
 }
 
 export function googleBookToUnified(gb: GoogleBook): UnifiedBook {
