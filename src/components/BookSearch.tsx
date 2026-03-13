@@ -131,6 +131,11 @@ export function BookSearch({ onAddBook, existingIds }: BookSearchProps) {
                             {book.publisher}
                           </span>
                         )}
+                        {book.format && (
+                          <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-body font-medium">
+                            {book.format === 'ebook' ? 'E-book' : book.format === 'audiobook' ? 'Audiobook' : book.format === 'hardback' ? 'Hardback' : 'Paperback'}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <button
