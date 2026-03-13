@@ -235,8 +235,21 @@ const Index = () => {
 
   const addToOwned = (book: UnifiedBook) => {
     if (!shelvedBooks.find((b) => b.id === book.id)) {
-      setShelvedBooks((prev) => [...prev, { ...book, shelf: "owned" }]);
+      // Queue the book and show the reason picker
+      setPendingBook(book);
     }
+  };
+
+  const confirmAddWithReason = (book: UnifiedBook, reason: ReasonForAdding) => {
+    setShelvedBooks((prev) => [...prev, { ...book, shelf: "owned", reasonForAdding: reason }]);
+    setPendingBook(null);
+    setShowAddTools(false);
+  };
+
+  const skipReason = (book: UnifiedBook) => {
+    setShelvedBooks((prev) => [...prev, { ...book, shelf: "owned" }]);
+    setPendingBook(null);
+    setShowAddTools(false);
   };
 
   const markAsRead = (book: UnifiedBook) => {
