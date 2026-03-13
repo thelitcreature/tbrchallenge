@@ -1,7 +1,8 @@
 export type Genre =
-  | 'Sci-Fi' | 'Romance' | 'Thriller' | 'Fantasy' | 'Literary Fiction'
-  | 'Horror' | 'Mystery' | 'Historical' | 'Non-Fiction' | 'Memoir'
-  | 'Self-Help' | 'Biography' | 'Poetry' | 'Humor' | 'Young Adult';
+  | 'Contemporary' | 'Literary Fiction' | 'Romance' | 'Romantasy'
+  | 'Fantasy' | 'Sci-Fi' | 'Historical' | 'Thriller'
+  | 'Horror' | 'Crime' | 'Humor' | 'Classics'
+  | 'Young Adult' | 'Non-Fiction';
 
 export type Mood =
   | 'Adventurous' | 'Cozy' | 'Reflective' | 'Dark' | 'Heartwarming'
@@ -23,9 +24,10 @@ export interface Book {
 }
 
 export const GENRES: Genre[] = [
-  'Sci-Fi', 'Romance', 'Thriller', 'Fantasy', 'Literary Fiction',
-  'Horror', 'Mystery', 'Historical', 'Non-Fiction', 'Memoir',
-  'Self-Help', 'Biography', 'Poetry', 'Humor', 'Young Adult',
+  'Contemporary', 'Literary Fiction', 'Romance', 'Romantasy',
+  'Fantasy', 'Sci-Fi', 'Historical', 'Thriller',
+  'Horror', 'Crime', 'Humor', 'Classics',
+  'Young Adult', 'Non-Fiction',
 ];
 
 export const MOODS: Mood[] = [
@@ -72,7 +74,7 @@ export const books: Book[] = [
     title: 'Mexican Gothic',
     author: 'Silvia Moreno-Garcia',
     description: 'After receiving a disturbing letter from her newlywed cousin, a glamorous socialite heads to the Mexican countryside to investigate a crumbling gothic mansion.',
-    genres: ['Horror', 'Historical', 'Mystery'],
+    genres: ['Horror', 'Historical', 'Crime'],
     moods: ['Dark', 'Suspenseful'],
     tags: ['Gothic', '1950s Mexico', 'Atmospheric'],
     year: 2020,
@@ -102,7 +104,7 @@ export const books: Book[] = [
     title: 'The Silent Patient',
     author: 'Alex Michaelides',
     description: "A woman shoots her husband five times and then never speaks another word. A criminal psychotherapist becomes obsessed with uncovering her motive.",
-    genres: ['Thriller', 'Mystery'],
+    genres: ['Thriller', 'Crime'],
     moods: ['Dark', 'Suspenseful', 'Intense'],
     tags: ['Psychological', 'Plot Twist', 'Unreliable Narrator'],
     year: 2019,
@@ -132,7 +134,7 @@ export const books: Book[] = [
     title: 'Piranesi',
     author: 'Susanna Clarke',
     description: 'A man lives in a mysterious House whose infinite halls are lined with thousands of statues. The ocean fills the lower floors and clouds drift through the upper ones.',
-    genres: ['Fantasy', 'Mystery', 'Literary Fiction'],
+    genres: ['Fantasy', 'Crime', 'Literary Fiction'],
     moods: ['Whimsical', 'Reflective', 'Adventurous'],
     tags: ['Surreal', 'Labyrinths', 'Identity'],
     year: 2020,
@@ -142,7 +144,7 @@ export const books: Book[] = [
     title: 'The Maid',
     author: 'Nita Prose',
     description: 'Molly the maid is all alone in the world. She finds comfort in the routine of her work at the Regency Grand Hotel—until she discovers a guest dead in his bed.',
-    genres: ['Mystery', 'Thriller'],
+    genres: ['Crime', 'Thriller'],
     moods: ['Cozy', 'Suspenseful'],
     tags: ['Cozy Mystery', 'Neurodivergent MC', 'Hotel Setting'],
     year: 2022,
@@ -172,7 +174,7 @@ export const books: Book[] = [
     title: 'The Cartographers',
     author: 'Peng Shepherd',
     description: 'A young cartographer investigates the mystery behind her father\'s death and discovers a secret about a high-value high-stakes high-society map world.',
-    genres: ['Mystery', 'Thriller'],
+    genres: ['Crime', 'Thriller'],
     moods: ['Adventurous', 'Suspenseful'],
     tags: ['Maps', 'Secrets', 'Academic'],
     year: 2022,
@@ -232,7 +234,7 @@ export const books: Book[] = [
     title: 'The Woman in the Window',
     author: 'A.J. Finn',
     description: 'An agoraphobic woman living alone spies on her neighbors and believes she witnessed a crime across the street—but no one believes her.',
-    genres: ['Thriller', 'Mystery'],
+    genres: ['Thriller', 'Crime'],
     moods: ['Dark', 'Suspenseful', 'Intense'],
     tags: ['Psychological', 'Isolation', 'Unreliable Narrator'],
     year: 2018,
@@ -253,7 +255,7 @@ export const books: Book[] = [
     title: 'Educated',
     author: 'Tara Westover',
     description: 'A memoir of a woman who grows up in a survivalist family in Idaho and eventually earns a PhD from Cambridge University.',
-    genres: ['Memoir', 'Non-Fiction'],
+    genres: ['Non-Fiction'],
     moods: ['Empowering', 'Intense', 'Reflective'],
     tags: ['Education', 'Family', 'Resilience'],
     year: 2018,
@@ -263,7 +265,7 @@ export const books: Book[] = [
     title: 'Atomic Habits',
     author: 'James Clear',
     description: 'A practical guide to building good habits, breaking bad ones, and mastering the tiny behaviors that lead to remarkable results.',
-    genres: ['Self-Help', 'Non-Fiction'],
+    genres: ['Non-Fiction'],
     moods: ['Empowering', 'Thought-Provoking', 'Calming'],
     tags: ['Productivity', 'Psychology', 'Habits'],
     year: 2018,
@@ -273,7 +275,7 @@ export const books: Book[] = [
     title: 'Becoming',
     author: 'Michelle Obama',
     description: 'An intimate and powerful memoir by the former First Lady of the United States, reflecting on her roots and her time in the White House.',
-    genres: ['Memoir', 'Biography', 'Non-Fiction'],
+    genres: ['Non-Fiction'],
     moods: ['Empowering', 'Heartwarming', 'Reflective'],
     tags: ['Politics', 'Inspiration', 'Family'],
     year: 2018,
@@ -283,7 +285,7 @@ export const books: Book[] = [
     title: 'The Body Keeps the Score',
     author: 'Bessel van der Kolk',
     description: 'A pioneering researcher transforms our understanding of traumatic stress, revealing how it literally reshapes the body and brain.',
-    genres: ['Non-Fiction', 'Self-Help'],
+    genres: ['Non-Fiction'],
     moods: ['Thought-Provoking', 'Empowering'],
     tags: ['Psychology', 'Trauma', 'Healing'],
     year: 2014,
@@ -293,7 +295,7 @@ export const books: Book[] = [
     title: 'Milk and Honey',
     author: 'Rupi Kaur',
     description: 'A collection of poetry and prose about survival, the experience of violence, abuse, love, loss, and femininity.',
-    genres: ['Poetry'],
+    genres: ['Literary Fiction', 'Romance'],
     moods: ['Reflective', 'Intense', 'Empowering'],
     tags: ['Feminism', 'Healing', 'Modern Poetry'],
     year: 2014,
@@ -323,7 +325,7 @@ export const books: Book[] = [
     title: 'Thinking, Fast and Slow',
     author: 'Daniel Kahneman',
     description: 'Nobel laureate Daniel Kahneman reveals the two systems that drive the way we think—and the biases that shape our decisions.',
-    genres: ['Non-Fiction', 'Self-Help'],
+    genres: ['Non-Fiction'],
     moods: ['Thought-Provoking', 'Calming'],
     tags: ['Psychology', 'Decision Making', 'Nobel Prize'],
     year: 2011,
@@ -424,7 +426,7 @@ export const books: Book[] = [
     title: 'Máj',
     author: 'Karel Hynek Mácha',
     description: 'Nejslavnější česká báseň o nešťastné lásce, pomstě a kráse přírody. Romantické dílo, které dodnes uchvacuje svou melodií.',
-    genres: ['Poetry', 'Romance'],
+    genres: ['Classics', 'Romance'],
     moods: ['Romantic', 'Sad', 'Emotional', 'Reflective'],
     tags: ['Česká klasika', 'Romantismus', 'Báseň'],
     year: 1836,
@@ -434,7 +436,7 @@ export const books: Book[] = [
     title: 'Kmotr Mrázek',
     author: 'Jaroslav Kmenta',
     description: 'Investigativní kniha o jednom z nejmocnějších českých podsvětních bossů a jeho propojení s politikou a byznysem.',
-    genres: ['Non-Fiction', 'Biography'],
+    genres: ['Non-Fiction'],
     moods: ['Tense', 'Informative', 'Dark'],
     tags: ['Česká non-fiction', 'True Crime', 'Investigace'],
     year: 2007,
@@ -515,7 +517,7 @@ export const books: Book[] = [
     title: 'Démoni',
     author: 'Jozef Karika',
     description: 'Napínavý slovenský thriller o záhadných udalostiach v malej obci, kde sa mieša realita s nadprirodzenom.',
-    genres: ['Thriller', 'Horror', 'Mystery'],
+    genres: ['Thriller', 'Horror', 'Crime'],
     moods: ['Dark', 'Tense', 'Mysterious', 'Suspenseful'],
     tags: ['Slovenský thriller', 'Nadprirodzeno', 'Napätie'],
     year: 2012,

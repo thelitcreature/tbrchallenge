@@ -62,25 +62,24 @@ const Index = () => {
       setRevealedBook(null);
       try {
         const lang = discoverLang || "en";
-        const isNonFiction = selectedGenres.includes("Non-Fiction") || selectedGenres.includes("Self-Help") || selectedGenres.includes("Biography") || selectedGenres.includes("Memoir");
+        const isNonFiction = selectedGenres.includes("Non-Fiction");
         
         // Build a reader-friendly query
         const genreMap: Record<string, string> = {
-          "Sci-Fi": "science fiction novels",
-          "Fantasy": "fantasy novels",
-          "Romance": "romance novels",
-          "Thriller": "thriller novels",
-          "Horror": "horror fiction",
-          "Mystery": "mystery detective novels",
-          "Historical": "historical fiction novels",
+          "Contemporary": "contemporary fiction novels",
           "Literary Fiction": "literary fiction novels",
-          "Non-Fiction": "popular nonfiction",
-          "Memoir": "memoir autobiography",
-          "Self-Help": "self-help books",
-          "Biography": "biography",
-          "Poetry": "poetry collection",
-          "Humor": "comedy humor fiction",
-          "Young Adult": "young adult novels",
+          "Romance": "romance novels",
+          "Romantasy": "romantasy fantasy romance novels",
+          "Fantasy": "fantasy novels",
+          "Sci-Fi": "science fiction novels",
+          "Historical": "historical fiction novels",
+          "Thriller": "thriller suspense novels",
+          "Horror": "horror fiction novels",
+          "Crime": "crime mystery detective novels",
+          "Humor": "comedy humor fiction novels",
+          "Classics": "classic literature novels",
+          "Young Adult": "young adult YA novels",
+          "Non-Fiction": "popular nonfiction bestseller",
         };
         
         let query: string;
