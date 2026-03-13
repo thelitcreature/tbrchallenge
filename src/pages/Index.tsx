@@ -29,6 +29,7 @@ const curatedUnified: UnifiedBook[] = curatedBooks.map((b) => ({
 }));
 
 const Index = () => {
+  const [hasOnboarded, setHasOnboarded] = useState(() => localStorage.getItem('plottwist-onboarded') === '1');
   const [showAddTools, setShowAddTools] = useState(false);
   const [mode, setMode] = useState<Mode>("tbr");
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
