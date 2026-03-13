@@ -56,10 +56,9 @@ export function BookSearch({ onAddBook, existingIds }: BookSearchProps) {
 
   const handleAdd = (book: GoogleBook) => {
     const unified = googleBookToUnified(book);
-    const format = selectedFormats[book.id];
+    const format = selectedFormats[book.id] || (book.format as BookFormat | undefined);
     if (format) unified.format = format;
     onAddBook(unified);
-    // Close results after adding
     setQuery('');
     setResults([]);
     setSearched(false);
