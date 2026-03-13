@@ -23,22 +23,22 @@ export function PullLever({ onPull, isRevealing }: PullLeverProps) {
         transition={{ type: 'spring', stiffness: 400, damping: 20 }}
       >
         {/* Outer ring */}
-        <div className="absolute inset-0 rounded-full border-2 border-primary/20 group-hover:border-primary/40 transition-colors duration-300" />
+        <div className="absolute inset-0 rounded-full border-2 border-accent/20 group-hover:border-accent/40 transition-colors duration-300" />
         
         {/* Subtle pulse ring */}
         <motion.div
-          className="absolute inset-0 rounded-full border border-primary/10"
+          className="absolute inset-0 rounded-full border border-accent/10"
           animate={{ scale: [1, 1.08, 1], opacity: [0.5, 0, 0.5] }}
           transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
         />
 
         {/* Inner circle */}
-        <div className="w-32 h-32 rounded-full bg-primary/5 group-hover:bg-primary/10 transition-colors duration-300 flex items-center justify-center">
+        <div className="w-32 h-32 rounded-full bg-accent/5 group-hover:bg-accent/10 transition-colors duration-300 flex items-center justify-center">
           <motion.div
             animate={isRevealing ? { rotateY: [0, 180, 360] } : {}}
             transition={{ duration: 0.7, ease: 'easeInOut' }}
           >
-            <BookOpen className="w-10 h-10 text-primary/70 group-hover:text-primary transition-colors duration-300" strokeWidth={1.5} />
+            <BookOpen className="w-10 h-10 text-accent/70 group-hover:text-accent transition-colors duration-300" strokeWidth={1.5} />
           </motion.div>
         </div>
       </motion.button>
