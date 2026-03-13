@@ -34,10 +34,12 @@ Deno.serve(async (req) => {
       params.set('langRestrict', langRestrict);
     }
 
-    const url = `https://www.googleapis.com/books/v1/volumes?${params}`;
+    const url = `https://www.googleapis.com/books/v1/volumes?${params.toString()}`;
     console.log('Fetching Google Books:', url);
 
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: { 'Accept': 'application/json' },
+    });
     const data = await response.json();
 
     if (!response.ok) {
