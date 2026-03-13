@@ -144,7 +144,7 @@ export const books: Book[] = [
     title: 'The Maid',
     author: 'Nita Prose',
     description: 'Molly the maid is all alone in the world. She finds comfort in the routine of her work at the Regency Grand Hotel—until she discovers a guest dead in his bed.',
-    genres: ['Mystery', 'Thriller'],
+    genres: ['Crime', 'Thriller'],
     moods: ['Cozy', 'Suspenseful'],
     tags: ['Cozy Mystery', 'Neurodivergent MC', 'Hotel Setting'],
     year: 2022,
