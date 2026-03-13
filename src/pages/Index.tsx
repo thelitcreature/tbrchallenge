@@ -179,7 +179,7 @@ const Index = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="flex flex-col items-center w-full max-w-lg space-y-6">
+        className="flex flex-col items-center w-full max-w-lg space-y-6 relative z-50">
         
           {/* TBR-only toggle */}
           {ownedBooks.length > 0 &&
