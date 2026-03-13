@@ -232,7 +232,7 @@ const Index = () => {
           
             {showFilters ? <ChevronUp className="w-4 h-4" /> : <SlidersHorizontal className="w-4 h-4" />}
             {showFilters ? "Hide filters" : "Add filters"}
-            {(selectedGenres.length > 0 || selectedMoods.length > 0 || discoverLang) &&
+            {(selectedGenres.length > 0 || selectedMoods.length > 0 || discoverLang !== "en") &&
           <span className="bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold">
                 {selectedGenres.length + selectedMoods.length + (discoverLang !== "en" ? 1 : 0)}
               </span>
