@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { SlidersHorizontal, ChevronUp } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { books as curatedBooks, GENRES, MOODS, type Genre, type Mood } from "@/data/books";
@@ -32,6 +32,8 @@ const Index = () => {
   const [tbrMode, setTbrMode] = useState(false);
   const [discoverLang, setDiscoverLang] = useState<BookLanguage>("");
   const [showFilters, setShowFilters] = useState(false);
+  const [hasPulled, setHasPulled] = useState(false);
+  const [filterChangeKey, setFilterChangeKey] = useState(0);
 
   const ownedBooks = shelvedBooks.filter((b) => b.shelf === "owned");
   const wantToReadBooks = shelvedBooks.filter((b) => b.shelf === "want-to-read");
@@ -39,12 +41,14 @@ const Index = () => {
 
   const toggleGenre = (g: Genre) => {
     setSelectedGenres((prev) => prev.includes(g) ? [] : [g]);
-    setRevealedBook(null);
+    if (hasPulled) setFilterChangeKey((k) => k + 1);
+    else setRevealedBook(null);
   };
 
   const toggleMood = (m: Mood) => {
     setSelectedMoods((prev) => prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]);
-    setRevealedBook(null);
+    if (hasPulled) setFilterChangeKey((k) => k + 1);
+    else setRevealedBook(null);
   };
 
   const getFilteredBooks = useCallback(() => {
@@ -57,6 +61,7 @@ const Index = () => {
   }, [selectedGenres, selectedMoods, tbrMode, ownedBooks]);
 
   const pullBook = async () => {
+    setHasPulled(true);
     if (!tbrMode) {
       setIsRevealing(true);
       setRevealedBook(null);
@@ -129,6 +134,16 @@ const Index = () => {
       setIsRevealing(false);
     }, 600);
   };
+
+  // Auto-pull when filters change after the user has already pulled
+  const pullBookRef = useRef(pullBook);
+  pullBookRef.current = pullBook;
+  
+  useEffect(() => {
+    if (filterChangeKey > 0) {
+      pullBookRef.current();
+    }
+  }, [filterChangeKey]);
 
   const addToOwned = (book: UnifiedBook) => {
     if (!shelvedBooks.find((b) => b.id === book.id)) {
@@ -227,7 +242,8 @@ const Index = () => {
                 selected={discoverLang}
                 onChange={(l) => {
                   setDiscoverLang(l);
-                  setRevealedBook(null);
+                  if (hasPulled) setFilterChangeKey((k) => k + 1);
+                  else setRevealedBook(null);
                 }} />
               
                   </div>
