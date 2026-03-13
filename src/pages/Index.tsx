@@ -19,7 +19,7 @@ import { googleBookToUnified } from "@/data/bookTypes";
 // Convert curated books to UnifiedBook format
 const curatedUnified: UnifiedBook[] = curatedBooks.map((b) => ({
   ...b,
-  source: "curated" as const,
+  source: "curated" as const
 }));
 
 const Index = () => {
@@ -28,7 +28,7 @@ const Index = () => {
   const [selectedMoods, setSelectedMoods] = useState<Mood[]>([]);
   const [revealedBook, setRevealedBook] = useState<UnifiedBook | null>(null);
   const [isRevealing, setIsRevealing] = useState(false);
-  const [shelvedBooks, setShelvedBooks] = useState<(UnifiedBook & { shelf: 'owned' | 'want-to-read' | 'read' })[]>([]);
+  const [shelvedBooks, setShelvedBooks] = useState<(UnifiedBook & {shelf: 'owned' | 'want-to-read' | 'read';})[]>([]);
   const [tbrMode, setTbrMode] = useState(false);
   const [discoverLang, setDiscoverLang] = useState<BookLanguage>("");
   const [showFilters, setShowFilters] = useState(false);
@@ -38,10 +38,10 @@ const Index = () => {
   const readBooks = shelvedBooks.filter((b) => b.shelf === "read");
 
   const toggleGenre = (g: Genre) =>
-    setSelectedGenres((prev) => (prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]));
+  setSelectedGenres((prev) => prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]);
 
   const toggleMood = (m: Mood) =>
-    setSelectedMoods((prev) => (prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]));
+  setSelectedMoods((prev) => prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]);
 
   const getFilteredBooks = useCallback(() => {
     const source = tbrMode ? ownedBooks : curatedUnified;
@@ -100,7 +100,7 @@ const Index = () => {
     setShelvedBooks((prev) => {
       const existing = prev.find((b) => b.id === book.id);
       if (existing) {
-        return prev.map((b) => (b.id === book.id ? { ...b, shelf: "read" as const } : b));
+        return prev.map((b) => b.id === book.id ? { ...b, shelf: "read" as const } : b);
       }
       return [...prev, { ...book, shelf: "read" as const }];
     });
@@ -117,7 +117,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center px-4 py-10 sm:py-16">
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8 flex flex-col items-center">
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8 flex-col flex items-center justify-center gap-[10px]">
         <h1 className="font-display text-5xl sm:text-6xl font-bold text-foreground tracking-tight">Plot Twist</h1>
         <p className="font-body text-sm text-muted-foreground mt-2 uppercase w-full" style={{ letterSpacing: '0.65em', paddingRight: '0.65em' }}>Let the book choose you</p>
       </motion.div>
@@ -127,136 +127,136 @@ const Index = () => {
         <ModeToggle mode={mode} onModeChange={setMode} tbrCount={ownedBooks.length} wishlistCount={wantToReadBooks.length + readBooks.length} />
       </motion.div>
 
-      {mode === "discover" ? (
-        <motion.div
-          key="discover"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="flex flex-col items-center w-full max-w-lg space-y-6"
-        >
+      {mode === "discover" ?
+      <motion.div
+        key="discover"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="flex flex-col items-center w-full max-w-lg space-y-6">
+        
           {/* TBR-only toggle */}
-          {ownedBooks.length > 0 && (
-            <label className="flex items-center gap-2 font-body text-sm text-muted-foreground cursor-pointer select-none">
+          {ownedBooks.length > 0 &&
+        <label className="flex items-center gap-2 font-body text-sm text-muted-foreground cursor-pointer select-none">
               <input
-                type="checkbox"
-                checked={tbrMode}
-                onChange={(e) => {
-                  setTbrMode(e.target.checked);
-                  setRevealedBook(null);
-                }}
-                className="w-4 h-4 accent-primary rounded"
-              />
+            type="checkbox"
+            checked={tbrMode}
+            onChange={(e) => {
+              setTbrMode(e.target.checked);
+              setRevealedBook(null);
+            }}
+            className="w-4 h-4 accent-primary rounded" />
+          
               Pick from My Books only
             </label>
-          )}
+        }
 
           {/* Filter toggle */}
           <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
+          onClick={() => setShowFilters(!showFilters)}
+          className="flex items-center gap-2 font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          
             {showFilters ? <ChevronUp className="w-4 h-4" /> : <SlidersHorizontal className="w-4 h-4" />}
             {showFilters ? "Hide filters" : "Add filters"}
-            {(selectedGenres.length > 0 || selectedMoods.length > 0 || discoverLang) && (
-              <span className="bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold">
+            {(selectedGenres.length > 0 || selectedMoods.length > 0 || discoverLang) &&
+          <span className="bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold">
                 {selectedGenres.length + selectedMoods.length + (discoverLang ? 1 : 0)}
               </span>
-            )}
+          }
           </button>
 
           <AnimatePresence>
-            {showFilters && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden w-full space-y-6"
-              >
+            {showFilters &&
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden w-full space-y-6">
+            
                 {/* Language filter */}
-                {!tbrMode && (
-                  <div className="space-y-2 w-full">
+                {!tbrMode &&
+            <div className="space-y-2 w-full">
                     <p className="text-sm font-body font-medium text-muted-foreground text-center">Book Language</p>
                     <LanguageFilter
-                      selected={discoverLang}
-                      onChange={(l) => {
-                        setDiscoverLang(l);
-                        setRevealedBook(null);
-                      }}
-                    />
+                selected={discoverLang}
+                onChange={(l) => {
+                  setDiscoverLang(l);
+                  setRevealedBook(null);
+                }} />
+              
                   </div>
-                )}
+            }
 
                 <FilterChips label="Genres" options={GENRES} selected={selectedGenres} onToggle={toggleGenre} />
                 <FilterChips
-                  label="I'm in the mood for something…"
-                  options={MOODS}
-                  selected={selectedMoods}
-                  onToggle={toggleMood}
-                />
+              label="I'm in the mood for something…"
+              options={MOODS}
+              selected={selectedMoods}
+              onToggle={toggleMood} />
+            
               </motion.div>
-            )}
+          }
           </AnimatePresence>
 
           {/* Main interaction */}
           <div
-            className="py-8 flex flex-col items-center min-h-[280px] justify-center w-full"
-            onClick={(e) => {
-              if (revealedBook && e.target === e.currentTarget) {
-                setRevealedBook(null);
-              }
-            }}
-          >
+          className="py-8 flex flex-col items-center min-h-[280px] justify-center w-full"
+          onClick={(e) => {
+            if (revealedBook && e.target === e.currentTarget) {
+              setRevealedBook(null);
+            }
+          }}>
+          
             <AnimatePresence mode="wait">
-              {revealedBook && !isRevealing ? (
-                <BookCard
-                  key={revealedBook.id}
-                  book={revealedBook}
-                  onPullAgain={pullBook}
-                  onDismiss={() => setRevealedBook(null)}
-                  onAddToWantToRead={addToWantToRead}
-                  onMarkAsRead={markAsRead}
-                  isInWantToRead={wantToReadIds.has(revealedBook.id)}
-                  isRead={readIds.has(revealedBook.id)}
-                />
-              ) : (
-                <motion.div key="lever" exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.2 }}>
+              {revealedBook && !isRevealing ?
+            <BookCard
+              key={revealedBook.id}
+              book={revealedBook}
+              onPullAgain={pullBook}
+              onDismiss={() => setRevealedBook(null)}
+              onAddToWantToRead={addToWantToRead}
+              onMarkAsRead={markAsRead}
+              isInWantToRead={wantToReadIds.has(revealedBook.id)}
+              isRead={readIds.has(revealedBook.id)} /> :
+
+
+            <motion.div key="lever" exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.2 }}>
                   <PullLever onPull={pullBook} isRevealing={isRevealing} />
                 </motion.div>
-              )}
+            }
             </AnimatePresence>
           </div>
-        </motion.div>
-      ) : mode === "tbr" ? (
-        <motion.div
-          key="tbr"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="w-full max-w-lg space-y-6"
-        >
+        </motion.div> :
+      mode === "tbr" ?
+      <motion.div
+        key="tbr"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="w-full max-w-lg space-y-6">
+        
           <BookSearch onAddBook={addToOwned} existingIds={shelvedIds} />
           <ManualEntry onAdd={addToOwned} />
           <TBRList books={ownedBooks} onRemove={removeFromShelves} />
-        </motion.div>
-      ) : (
-        <motion.div
-          key="wishlist"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="w-full max-w-lg space-y-6"
-        >
+        </motion.div> :
+
+      <motion.div
+        key="wishlist"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="w-full max-w-lg space-y-6">
+        
           <Wishlist
-            wantToReadBooks={wantToReadBooks}
-            readBooks={readBooks}
-            onRemove={removeFromShelves}
-            onMarkAsRead={markAsRead}
-          />
+          wantToReadBooks={wantToReadBooks}
+          readBooks={readBooks}
+          onRemove={removeFromShelves}
+          onMarkAsRead={markAsRead} />
+        
         </motion.div>
-      )}
-    </div>
-  );
+      }
+    </div>);
+
 };
 
 export default Index;
