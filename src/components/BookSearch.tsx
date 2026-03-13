@@ -49,7 +49,7 @@ export function BookSearch({ onAddBook, existingIds }: BookSearchProps) {
       } finally {
         setIsLoading(false);
       }
-    }, 350);
+    }, 500);
 
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [query]);
