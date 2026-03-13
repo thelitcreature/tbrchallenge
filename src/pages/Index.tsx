@@ -241,13 +241,13 @@ const Index = () => {
   };
 
   const confirmAddWithReason = (book: UnifiedBook, reason: ReasonForAdding) => {
-    setShelvedBooks((prev) => [...prev, { ...book, shelf: "owned", reasonForAdding: reason }]);
+    setShelvedBooks((prev) => [...prev, { ...book, reasonForAdding: reason, dateAdded: new Date().toISOString(), isRead: false }]);
     setPendingBook(null);
     setShowAddTools(false);
   };
 
   const skipReason = (book: UnifiedBook) => {
-    setShelvedBooks((prev) => [...prev, { ...book, shelf: "owned" }]);
+    setShelvedBooks((prev) => [...prev, { ...book, dateAdded: new Date().toISOString(), isRead: false }]);
     setPendingBook(null);
     setShowAddTools(false);
   };
@@ -256,10 +256,18 @@ const Index = () => {
     setShelvedBooks((prev) => {
       const existing = prev.find((b) => b.id === book.id);
       if (existing) {
-        return prev.map((b) => b.id === book.id ? { ...b, shelf: "read" as const } : b);
+        return prev.map((b) => b.id === book.id ? { ...b, isRead: true } : b);
       }
-      return [...prev, { ...book, shelf: "read" as const }];
+      return [...prev, { ...book, dateAdded: new Date().toISOString(), isRead: true }];
     });
+  };
+
+  const markAsReadById = (id: string) => {
+    setShelvedBooks((prev) => prev.map((b) => b.id === id ? { ...b, isRead: true } : b));
+  };
+
+  const updateDateAdded = (id: string, date: string) => {
+    setShelvedBooks((prev) => prev.map((b) => b.id === id ? { ...b, dateAdded: date } : b));
   };
 
   const removeFromShelves = (id: string) => {
