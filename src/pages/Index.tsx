@@ -95,7 +95,7 @@ const Index = () => {
           const mapped = selectedGenres.map((g) => genreMap[g] || g.toLowerCase()).join(" ");
           query = isNonFiction ? `${mapped} ${trendBoost}` : `subject:fiction ${mapped} ${trendBoost}`;
         } else {
-          query = lang === "en" ? `subject:fiction popular novels ${trendBoost}` : `subject:fiction romány ${trendBoost}`;
+          query = lang === "en" ? `subject:fiction popular novels ${trendBoost}` : (lang === "cs" ? `subject:fiction romány beletrie ${trendBoost}` : `subject:fiction romány beletria ${trendBoost}`);
         }
         
         if (selectedMoods.length > 0) {
