@@ -426,7 +426,7 @@ export const books: Book[] = [
     title: 'Máj',
     author: 'Karel Hynek Mácha',
     description: 'Nejslavnější česká báseň o nešťastné lásce, pomstě a kráse přírody. Romantické dílo, které dodnes uchvacuje svou melodií.',
-    genres: ['Poetry', 'Romance'],
+    genres: ['Classics', 'Romance'],
     moods: ['Romantic', 'Sad', 'Emotional', 'Reflective'],
     tags: ['Česká klasika', 'Romantismus', 'Báseň'],
     year: 1836,
