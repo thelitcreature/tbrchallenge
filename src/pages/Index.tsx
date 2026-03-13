@@ -58,9 +58,14 @@ const Index = () => {
       setRevealedBook(null);
       try {
         const lang = discoverLang || "en";
-        const genreQuery = selectedGenres.length > 0 ? selectedGenres.join(" OR ") : (lang === "en" ? "books" : "knihy");
+        const isNonFiction = selectedGenres.includes("Non-Fiction") || selectedGenres.includes("Self-Help") || selectedGenres.includes("Biography") || selectedGenres.includes("Memoir");
+        const genreParts = selectedGenres.length > 0
+          ? selectedGenres.map((g) => `subject:${g.toLowerCase()}`).join(" ")
+          : "";
+        const fictionHint = !isNonFiction ? " fiction novel" : "";
         const moodQuery = selectedMoods.length > 0 ? ` ${selectedMoods[0]}` : "";
-        const query = `${genreQuery}${moodQuery}`;
+        const fallback = lang === "en" ? "popular fiction novels" : "romány";
+        const query = genreParts ? `${genreParts}${fictionHint}${moodQuery}` : `${fallback}${moodQuery}`;
         const { books } = await searchGoogleBooks(query, lang, 20);
         if (books.length > 0) {
           const randomBook = books[Math.floor(Math.random() * books.length)];
