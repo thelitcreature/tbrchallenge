@@ -26,7 +26,7 @@ const Index = () => {
   const [selectedMoods, setSelectedMoods] = useState<Mood[]>([]);
   const [revealedBook, setRevealedBook] = useState<UnifiedBook | null>(null);
   const [isRevealing, setIsRevealing] = useState(false);
-  const [shelvedBooks, setShelvedBooks] = useState<ShelvedBook[]>([]);
+  const [shelvedBooks, setShelvedBooks] = useState<(UnifiedBook & { shelf: 'owned' | 'want-to-read' | 'read' })[]>([]);
   const [tbrMode, setTbrMode] = useState(false);
   const [discoverLang, setDiscoverLang] = useState<BookLanguage>("");
 
