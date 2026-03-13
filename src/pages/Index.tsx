@@ -242,7 +242,8 @@ const Index = () => {
                 selected={discoverLang}
                 onChange={(l) => {
                   setDiscoverLang(l);
-                  setRevealedBook(null);
+                  if (hasPulled) setFilterChangeKey((k) => k + 1);
+                  else setRevealedBook(null);
                 }} />
               
                   </div>
