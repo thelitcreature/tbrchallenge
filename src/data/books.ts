@@ -234,7 +234,7 @@ export const books: Book[] = [
     title: 'The Woman in the Window',
     author: 'A.J. Finn',
     description: 'An agoraphobic woman living alone spies on her neighbors and believes she witnessed a crime across the street—but no one believes her.',
-    genres: ['Thriller', 'Mystery'],
+    genres: ['Thriller', 'Crime'],
     moods: ['Dark', 'Suspenseful', 'Intense'],
     tags: ['Psychological', 'Isolation', 'Unreliable Narrator'],
     year: 2018,
