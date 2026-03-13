@@ -56,10 +56,9 @@ export function BookSearch({ onAddBook, existingIds }: BookSearchProps) {
 
   const handleAdd = (book: GoogleBook) => {
     const unified = googleBookToUnified(book);
-    const format = selectedFormats[book.id];
+    const format = selectedFormats[book.id] || (book.format as BookFormat | undefined);
     if (format) unified.format = format;
     onAddBook(unified);
-    // Close results after adding
     setQuery('');
     setResults([]);
     setSearched(false);
@@ -97,7 +96,7 @@ export function BookSearch({ onAddBook, existingIds }: BookSearchProps) {
             {results.map((book) => {
               const unifiedId = `google-${book.id}`;
               const isAdded = existingIds.has(unifiedId);
-              const chosenFormat = selectedFormats[book.id];
+              const chosenFormat = selectedFormats[book.id] || (book.format as BookFormat | undefined);
               return (
                 <motion.div
                   key={book.id}
@@ -130,6 +129,11 @@ export function BookSearch({ onAddBook, existingIds }: BookSearchProps) {
                         {book.publisher && (
                           <span className="px-2 py-0.5 rounded-full bg-secondary text-muted-foreground text-[10px] font-body truncate max-w-[120px]">
                             {book.publisher}
+                          </span>
+                        )}
+                        {book.format && (
+                          <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-body font-medium">
+                            {book.format === 'ebook' ? 'E-book' : book.format === 'audiobook' ? 'Audiobook' : book.format === 'hardback' ? 'Hardback' : 'Paperback'}
                           </span>
                         )}
                       </div>
