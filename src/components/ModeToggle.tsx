@@ -11,7 +11,7 @@ interface ModeToggleProps {
 
 const TABS: { key: Mode; label: string }[] = [
   { key: 'discover', label: 'Discover' },
-  { key: 'tbr', label: 'My TBR' },
+  { key: 'tbr', label: 'Choose from my TBR' },
   { key: 'wishlist', label: 'Want to Read' },
 ];
 
