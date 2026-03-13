@@ -42,8 +42,10 @@ const Index = () => {
     setRevealedBook(null);
   };
 
-  const toggleMood = (m: Mood) =>
-  setSelectedMoods((prev) => prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]);
+  const toggleMood = (m: Mood) => {
+    setSelectedMoods((prev) => prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]);
+    setRevealedBook(null);
+  };
 
   const getFilteredBooks = useCallback(() => {
     const source = tbrMode ? ownedBooks : curatedUnified;
