@@ -32,7 +32,7 @@ const Index = () => {
   const [isRevealing, setIsRevealing] = useState(false);
   const [shelvedBooks, setShelvedBooks] = useState<(UnifiedBook & {shelf: 'owned' | 'want-to-read' | 'read';})[]>([]);
   const [tbrMode, setTbrMode] = useState(false);
-  const [discoverLang, setDiscoverLang] = useState<BookLanguage>("en");
+  const [discoverLangs, setDiscoverLangs] = useState<BookLanguage[]>(["en"]);
   const [showFilters, setShowFilters] = useState(false);
   const [hasPulled, setHasPulled] = useState(false);
   const [filterChangeKey, setFilterChangeKey] = useState(0);
