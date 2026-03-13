@@ -207,6 +207,7 @@ const Index = () => {
                   key={revealedBook.id}
                   book={revealedBook}
                   onPullAgain={pullBook}
+                  onDismiss={() => setRevealedBook(null)}
                   onAddToWantToRead={addToWantToRead}
                   onMarkAsRead={markAsRead}
                   isInWantToRead={wantToReadIds.has(revealedBook.id)}
