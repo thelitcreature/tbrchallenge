@@ -59,6 +59,11 @@ export function BookSearch({ onAddBook, existingIds }: BookSearchProps) {
     const format = selectedFormats[book.id];
     if (format) unified.format = format;
     onAddBook(unified);
+    // Close results after adding
+    setQuery('');
+    setResults([]);
+    setSearched(false);
+    setSelectedFormats({});
   };
 
   return (
