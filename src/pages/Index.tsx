@@ -32,7 +32,7 @@ const Index = () => {
   const [isRevealing, setIsRevealing] = useState(false);
   const [shelvedBooks, setShelvedBooks] = useState<(UnifiedBook & {shelf: 'owned' | 'want-to-read' | 'read';})[]>([]);
   const [tbrMode, setTbrMode] = useState(false);
-  const [discoverLang, setDiscoverLang] = useState<BookLanguage>("en");
+  const [discoverLangs, setDiscoverLangs] = useState<BookLanguage[]>(["en"]);
   const [showFilters, setShowFilters] = useState(false);
   const [hasPulled, setHasPulled] = useState(false);
   const [filterChangeKey, setFilterChangeKey] = useState(0);
@@ -59,7 +59,7 @@ const Index = () => {
         const { books: aiBooks } = await getAIRecommendations(
           selectedGenres,
           selectedMoods,
-          discoverLang,
+          discoverLangs,
           shownIds
         );
         const unified = aiBooks
@@ -74,7 +74,7 @@ const Index = () => {
         prefetchingRef.current = false;
       }
     }
-  }, [bookHistory, selectedGenres, selectedMoods, discoverLang, dismissedIds]);
+  }, [bookHistory, selectedGenres, selectedMoods, discoverLangs, dismissedIds]);
 
   const ownedBooks = shelvedBooks.filter((b) => b.shelf === "owned");
   const wantToReadBooks = shelvedBooks.filter((b) => b.shelf === "want-to-read");
@@ -156,7 +156,7 @@ const Index = () => {
         const { books: aiBooks } = await getAIRecommendations(
           selectedGenres,
           selectedMoods,
-          discoverLang,
+          discoverLangs,
           shownIds
         );
 
@@ -172,7 +172,7 @@ const Index = () => {
           // Fallback to Google Books if AI returns nothing
           const { books } = await searchGoogleBooks(
             "subject:fiction bestseller 2024",
-            discoverLang,
+            discoverLangs[0] || "en",
             40,
             0
           );
@@ -187,7 +187,7 @@ const Index = () => {
         try {
           const { books } = await searchGoogleBooks(
             "subject:fiction popular novels bestseller",
-            discoverLang,
+            discoverLangs[0] || "en",
             40,
             Math.floor(Math.random() * 10)
           );
@@ -313,9 +313,9 @@ const Index = () => {
           
             {showFilters ? <ChevronUp className="w-4 h-4" /> : <SlidersHorizontal className="w-4 h-4" />}
             {showFilters ? "Hide filters" : "Add filters"}
-            {(selectedGenres.length > 0 || selectedMoods.length > 0 || discoverLang !== "en") &&
+            {(selectedGenres.length > 0 || selectedMoods.length > 0 || discoverLangs.length > 1 || !discoverLangs.includes("en")) &&
           <span className="bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold">
-                {selectedGenres.length + selectedMoods.length + (discoverLang !== "en" ? 1 : 0)}
+                {selectedGenres.length + selectedMoods.length + (discoverLangs.length > 1 || !discoverLangs.includes("en") ? 1 : 0)}
               </span>
           }
           </button>
@@ -333,9 +333,9 @@ const Index = () => {
             <div className="space-y-2 w-full">
                     <p className="text-sm font-body font-medium text-muted-foreground text-center">Book Language</p>
                     <LanguageFilter
-                selected={discoverLang}
-                onChange={(l) => {
-                  setDiscoverLang(l);
+                selected={discoverLangs}
+                onChange={(langs) => {
+                  setDiscoverLangs(langs);
                   setAiPool([]); setAiPoolIndex(0);
                   if (hasPulled) setFilterChangeKey((k) => k + 1);
                   else setRevealedBook(null);
