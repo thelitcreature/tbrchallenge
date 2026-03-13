@@ -22,6 +22,8 @@ Deno.serve(async (req) => {
     const clampedResults = Math.min(Math.max(1, maxResults), 40);
     const clampedStart = Math.min(Math.max(0, startIndex), 100);
 
+    const apiKey = Deno.env.get('GOOGLE_BOOKS_API_KEY');
+
     const params = new URLSearchParams({
       q: sanitizedQuery,
       maxResults: String(clampedResults),
@@ -29,6 +31,10 @@ Deno.serve(async (req) => {
       printType: 'books',
       orderBy: 'relevance',
     });
+
+    if (apiKey) {
+      params.set('key', apiKey);
+    }
 
     if (langRestrict && /^[a-z]{2}$/.test(langRestrict)) {
       params.set('langRestrict', langRestrict);
