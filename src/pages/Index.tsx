@@ -241,7 +241,7 @@ const Index = () => {
     setRevealedBook(null);
     setTimeout(() => {
       const randomBook = filtered[Math.floor(Math.random() * filtered.length)];
-      setRevealedBook(randomBook);
+      revealNewBook(randomBook);
       setIsRevealing(false);
     }, 600);
   };
