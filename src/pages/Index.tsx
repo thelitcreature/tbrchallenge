@@ -295,6 +295,15 @@ const Index = () => {
   
   const readIds = new Set(readBooks.map((b) => b.id));
 
+  if (!hasOnboarded) {
+    return (
+      <Onboarding onComplete={() => {
+        setHasOnboarded(true);
+        setShowAddTools(true);
+      }} />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background flex flex-col items-center px-4 py-10 sm:py-16">
       {/* Header */}
