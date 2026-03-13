@@ -6,7 +6,7 @@ import { FilterChips } from '@/components/FilterChips';
 import { LanguageFilter, type BookLanguage } from '@/components/LanguageFilter';
 import { PullLever } from '@/components/PullLever';
 import { BookCard } from '@/components/BookCard';
-import { TBRList } from '@/components/TBRList';
+import { TBRList, type ShelvedBook } from '@/components/TBRList';
 import { ModeToggle } from '@/components/ModeToggle';
 import { BookSearch } from '@/components/BookSearch';
 import { ManualEntry } from '@/components/ManualEntry';
@@ -25,9 +25,13 @@ const Index = () => {
   const [selectedMoods, setSelectedMoods] = useState<Mood[]>([]);
   const [revealedBook, setRevealedBook] = useState<UnifiedBook | null>(null);
   const [isRevealing, setIsRevealing] = useState(false);
-  const [tbrBooks, setTbrBooks] = useState<UnifiedBook[]>([]);
+  const [shelvedBooks, setShelvedBooks] = useState<ShelvedBook[]>([]);
   const [tbrMode, setTbrMode] = useState(false);
   const [discoverLang, setDiscoverLang] = useState<BookLanguage>('');
+
+  const ownedBooks = shelvedBooks.filter((b) => b.shelf === 'owned');
+  const wantToReadBooks = shelvedBooks.filter((b) => b.shelf === 'want-to-read');
+  const readBooks = shelvedBooks.filter((b) => b.shelf === 'read');
 
   const toggleGenre = (g: Genre) =>
     setSelectedGenres((prev) => (prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]));
@@ -36,16 +40,15 @@ const Index = () => {
     setSelectedMoods((prev) => (prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]));
 
   const getFilteredBooks = useCallback(() => {
-    const source = tbrMode ? tbrBooks : curatedUnified;
+    const source = tbrMode ? ownedBooks : curatedUnified;
     return source.filter((book) => {
       const genreMatch = selectedGenres.length === 0 || book.genres.some((g) => selectedGenres.includes(g));
       const moodMatch = selectedMoods.length === 0 || book.moods.some((m) => selectedMoods.includes(m));
       return genreMatch && moodMatch;
     });
-  }, [selectedGenres, selectedMoods, tbrMode, tbrBooks]);
+  }, [selectedGenres, selectedMoods, tbrMode, ownedBooks]);
 
   const pullBook = async () => {
-    // If a CZ/SK language is selected, fetch from Google Books API
     if (discoverLang && !tbrMode) {
       setIsRevealing(true);
       setRevealedBook(null);
@@ -77,17 +80,35 @@ const Index = () => {
     }, 600);
   };
 
-  const addToTBR = (book: UnifiedBook) => {
-    if (!tbrBooks.find((b) => b.id === book.id)) {
-      setTbrBooks((prev) => [...prev, book]);
+  const addToOwned = (book: UnifiedBook) => {
+    if (!shelvedBooks.find((b) => b.id === book.id)) {
+      setShelvedBooks((prev) => [...prev, { ...book, shelf: 'owned' }]);
     }
   };
 
-  const removeFromTBR = (id: string) => {
-    setTbrBooks((prev) => prev.filter((b) => b.id !== id));
+  const addToWantToRead = (book: UnifiedBook) => {
+    if (!shelvedBooks.find((b) => b.id === book.id)) {
+      setShelvedBooks((prev) => [...prev, { ...book, shelf: 'want-to-read' }]);
+    }
   };
 
-  const tbrIds = new Set(tbrBooks.map((b) => b.id));
+  const markAsRead = (book: UnifiedBook) => {
+    setShelvedBooks((prev) => {
+      const existing = prev.find((b) => b.id === book.id);
+      if (existing) {
+        return prev.map((b) => b.id === book.id ? { ...b, shelf: 'read' as const } : b);
+      }
+      return [...prev, { ...book, shelf: 'read' as const }];
+    });
+  };
+
+  const removeFromShelves = (id: string) => {
+    setShelvedBooks((prev) => prev.filter((b) => b.id !== id));
+  };
+
+  const shelvedIds = new Set(shelvedBooks.map((b) => b.id));
+  const wantToReadIds = new Set(wantToReadBooks.map((b) => b.id));
+  const readIds = new Set(readBooks.map((b) => b.id));
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center px-4 py-10 sm:py-16">
@@ -112,7 +133,7 @@ const Index = () => {
         transition={{ delay: 0.15 }}
         className="mb-8"
       >
-        <ModeToggle mode={mode} onModeChange={setMode} tbrCount={tbrBooks.length} />
+        <ModeToggle mode={mode} onModeChange={setMode} tbrCount={shelvedBooks.length} />
       </motion.div>
 
       {mode === 'discover' ? (
@@ -124,7 +145,7 @@ const Index = () => {
           className="flex flex-col items-center w-full max-w-lg space-y-6"
         >
           {/* TBR-only toggle */}
-          {tbrBooks.length > 0 && (
+          {ownedBooks.length > 0 && (
             <label className="flex items-center gap-2 font-body text-sm text-muted-foreground cursor-pointer select-none">
               <input
                 type="checkbox"
@@ -132,11 +153,11 @@ const Index = () => {
                 onChange={(e) => { setTbrMode(e.target.checked); setRevealedBook(null); }}
                 className="w-4 h-4 accent-primary rounded"
               />
-              Pick from My TBR only
+              Pick from My Books only
             </label>
           )}
 
-          {/* Language filter for discovery */}
+          {/* Language filter */}
           {!tbrMode && (
             <div className="space-y-2 w-full">
               <p className="text-sm font-body font-medium text-muted-foreground text-center">Language / Jazyk</p>
@@ -156,8 +177,10 @@ const Index = () => {
                   key={revealedBook.id}
                   book={revealedBook}
                   onPullAgain={pullBook}
-                  onAddToTBR={addToTBR}
-                  isInTBR={tbrIds.has(revealedBook.id)}
+                  onAddToWantToRead={addToWantToRead}
+                  onMarkAsRead={markAsRead}
+                  isInWantToRead={wantToReadIds.has(revealedBook.id)}
+                  isRead={readIds.has(revealedBook.id)}
                 />
               ) : (
                 <motion.div key="lever" exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.2 }}>
@@ -175,14 +198,19 @@ const Index = () => {
           exit={{ opacity: 0 }}
           className="w-full max-w-lg space-y-6"
         >
-          {/* Search to add */}
-          <BookSearch onAddBook={addToTBR} existingIds={tbrIds} />
+          {/* Search to add (goes to owned) */}
+          <BookSearch onAddBook={addToOwned} existingIds={shelvedIds} />
 
-          {/* Manual entry */}
-          <ManualEntry onAdd={addToTBR} />
+          {/* Manual entry (goes to owned) */}
+          <ManualEntry onAdd={addToOwned} />
 
-          {/* TBR list */}
-          <TBRList books={tbrBooks} onRemove={removeFromTBR} />
+          {/* Shelved books */}
+          <TBRList
+            ownedBooks={ownedBooks}
+            wantToReadBooks={wantToReadBooks}
+            readBooks={readBooks}
+            onRemove={removeFromShelves}
+          />
         </motion.div>
       )}
     </div>

@@ -1,15 +1,17 @@
 import { motion } from 'framer-motion';
 import type { UnifiedBook } from '@/data/bookTypes';
-import { Heart, RotateCcw } from 'lucide-react';
+import { Heart, RotateCcw, BookCheck, BookOpenText } from 'lucide-react';
 
 interface BookCardProps {
   book: UnifiedBook;
   onPullAgain: () => void;
-  onAddToTBR?: (book: UnifiedBook) => void;
-  isInTBR?: boolean;
+  onAddToWantToRead?: (book: UnifiedBook) => void;
+  onMarkAsRead?: (book: UnifiedBook) => void;
+  isInWantToRead?: boolean;
+  isRead?: boolean;
 }
 
-export function BookCard({ book, onPullAgain, onAddToTBR, isInTBR }: BookCardProps) {
+export function BookCard({ book, onPullAgain, onAddToWantToRead, onMarkAsRead, isInWantToRead, isRead }: BookCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 40, scale: 0.95 }}
@@ -18,13 +20,20 @@ export function BookCard({ book, onPullAgain, onAddToTBR, isInTBR }: BookCardPro
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
       className="w-full max-w-md bg-card rounded-2xl p-8 shadow-elevated text-center space-y-5"
     >
-      {book.thumbnail && (
-        <img
-          src={book.thumbnail}
-          alt={book.title}
-          className="w-24 h-36 object-cover rounded-lg mx-auto shadow-card"
-        />
-      )}
+      {/* Always show cover */}
+      <div className="flex justify-center">
+        {book.thumbnail ? (
+          <img
+            src={book.thumbnail}
+            alt={book.title}
+            className="w-28 h-40 object-cover rounded-lg shadow-card"
+          />
+        ) : (
+          <div className="w-28 h-40 rounded-lg bg-secondary flex items-center justify-center shadow-card">
+            <BookOpenText className="w-10 h-10 text-muted-foreground/40" />
+          </div>
+        )}
+      </div>
 
       <div className="space-y-1">
         <h2 className="font-display text-2xl font-bold text-foreground leading-tight">
@@ -48,7 +57,7 @@ export function BookCard({ book, onPullAgain, onAddToTBR, isInTBR }: BookCardPro
         ))}
       </div>
 
-      <div className="flex gap-3 justify-center pt-2">
+      <div className="flex flex-wrap gap-3 justify-center pt-2">
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={onPullAgain}
@@ -57,19 +66,36 @@ export function BookCard({ book, onPullAgain, onAddToTBR, isInTBR }: BookCardPro
           <RotateCcw className="w-4 h-4" />
           Pull again
         </motion.button>
-        {onAddToTBR && (
+
+        {onAddToWantToRead && (
           <motion.button
             whileTap={{ scale: 0.95 }}
-            onClick={() => onAddToTBR(book)}
-            disabled={isInTBR}
+            onClick={() => onAddToWantToRead(book)}
+            disabled={isInWantToRead}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-body font-medium transition-colors ${
-              isInTBR
+              isInWantToRead
                 ? 'bg-primary/10 text-primary cursor-default'
                 : 'bg-primary text-primary-foreground hover:bg-primary/90'
             }`}
           >
-            <Heart className={`w-4 h-4 ${isInTBR ? 'fill-current' : ''}`} />
-            {isInTBR ? 'In TBR' : 'Add to TBR'}
+            <Heart className={`w-4 h-4 ${isInWantToRead ? 'fill-current' : ''}`} />
+            {isInWantToRead ? 'Saved' : 'Want to Read'}
+          </motion.button>
+        )}
+
+        {onMarkAsRead && (
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => onMarkAsRead(book)}
+            disabled={isRead}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-body font-medium transition-colors ${
+              isRead
+                ? 'bg-green-500/10 text-green-600 cursor-default'
+                : 'bg-secondary text-foreground hover:bg-secondary/80'
+            }`}
+          >
+            <BookCheck className={`w-4 h-4 ${isRead ? 'text-green-600' : ''}`} />
+            {isRead ? 'Read ✓' : 'Already Read'}
           </motion.button>
         )}
       </div>
