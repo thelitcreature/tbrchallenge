@@ -32,6 +32,8 @@ const Index = () => {
   const [tbrMode, setTbrMode] = useState(false);
   const [discoverLang, setDiscoverLang] = useState<BookLanguage>("");
   const [showFilters, setShowFilters] = useState(false);
+  const [hasPulled, setHasPulled] = useState(false);
+  const [filterChangeKey, setFilterChangeKey] = useState(0);
 
   const ownedBooks = shelvedBooks.filter((b) => b.shelf === "owned");
   const wantToReadBooks = shelvedBooks.filter((b) => b.shelf === "want-to-read");
@@ -39,12 +41,14 @@ const Index = () => {
 
   const toggleGenre = (g: Genre) => {
     setSelectedGenres((prev) => prev.includes(g) ? [] : [g]);
-    setRevealedBook(null);
+    if (hasPulled) setFilterChangeKey((k) => k + 1);
+    else setRevealedBook(null);
   };
 
   const toggleMood = (m: Mood) => {
     setSelectedMoods((prev) => prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]);
-    setRevealedBook(null);
+    if (hasPulled) setFilterChangeKey((k) => k + 1);
+    else setRevealedBook(null);
   };
 
   const getFilteredBooks = useCallback(() => {
