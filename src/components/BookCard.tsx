@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { UnifiedBook } from '@/data/bookTypes';
-import { Heart, RotateCcw, BookCheck, BookOpenText, X, ThumbsDown, Info } from 'lucide-react';
+import { Heart, RotateCcw, BookCheck, BookOpenText, X, ThumbsDown } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface SparkleProps {
   count?: number;
@@ -161,14 +162,26 @@ export function BookCard({ book, onPullAgain, onDismiss, onAddToWantToRead, onMa
         )}
 
         {onNotInterested && (
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowConfirm(true)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-body font-medium bg-secondary text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-          >
-            <ThumbsDown className="w-4 h-4" />
-            Not interested
-          </motion.button>
+          <div className="flex items-center gap-1.5">
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowConfirm(true)}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-body font-medium bg-secondary text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+            >
+              <ThumbsDown className="w-4 h-4" />
+              Not interested
+            </motion.button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="w-5 h-5 rounded-full bg-muted flex items-center justify-center text-muted-foreground text-xs font-bold cursor-help select-none shrink-0">
+                  i
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-[200px] text-center">
+                <p className="text-xs">This will permanently hide this book from your recommendations.</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
         )}
       </div>
 
@@ -181,7 +194,7 @@ export function BookCard({ book, onPullAgain, onDismiss, onAddToWantToRead, onMa
             className="mt-2 rounded-xl border border-border bg-secondary/50 p-4 space-y-3"
           >
             <div className="flex items-start gap-2 text-left">
-              <Info className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+              <span className="w-4 h-4 rounded-full bg-muted-foreground/20 flex items-center justify-center text-muted-foreground text-[10px] font-bold mt-0.5 shrink-0">i</span>
               <p className="font-body text-xs text-muted-foreground leading-relaxed">
                 This book will be permanently hidden from your recommendations. You won't see it again in future pulls.
               </p>
