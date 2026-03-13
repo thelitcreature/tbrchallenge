@@ -192,7 +192,7 @@ const Index = () => {
             </AnimatePresence>
           </div>
         </motion.div>
-      ) : (
+      ) : mode === "tbr" ? (
         <motion.div
           key="tbr"
           initial={{ opacity: 0 }}
@@ -200,18 +200,23 @@ const Index = () => {
           exit={{ opacity: 0 }}
           className="w-full max-w-lg space-y-6"
         >
-          {/* Search to add (goes to owned) */}
           <BookSearch onAddBook={addToOwned} existingIds={shelvedIds} />
-
-          {/* Manual entry (goes to owned) */}
           <ManualEntry onAdd={addToOwned} />
-
-          {/* Shelved books */}
-          <TBRList
-            ownedBooks={ownedBooks}
+          <TBRList books={ownedBooks} onRemove={removeFromShelves} />
+        </motion.div>
+      ) : (
+        <motion.div
+          key="wishlist"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="w-full max-w-lg space-y-6"
+        >
+          <Wishlist
             wantToReadBooks={wantToReadBooks}
             readBooks={readBooks}
             onRemove={removeFromShelves}
+            onMarkAsRead={markAsRead}
           />
         </motion.div>
       )}
