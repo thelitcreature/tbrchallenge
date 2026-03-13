@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { UnifiedBook } from '@/data/bookTypes';
-import { Heart, RotateCcw, BookCheck, BookOpenText, X } from 'lucide-react';
+import { Heart, RotateCcw, BookCheck, BookOpenText, X, ThumbsDown, Info } from 'lucide-react';
 
 interface SparkleProps {
   count?: number;
@@ -47,16 +47,22 @@ interface BookCardProps {
   onDismiss: () => void;
   onAddToWantToRead?: (book: UnifiedBook) => void;
   onMarkAsRead?: (book: UnifiedBook) => void;
+  onNotInterested?: (book: UnifiedBook) => void;
   isInWantToRead?: boolean;
   isRead?: boolean;
 }
 
-export function BookCard({ book, onPullAgain, onDismiss, onAddToWantToRead, onMarkAsRead, isInWantToRead, isRead }: BookCardProps) {
+export function BookCard({ book, onPullAgain, onDismiss, onAddToWantToRead, onMarkAsRead, onNotInterested, isInWantToRead, isRead }: BookCardProps) {
   const [showSparkles, setShowSparkles] = useState(true);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSparkles(false), 900);
     return () => clearTimeout(timer);
+  }, [book.id]);
+
+  useEffect(() => {
+    setShowConfirm(false);
   }, [book.id]);
 
   return (
@@ -68,7 +74,6 @@ export function BookCard({ book, onPullAgain, onDismiss, onAddToWantToRead, onMa
       className="w-full max-w-md bg-card rounded-2xl p-8 shadow-elevated text-center space-y-5 relative overflow-visible"
     >
       {showSparkles && <Sparkles />}
-      {/* Dismiss button */}
       <button
         onClick={onDismiss}
         className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
@@ -77,7 +82,6 @@ export function BookCard({ book, onPullAgain, onDismiss, onAddToWantToRead, onMa
         <X className="w-4 h-4" />
       </button>
 
-      {/* Cover */}
       <div className="flex justify-center">
         {book.thumbnail ? (
           <img
@@ -155,7 +159,55 @@ export function BookCard({ book, onPullAgain, onDismiss, onAddToWantToRead, onMa
             {isRead ? 'Read ✓' : 'Already Read'}
           </motion.button>
         )}
+
+        {onNotInterested && (
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowConfirm(true)}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-body font-medium bg-secondary text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+          >
+            <ThumbsDown className="w-4 h-4" />
+            Not interested
+          </motion.button>
+        )}
       </div>
+
+      <AnimatePresence>
+        {showConfirm && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            className="mt-2 rounded-xl border border-border bg-secondary/50 p-4 space-y-3"
+          >
+            <div className="flex items-start gap-2 text-left">
+              <Info className="w-4 h-4 text-muted-foreground mt-0.5 shrink-0" />
+              <p className="font-body text-xs text-muted-foreground leading-relaxed">
+                This book will be permanently hidden from your recommendations. You won't see it again in future pulls.
+              </p>
+            </div>
+            <div className="flex gap-2 justify-center">
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowConfirm(false)}
+                className="px-4 py-1.5 rounded-full text-xs font-body font-medium bg-secondary text-foreground hover:bg-secondary/80 transition-colors"
+              >
+                Cancel
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  onNotInterested?.(book);
+                  setShowConfirm(false);
+                }}
+                className="px-4 py-1.5 rounded-full text-xs font-body font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"
+              >
+                Yes, hide forever
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

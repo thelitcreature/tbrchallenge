@@ -34,6 +34,12 @@ const Index = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [hasPulled, setHasPulled] = useState(false);
   const [filterChangeKey, setFilterChangeKey] = useState(0);
+  const [dismissedIds, setDismissedIds] = useState<Set<string>>(() => {
+    try {
+      const stored = localStorage.getItem("plottwist-dismissed");
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch { return new Set(); }
+  });
 
   const ownedBooks = shelvedBooks.filter((b) => b.shelf === "owned");
   const wantToReadBooks = shelvedBooks.filter((b) => b.shelf === "want-to-read");
@@ -150,6 +156,7 @@ const Index = () => {
         const NON_FICTION_CATS = ["periodicals", "education", "history", "science", "business", "reference", "law", "mathematics", "technology", "medical", "computers"];
         const TITLE_BLACKLIST = ["best american", "anthology", "collected stories", "selected stories", "complete stories", "complete works", "collected poems", "encyclopedia", "handbook", "guide to", "introduction to", "textbook", "workbook", "study guide", "short stories", "year's best", "best of the year"];
         const filtered = (isNonFiction ? books : books.filter((b) => {
+          if (dismissedIds.has(b.id)) return false;
           const cats = (b.categories || []).join(" ").toLowerCase();
           const titleLower = b.title.toLowerCase();
           const isBlacklisted = TITLE_BLACKLIST.some((bl) => titleLower.includes(bl));
@@ -225,6 +232,17 @@ const Index = () => {
 
   const removeFromShelves = (id: string) => {
     setShelvedBooks((prev) => prev.filter((b) => b.id !== id));
+  };
+
+  const dismissBook = (book: UnifiedBook) => {
+    setDismissedIds((prev) => {
+      const next = new Set(prev);
+      next.add(book.id);
+      localStorage.setItem("plottwist-dismissed", JSON.stringify([...next]));
+      return next;
+    });
+    // Auto-pull next book
+    pullBook();
   };
 
   const shelvedIds = new Set(shelvedBooks.map((b) => b.id));
@@ -329,6 +347,7 @@ const Index = () => {
               onDismiss={() => setRevealedBook(null)}
               onAddToWantToRead={addToWantToRead}
               onMarkAsRead={markAsRead}
+              onNotInterested={dismissBook}
               isInWantToRead={wantToReadIds.has(revealedBook.id)}
               isRead={readIds.has(revealedBook.id)} /> :
 
