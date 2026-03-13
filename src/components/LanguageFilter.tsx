@@ -5,8 +5,8 @@ export type BookLanguage = 'en' | 'cs' | 'sk';
 
 const LANGUAGES: { code: BookLanguage; label: string; flag?: string }[] = [
   { code: 'en', label: 'English', flag: '🇬🇧' },
-  { code: 'cs', label: 'Čeština', flag: '🇨🇿' },
-  { code: 'sk', label: 'Slovenčina', flag: '🇸🇰' },
+  { code: 'cs', label: 'Czech', flag: '🇨🇿' },
+  { code: 'sk', label: 'Slovak', flag: '🇸🇰' },
 ];
 
 interface LanguageFilterProps {
