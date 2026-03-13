@@ -255,7 +255,7 @@ export const books: Book[] = [
     title: 'Educated',
     author: 'Tara Westover',
     description: 'A memoir of a woman who grows up in a survivalist family in Idaho and eventually earns a PhD from Cambridge University.',
-    genres: ['Memoir', 'Non-Fiction'],
+    genres: ['Non-Fiction'],
     moods: ['Empowering', 'Intense', 'Reflective'],
     tags: ['Education', 'Family', 'Resilience'],
     year: 2018,
