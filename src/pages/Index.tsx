@@ -3,6 +3,8 @@ import { SlidersHorizontal, ChevronUp, ChevronLeft, ChevronRight } from "lucide-
 import { AnimatePresence, motion } from "framer-motion";
 import { books as curatedBooks, GENRES, MOODS, type Genre, type Mood } from "@/data/books";
 import type { UnifiedBook } from "@/data/bookTypes";
+import { getAIRecommendations } from "@/lib/api/recommendations";
+import { aiBookToUnified } from "@/data/bookTypes";
 import { FilterChips } from "@/components/FilterChips";
 import { LanguageFilter, type BookLanguage } from "@/components/LanguageFilter";
 import { PullLever } from "@/components/PullLever";
