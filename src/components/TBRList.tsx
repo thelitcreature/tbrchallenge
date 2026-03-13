@@ -44,9 +44,6 @@ export function TBRList({ books, onRemove, onUpdateFormat }: TBRListProps) {
     );
   }
 
-
-  }
-
   return (
     <div className="space-y-3 w-full max-w-md mx-auto">
       <p className="font-body text-sm text-muted-foreground text-center">{books.length} book{books.length !== 1 ? 's' : ''}</p>
