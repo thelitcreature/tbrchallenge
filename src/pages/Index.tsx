@@ -62,11 +62,12 @@ const Index = () => {
         const genreParts = selectedGenres.length > 0
           ? selectedGenres.map((g) => `subject:${g.toLowerCase()}`).join(" ")
           : "";
-        const fictionHint = !isNonFiction ? " fiction novel" : "";
+        const fictionHint = !isNonFiction ? " novel bestseller" : "";
         const moodQuery = selectedMoods.length > 0 ? ` ${selectedMoods[0]}` : "";
-        const fallback = lang === "en" ? "popular fiction novels" : "romány";
+        const fallback = lang === "en" ? "bestselling novel fiction award-winning" : "nejlepší romány bestseller";
         const query = genreParts ? `${genreParts}${fictionHint}${moodQuery}` : `${fallback}${moodQuery}`;
-        const { books } = await searchGoogleBooks(query, lang, 20);
+        const startIndex = Math.floor(Math.random() * 20);
+        const { books } = await searchGoogleBooks(query, lang, 20, startIndex);
         if (books.length > 0) {
           const randomBook = books[Math.floor(Math.random() * books.length)];
           setRevealedBook(googleBookToUnified(randomBook));

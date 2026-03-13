@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { query, langRestrict, maxResults = 10 } = await req.json();
+    const { query, langRestrict, maxResults = 10, startIndex = 0 } = await req.json();
 
     if (!query || typeof query !== 'string' || query.trim().length === 0) {
       return new Response(
@@ -20,11 +20,14 @@ Deno.serve(async (req) => {
 
     const sanitizedQuery = query.trim().slice(0, 200);
     const clampedResults = Math.min(Math.max(1, maxResults), 40);
+    const clampedStart = Math.min(Math.max(0, startIndex), 100);
 
     const params = new URLSearchParams({
       q: sanitizedQuery,
       maxResults: String(clampedResults),
+      startIndex: String(clampedStart),
       printType: 'books',
+      orderBy: 'relevance',
     });
 
     if (langRestrict && /^[a-z]{2}$/.test(langRestrict)) {
