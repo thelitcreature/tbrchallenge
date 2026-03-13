@@ -15,7 +15,7 @@ import type { Mode } from "@/components/ModeToggle";
 import { ModeToggle } from "@/components/ModeToggle";
 import { BookSearch } from "@/components/BookSearch";
 import { ManualEntry } from "@/components/ManualEntry";
-import { Wishlist } from "@/components/Wishlist";
+import { Challenges } from "@/components/Challenges";
 import { PhotoBookAdd } from "@/components/PhotoBookAdd";
 import { searchGoogleBooks } from "@/lib/api/googleBooks";
 import { googleBookToUnified } from "@/data/bookTypes";
@@ -80,7 +80,7 @@ const Index = () => {
   }, [bookHistory, selectedGenres, selectedMoods, discoverLangs, dismissedIds]);
 
   const ownedBooks = shelvedBooks.filter((b) => b.shelf === "owned");
-  const wantToReadBooks = shelvedBooks.filter((b) => b.shelf === "want-to-read");
+  
   const readBooks = shelvedBooks.filter((b) => b.shelf === "read");
 
   const revealNewBook = (book: UnifiedBook) => {
@@ -237,12 +237,6 @@ const Index = () => {
     }
   };
 
-  const addToWantToRead = (book: UnifiedBook) => {
-    if (!shelvedBooks.find((b) => b.id === book.id)) {
-      setShelvedBooks((prev) => [...prev, { ...book, shelf: "want-to-read" }]);
-    }
-  };
-
   const markAsRead = (book: UnifiedBook) => {
     setShelvedBooks((prev) => {
       const existing = prev.find((b) => b.id === book.id);
@@ -273,7 +267,7 @@ const Index = () => {
   };
 
   const shelvedIds = new Set(shelvedBooks.map((b) => b.id));
-  const wantToReadIds = new Set(wantToReadBooks.map((b) => b.id));
+  
   const readIds = new Set(readBooks.map((b) => b.id));
 
   return (
@@ -286,7 +280,7 @@ const Index = () => {
 
       {/* Mode Toggle */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }} className="mb-8 mt-4">
-        <ModeToggle mode={mode} onModeChange={setMode} tbrCount={ownedBooks.length} wishlistCount={wantToReadBooks.length + readBooks.length} />
+        <ModeToggle mode={mode} onModeChange={setMode} tbrCount={ownedBooks.length} />
       </motion.div>
 
       {mode === "discover" ?
@@ -392,10 +386,8 @@ const Index = () => {
                 book={revealedBook}
                 onPullAgain={pullBook}
                 onDismiss={() => setRevealedBook(null)}
-                onAddToWantToRead={addToWantToRead}
                 onMarkAsRead={markAsRead}
                 onNotInterested={dismissBook}
-                isInWantToRead={wantToReadIds.has(revealedBook.id)}
                 isRead={readIds.has(revealedBook.id)} /> :
 
               <motion.div key="lever" exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.2 }}>
@@ -461,18 +453,12 @@ const Index = () => {
         </motion.div> :
 
       <motion.div
-        key="wishlist"
+        key="challenges"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="w-full max-w-lg space-y-6">
-        
-          <Wishlist
-          wantToReadBooks={wantToReadBooks}
-          readBooks={readBooks}
-          onRemove={removeFromShelves}
-          onMarkAsRead={markAsRead} />
-        
+          <Challenges />
         </motion.div>
       }
     </div>);

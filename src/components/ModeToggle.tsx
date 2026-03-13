@@ -1,23 +1,22 @@
 import { motion } from 'framer-motion';
 
-export type Mode = 'discover' | 'tbr' | 'wishlist';
+export type Mode = 'discover' | 'tbr' | 'challenges';
 
 interface ModeToggleProps {
   mode: Mode;
   onModeChange: (mode: Mode) => void;
   tbrCount: number;
-  wishlistCount: number;
 }
 
 const TABS: { key: Mode; label: string }[] = [
   { key: 'discover', label: 'Discover' },
   { key: 'tbr', label: 'Choose from my TBR' },
-  { key: 'wishlist', label: 'Want to Read' },
+  { key: 'challenges', label: 'Challenges' },
 ];
 
-export function ModeToggle({ mode, onModeChange, tbrCount, wishlistCount }: ModeToggleProps) {
+export function ModeToggle({ mode, onModeChange, tbrCount }: ModeToggleProps) {
   const activeIndex = TABS.findIndex((t) => t.key === mode);
-  const count = (key: Mode) => key === 'tbr' ? tbrCount : key === 'wishlist' ? wishlistCount : 0;
+  const count = (key: Mode) => key === 'tbr' ? tbrCount : 0;
 
   return (
     <div className="relative inline-flex bg-secondary rounded-full p-1 min-w-[560px]">
