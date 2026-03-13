@@ -59,19 +59,18 @@ function mapCategoriesToGenres(categories: string[]): Genre[] {
   const genres: Genre[] = [];
   const catStr = (categories || []).join(' ').toLowerCase();
   if (catStr.includes('science fiction') || catStr.includes('sci-fi')) genres.push('Sci-Fi');
-  if (catStr.includes('romance')) genres.push('Romance');
+  if (catStr.includes('romance') && catStr.includes('fantasy')) genres.push('Romantasy');
+  else if (catStr.includes('romance')) genres.push('Romance');
   if (catStr.includes('thriller') || catStr.includes('suspense')) genres.push('Thriller');
-  if (catStr.includes('fantasy')) genres.push('Fantasy');
+  if (catStr.includes('fantasy') && !catStr.includes('romance')) genres.push('Fantasy');
   if (catStr.includes('horror')) genres.push('Horror');
-  if (catStr.includes('mystery') || catStr.includes('detective')) genres.push('Mystery');
+  if (catStr.includes('mystery') || catStr.includes('detective') || catStr.includes('crime')) genres.push('Crime');
   if (catStr.includes('histor')) genres.push('Historical');
-  if (catStr.includes('biography')) genres.push('Biography');
-  if (catStr.includes('memoir')) genres.push('Memoir');
-  if (catStr.includes('self-help') || catStr.includes('self help')) genres.push('Self-Help');
-  if (catStr.includes('poetry') || catStr.includes('poems')) genres.push('Poetry');
   if (catStr.includes('humor') || catStr.includes('comedy')) genres.push('Humor');
   if (catStr.includes('young adult') || catStr.includes('ya ')) genres.push('Young Adult');
-  if (catStr.includes('nonfiction') || catStr.includes('non-fiction') || catStr.includes('science') || catStr.includes('business') || catStr.includes('psychology') || catStr.includes('philosophy')) genres.push('Non-Fiction');
+  if (catStr.includes('classic')) genres.push('Classics');
+  if (catStr.includes('contemporary')) genres.push('Contemporary');
+  if (catStr.includes('nonfiction') || catStr.includes('non-fiction') || catStr.includes('science') || catStr.includes('business') || catStr.includes('psychology') || catStr.includes('philosophy') || catStr.includes('self-help') || catStr.includes('biography') || catStr.includes('memoir')) genres.push('Non-Fiction');
   if (catStr.includes('fiction') && !catStr.includes('science fiction') && !catStr.includes('nonfiction') && !catStr.includes('non-fiction')) genres.push('Literary Fiction');
   return genres.length > 0 ? genres : ['Literary Fiction'];
 }
