@@ -19,7 +19,7 @@ export function FilterChips<T extends string>({ label, options, selected, onTogg
   return (
     <div className="space-y-2 w-full">
       <p className="text-sm font-body font-medium text-muted-foreground">{label}</p>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         <AnimatePresence initial={false}>
           {visible.map((option) => {
             const isActive = selected.includes(option);
