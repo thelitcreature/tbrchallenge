@@ -29,7 +29,7 @@ const curatedUnified: UnifiedBook[] = curatedBooks.map((b) => ({
 
 const Index = () => {
   const [showAddTools, setShowAddTools] = useState(false);
-  const [mode, setMode] = useState<Mode>("discover");
+  const [mode, setMode] = useState<Mode>("tbr");
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
   const [selectedMoods, setSelectedMoods] = useState<Mood[]>([]);
   const [revealedBook, setRevealedBook] = useState<UnifiedBook | null>(null);
