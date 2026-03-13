@@ -204,7 +204,7 @@ const Index = () => {
         
         // Filter: prefer standalone novels, known authors, recent books
         const NON_FICTION_CATS = ["periodicals", "education", "history", "science", "business", "reference", "law", "mathematics", "technology", "medical", "computers"];
-        const TITLE_BLACKLIST = ["best american", "anthology", "collected stories", "selected stories", "complete stories", "complete works", "collected poems", "encyclopedia", "handbook", "guide to", "introduction to", "textbook", "workbook", "study guide", "short stories", "year's best", "best of the year"];
+        const TITLE_BLACKLIST = ["best american", "anthology", "collected stories", "selected stories", "complete stories", "complete works", "collected poems", "encyclopedia", "handbook", "guide to", "introduction to", "textbook", "workbook", "study guide", "short stories", "year's best", "best of the year", "books 1-", "books 2-", "books 3-", "books 4-", "books 5-", "boxed set", "box set", "collection:", "bundle:", "omnibus", "3-in-1", "4-in-1", "2-in-1"];
         const filtered = (isNonFiction ? books : books.filter((b) => {
           if (dismissedIds.has(b.id)) return false;
           const cats = (b.categories || []).join(" ").toLowerCase();
