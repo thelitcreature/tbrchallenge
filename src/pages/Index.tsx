@@ -74,7 +74,7 @@ const Index = () => {
         prefetchingRef.current = false;
       }
     }
-  }, [bookHistory, selectedGenres, selectedMoods, discoverLang, dismissedIds]);
+  }, [bookHistory, selectedGenres, selectedMoods, discoverLangs, dismissedIds]);
 
   const ownedBooks = shelvedBooks.filter((b) => b.shelf === "owned");
   const wantToReadBooks = shelvedBooks.filter((b) => b.shelf === "want-to-read");
