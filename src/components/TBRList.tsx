@@ -20,12 +20,29 @@ export function TBRList({ books, onRemove, onUpdateFormat }: TBRListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   if (books.length === 0) {
-    return;
-
-
-
-
-
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md mx-auto text-center py-16 px-6 space-y-5"
+      >
+        <div className="mx-auto w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center">
+          <BookOpenText className="w-10 h-10 text-primary" />
+        </div>
+        <div className="space-y-2">
+          <h3 className="font-display text-xl font-bold text-foreground">Your TBR is empty!</h3>
+          <p className="font-body text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
+            Every great reading journey starts with one book. Search for a title, snap a photo of your shelf, or add one manually to get started.
+          </p>
+        </div>
+        <div className="flex flex-wrap justify-center gap-2 pt-2">
+          <span className="px-3 py-1.5 rounded-full bg-secondary text-muted-foreground text-xs font-body">🔍 Search</span>
+          <span className="px-3 py-1.5 rounded-full bg-secondary text-muted-foreground text-xs font-body">📸 Photo</span>
+          <span className="px-3 py-1.5 rounded-full bg-secondary text-muted-foreground text-xs font-body">✏️ Manual</span>
+        </div>
+      </motion.div>
+    );
+  }
 
 
   }
