@@ -48,6 +48,7 @@ const Index = () => {
   });
   const [bookHistory, setBookHistory] = useState<UnifiedBook[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+  const [pendingBook, setPendingBook] = useState<UnifiedBook | null>(null);
 
   const [aiPool, setAiPool] = useState<UnifiedBook[]>([]);
   const [aiPoolIndex, setAiPoolIndex] = useState(0);
