@@ -1,5 +1,12 @@
-export type Genre = 'Sci-Fi' | 'Romance' | 'Thriller' | 'Fantasy' | 'Literary Fiction' | 'Horror' | 'Mystery' | 'Historical';
-export type Mood = 'Adventurous' | 'Cozy' | 'Reflective' | 'Dark' | 'Heartwarming' | 'Suspenseful' | 'Whimsical';
+export type Genre =
+  | 'Sci-Fi' | 'Romance' | 'Thriller' | 'Fantasy' | 'Literary Fiction'
+  | 'Horror' | 'Mystery' | 'Historical' | 'Non-Fiction' | 'Memoir'
+  | 'Self-Help' | 'Biography' | 'Poetry' | 'Humor' | 'Young Adult';
+
+export type Mood =
+  | 'Adventurous' | 'Cozy' | 'Reflective' | 'Dark' | 'Heartwarming'
+  | 'Suspenseful' | 'Whimsical' | 'Thought-Provoking' | 'Romantic'
+  | 'Empowering' | 'Nostalgic' | 'Intense' | 'Calming';
 
 export interface Book {
   id: string;
@@ -12,8 +19,17 @@ export interface Book {
   year: number;
 }
 
-export const GENRES: Genre[] = ['Sci-Fi', 'Romance', 'Thriller', 'Fantasy', 'Literary Fiction', 'Horror', 'Mystery', 'Historical'];
-export const MOODS: Mood[] = ['Adventurous', 'Cozy', 'Reflective', 'Dark', 'Heartwarming', 'Suspenseful', 'Whimsical'];
+export const GENRES: Genre[] = [
+  'Sci-Fi', 'Romance', 'Thriller', 'Fantasy', 'Literary Fiction',
+  'Horror', 'Mystery', 'Historical', 'Non-Fiction', 'Memoir',
+  'Self-Help', 'Biography', 'Poetry', 'Humor', 'Young Adult',
+];
+
+export const MOODS: Mood[] = [
+  'Adventurous', 'Cozy', 'Reflective', 'Dark', 'Heartwarming',
+  'Suspenseful', 'Whimsical', 'Thought-Provoking', 'Romantic',
+  'Empowering', 'Nostalgic', 'Intense', 'Calming',
+];
 
 export const books: Book[] = [
   {
@@ -62,7 +78,7 @@ export const books: Book[] = [
     author: 'Taylor Jenkins Reid',
     description: 'Aging and reclusive Hollywood movie icon Evelyn Hugo is finally ready to tell the truth about her glamorous and scandalous life.',
     genres: ['Historical', 'Romance', 'Literary Fiction'],
-    moods: ['Reflective', 'Dark', 'Heartwarming'],
+    moods: ['Reflective', 'Dark', 'Heartwarming', 'Romantic'],
     tags: ['Old Hollywood', 'LGBTQ+', 'Dual Timeline'],
     year: 2017,
   },
@@ -72,7 +88,7 @@ export const books: Book[] = [
     author: 'V.E. Schwab',
     description: 'A woman makes a Faustian bargain to live forever but is cursed to be forgotten by everyone she meets—until one day, a young man in a bookshop remembers her name.',
     genres: ['Fantasy', 'Romance', 'Historical'],
-    moods: ['Reflective', 'Adventurous', 'Heartwarming'],
+    moods: ['Reflective', 'Adventurous', 'Heartwarming', 'Romantic'],
     tags: ['Immortality', 'Art', 'Love Story'],
     year: 2020,
   },
@@ -82,7 +98,7 @@ export const books: Book[] = [
     author: 'Alex Michaelides',
     description: "A woman shoots her husband five times and then never speaks another word. A criminal psychotherapist becomes obsessed with uncovering her motive.",
     genres: ['Thriller', 'Mystery'],
-    moods: ['Dark', 'Suspenseful'],
+    moods: ['Dark', 'Suspenseful', 'Intense'],
     tags: ['Psychological', 'Plot Twist', 'Unreliable Narrator'],
     year: 2019,
   },
@@ -92,7 +108,7 @@ export const books: Book[] = [
     author: 'Kazuo Ishiguro',
     description: 'An Artificial Friend with outstanding observational qualities watches the world from her store shelf, waiting for a customer to choose her.',
     genres: ['Sci-Fi', 'Literary Fiction'],
-    moods: ['Reflective', 'Heartwarming'],
+    moods: ['Reflective', 'Heartwarming', 'Thought-Provoking'],
     tags: ['AI', 'Coming-of-Age', 'Nobel Prize Winner'],
     year: 2021,
   },
@@ -102,7 +118,7 @@ export const books: Book[] = [
     author: 'Emily Henry',
     description: 'Two writers with opposite genres swap styles for the summer. A romance writer pens literary fiction while a literary writer attempts a love story.',
     genres: ['Romance', 'Literary Fiction'],
-    moods: ['Cozy', 'Heartwarming', 'Whimsical'],
+    moods: ['Cozy', 'Heartwarming', 'Whimsical', 'Romantic'],
     tags: ['Writers', 'Summer', 'Enemies to Lovers'],
     year: 2020,
   },
@@ -132,7 +148,7 @@ export const books: Book[] = [
     author: 'Samantha Shannon',
     description: 'A world divided by dragonkind must find unity when an ancient evil stirs. Queens, dragonriders, and mages hold the key to survival.',
     genres: ['Fantasy'],
-    moods: ['Adventurous', 'Dark'],
+    moods: ['Adventurous', 'Dark', 'Intense'],
     tags: ['Dragons', 'Epic Fantasy', 'LGBTQ+'],
     year: 2019,
   },
@@ -142,7 +158,7 @@ export const books: Book[] = [
     author: 'Madeline Miller',
     description: 'In the house of Helios, god of the sun, a daughter is born. But Circe is a strange child—not powerful, like her father, nor alluring, like her mother.',
     genres: ['Fantasy', 'Historical', 'Literary Fiction'],
-    moods: ['Adventurous', 'Reflective', 'Dark'],
+    moods: ['Adventurous', 'Reflective', 'Dark', 'Empowering'],
     tags: ['Greek Mythology', 'Feminist Retelling', 'Witchcraft'],
     year: 2018,
   },
@@ -162,7 +178,7 @@ export const books: Book[] = [
     author: 'Travis Baldree',
     description: 'After decades of slaying and looting, a barbarian orc hangs up her sword to open the first coffee shop in the city of Thune.',
     genres: ['Fantasy', 'Romance'],
-    moods: ['Cozy', 'Heartwarming', 'Whimsical'],
+    moods: ['Cozy', 'Heartwarming', 'Whimsical', 'Calming'],
     tags: ['Cozy Fantasy', 'Coffee Shop', 'Low Stakes'],
     year: 2022,
   },
@@ -172,7 +188,7 @@ export const books: Book[] = [
     author: 'Blake Crouch',
     description: 'A mysterious affliction is causing tens of thousands to experience false memories of lives they never lived. A neuroscientist and a detective uncover the terrifying truth.',
     genres: ['Sci-Fi', 'Thriller'],
-    moods: ['Dark', 'Suspenseful', 'Adventurous'],
+    moods: ['Dark', 'Suspenseful', 'Adventurous', 'Intense'],
     tags: ['Memory', 'Time', 'Mind-Bending'],
     year: 2019,
   },
@@ -181,7 +197,7 @@ export const books: Book[] = [
     title: 'The Hitchhiker\'s Guide to the Galaxy',
     author: 'Douglas Adams',
     description: 'Seconds before Earth is demolished for a galactic freeway, Arthur Dent is swept off the planet by his friend Ford Prefect.',
-    genres: ['Sci-Fi'],
+    genres: ['Sci-Fi', 'Humor'],
     moods: ['Whimsical', 'Adventurous'],
     tags: ['Comedy', 'Classic', 'Space Opera'],
     year: 1979,
@@ -192,7 +208,7 @@ export const books: Book[] = [
     author: 'Erin Morgenstern',
     description: 'A duel between two young magicians plays out in a mysterious circus that only appears at night, drawing spectators and participants into its spell.',
     genres: ['Fantasy', 'Romance', 'Historical'],
-    moods: ['Whimsical', 'Dark', 'Cozy'],
+    moods: ['Whimsical', 'Dark', 'Cozy', 'Romantic'],
     tags: ['Circus', 'Magic', 'Atmospheric'],
     year: 2011,
   },
@@ -202,7 +218,7 @@ export const books: Book[] = [
     author: 'Gabrielle Zevin',
     description: 'Two friends—often in love, but never lovers—come together as creative partners in the world of video game design.',
     genres: ['Literary Fiction'],
-    moods: ['Reflective', 'Heartwarming'],
+    moods: ['Reflective', 'Heartwarming', 'Nostalgic'],
     tags: ['Gaming', 'Friendship', 'Creative Process'],
     year: 2022,
   },
@@ -212,8 +228,109 @@ export const books: Book[] = [
     author: 'A.J. Finn',
     description: 'An agoraphobic woman living alone spies on her neighbors and believes she witnessed a crime across the street—but no one believes her.',
     genres: ['Thriller', 'Mystery'],
-    moods: ['Dark', 'Suspenseful'],
+    moods: ['Dark', 'Suspenseful', 'Intense'],
     tags: ['Psychological', 'Isolation', 'Unreliable Narrator'],
     year: 2018,
+  },
+  // Non-fiction & more
+  {
+    id: '21',
+    title: 'Sapiens: A Brief History of Humankind',
+    author: 'Yuval Noah Harari',
+    description: 'From the emergence of Homo sapiens in Africa to the present, Harari explores how biology and history have defined us.',
+    genres: ['Non-Fiction'],
+    moods: ['Thought-Provoking', 'Adventurous'],
+    tags: ['History', 'Anthropology', 'Evolution'],
+    year: 2011,
+  },
+  {
+    id: '22',
+    title: 'Educated',
+    author: 'Tara Westover',
+    description: 'A memoir of a woman who grows up in a survivalist family in Idaho and eventually earns a PhD from Cambridge University.',
+    genres: ['Memoir', 'Non-Fiction'],
+    moods: ['Empowering', 'Intense', 'Reflective'],
+    tags: ['Education', 'Family', 'Resilience'],
+    year: 2018,
+  },
+  {
+    id: '23',
+    title: 'Atomic Habits',
+    author: 'James Clear',
+    description: 'A practical guide to building good habits, breaking bad ones, and mastering the tiny behaviors that lead to remarkable results.',
+    genres: ['Self-Help', 'Non-Fiction'],
+    moods: ['Empowering', 'Thought-Provoking', 'Calming'],
+    tags: ['Productivity', 'Psychology', 'Habits'],
+    year: 2018,
+  },
+  {
+    id: '24',
+    title: 'Becoming',
+    author: 'Michelle Obama',
+    description: 'An intimate and powerful memoir by the former First Lady of the United States, reflecting on her roots and her time in the White House.',
+    genres: ['Memoir', 'Biography', 'Non-Fiction'],
+    moods: ['Empowering', 'Heartwarming', 'Reflective'],
+    tags: ['Politics', 'Inspiration', 'Family'],
+    year: 2018,
+  },
+  {
+    id: '25',
+    title: 'The Body Keeps the Score',
+    author: 'Bessel van der Kolk',
+    description: 'A pioneering researcher transforms our understanding of traumatic stress, revealing how it literally reshapes the body and brain.',
+    genres: ['Non-Fiction', 'Self-Help'],
+    moods: ['Thought-Provoking', 'Empowering'],
+    tags: ['Psychology', 'Trauma', 'Healing'],
+    year: 2014,
+  },
+  {
+    id: '26',
+    title: 'Milk and Honey',
+    author: 'Rupi Kaur',
+    description: 'A collection of poetry and prose about survival, the experience of violence, abuse, love, loss, and femininity.',
+    genres: ['Poetry'],
+    moods: ['Reflective', 'Intense', 'Empowering'],
+    tags: ['Feminism', 'Healing', 'Modern Poetry'],
+    year: 2014,
+  },
+  {
+    id: '27',
+    title: 'A Man Called Ove',
+    author: 'Fredrik Backman',
+    description: 'A grumpy yet lovable man finds his solitary world turned on its head when a boisterous young family moves in next door.',
+    genres: ['Literary Fiction', 'Humor'],
+    moods: ['Heartwarming', 'Whimsical', 'Nostalgic'],
+    tags: ['Community', 'Grief', 'Humor'],
+    year: 2012,
+  },
+  {
+    id: '28',
+    title: 'The Hunger Games',
+    author: 'Suzanne Collins',
+    description: 'In a dystopian future, teenagers are forced to fight to the death in an annual televised event. Katniss Everdeen volunteers to save her sister.',
+    genres: ['Young Adult', 'Sci-Fi'],
+    moods: ['Intense', 'Adventurous', 'Dark'],
+    tags: ['Dystopia', 'Survival', 'Revolution'],
+    year: 2008,
+  },
+  {
+    id: '29',
+    title: 'Thinking, Fast and Slow',
+    author: 'Daniel Kahneman',
+    description: 'Nobel laureate Daniel Kahneman reveals the two systems that drive the way we think—and the biases that shape our decisions.',
+    genres: ['Non-Fiction', 'Self-Help'],
+    moods: ['Thought-Provoking', 'Calming'],
+    tags: ['Psychology', 'Decision Making', 'Nobel Prize'],
+    year: 2011,
+  },
+  {
+    id: '30',
+    title: 'The Song of Achilles',
+    author: 'Madeline Miller',
+    description: 'A captivating retelling of the Iliad through the eyes of Patroclus, exploring his bond with the legendary warrior Achilles.',
+    genres: ['Historical', 'Romance', 'Fantasy'],
+    moods: ['Romantic', 'Dark', 'Heartwarming', 'Intense'],
+    tags: ['Greek Mythology', 'LGBTQ+', 'War'],
+    year: 2012,
   },
 ];

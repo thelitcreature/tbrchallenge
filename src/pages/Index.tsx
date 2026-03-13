@@ -3,12 +3,15 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { books as curatedBooks, GENRES, MOODS, type Genre, type Mood } from '@/data/books';
 import type { UnifiedBook } from '@/data/bookTypes';
 import { FilterChips } from '@/components/FilterChips';
+import { LanguageFilter, type BookLanguage } from '@/components/LanguageFilter';
 import { PullLever } from '@/components/PullLever';
 import { BookCard } from '@/components/BookCard';
 import { TBRList } from '@/components/TBRList';
 import { ModeToggle } from '@/components/ModeToggle';
 import { BookSearch } from '@/components/BookSearch';
 import { ManualEntry } from '@/components/ManualEntry';
+import { searchGoogleBooks } from '@/lib/api/googleBooks';
+import { googleBookToUnified } from '@/data/bookTypes';
 
 // Convert curated books to UnifiedBook format
 const curatedUnified: UnifiedBook[] = curatedBooks.map((b) => ({
@@ -24,6 +27,7 @@ const Index = () => {
   const [isRevealing, setIsRevealing] = useState(false);
   const [tbrBooks, setTbrBooks] = useState<UnifiedBook[]>([]);
   const [tbrMode, setTbrMode] = useState(false);
+  const [discoverLang, setDiscoverLang] = useState<BookLanguage>('');
 
   const toggleGenre = (g: Genre) =>
     setSelectedGenres((prev) => (prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]));
@@ -40,7 +44,28 @@ const Index = () => {
     });
   }, [selectedGenres, selectedMoods, tbrMode, tbrBooks]);
 
-  const pullBook = () => {
+  const pullBook = async () => {
+    // If a CZ/SK language is selected, fetch from Google Books API
+    if (discoverLang && !tbrMode) {
+      setIsRevealing(true);
+      setRevealedBook(null);
+      try {
+        const genreQuery = selectedGenres.length > 0 ? selectedGenres.join(' OR ') : 'knihy';
+        const moodQuery = selectedMoods.length > 0 ? ` ${selectedMoods[0]}` : '';
+        const query = `${genreQuery}${moodQuery}`;
+        const { books } = await searchGoogleBooks(query, discoverLang, 20);
+        if (books.length > 0) {
+          const randomBook = books[Math.floor(Math.random() * books.length)];
+          setRevealedBook(googleBookToUnified(randomBook));
+        }
+      } catch (err) {
+        console.error('Discovery fetch error:', err);
+      } finally {
+        setIsRevealing(false);
+      }
+      return;
+    }
+
     const filtered = getFilteredBooks();
     if (filtered.length === 0) return;
     setIsRevealing(true);
@@ -109,6 +134,14 @@ const Index = () => {
               />
               Pick from My TBR only
             </label>
+          )}
+
+          {/* Language filter for discovery */}
+          {!tbrMode && (
+            <div className="space-y-2 w-full">
+              <p className="text-sm font-body font-medium text-muted-foreground text-center">Language / Jazyk</p>
+              <LanguageFilter selected={discoverLang} onChange={(l) => { setDiscoverLang(l); setRevealedBook(null); }} />
+            </div>
           )}
 
           {/* Filters */}
