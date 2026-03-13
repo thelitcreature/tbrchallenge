@@ -233,6 +233,17 @@ const Index = () => {
     setShelvedBooks((prev) => prev.filter((b) => b.id !== id));
   };
 
+  const dismissBook = (book: UnifiedBook) => {
+    setDismissedIds((prev) => {
+      const next = new Set(prev);
+      next.add(book.id);
+      localStorage.setItem("plottwist-dismissed", JSON.stringify([...next]));
+      return next;
+    });
+    // Auto-pull next book
+    pullBook();
+  };
+
   const shelvedIds = new Set(shelvedBooks.map((b) => b.id));
   const wantToReadIds = new Set(wantToReadBooks.map((b) => b.id));
   const readIds = new Set(readBooks.map((b) => b.id));
