@@ -306,6 +306,7 @@ const Index = () => {
                 selected={discoverLang}
                 onChange={(l) => {
                   setDiscoverLang(l);
+                  setAiPool([]); setAiPoolIndex(0);
                   if (hasPulled) setFilterChangeKey((k) => k + 1);
                   else setRevealedBook(null);
                 }} />
