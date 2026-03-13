@@ -1,9 +1,9 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Book } from '@/data/books';
+import type { UnifiedBook } from '@/data/bookTypes';
 import { X, BookOpen } from 'lucide-react';
 
 interface TBRListProps {
-  books: Book[];
+  books: UnifiedBook[];
   onRemove: (id: string) => void;
 }
 
@@ -13,7 +13,7 @@ export function TBRList({ books, onRemove }: TBRListProps) {
       <div className="text-center py-16 space-y-3">
         <BookOpen className="w-10 h-10 text-muted-foreground/40 mx-auto" />
         <p className="font-body text-muted-foreground text-sm">
-          Your TBR is empty. Discover books and add them here!
+          Your TBR is empty. Search for books above or add one manually!
         </p>
       </div>
     );
@@ -21,6 +21,7 @@ export function TBRList({ books, onRemove }: TBRListProps) {
 
   return (
     <div className="space-y-3 w-full max-w-md mx-auto">
+      <p className="font-body text-sm text-muted-foreground text-center">{books.length} book{books.length !== 1 ? 's' : ''} in your TBR</p>
       <AnimatePresence mode="popLayout">
         {books.map((book) => (
           <motion.div
@@ -29,17 +30,25 @@ export function TBRList({ books, onRemove }: TBRListProps) {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20, scale: 0.9 }}
-            className="bg-card rounded-xl p-4 shadow-card flex items-start gap-4"
+            className="bg-card rounded-xl p-4 shadow-card flex items-start gap-3"
           >
+            {book.thumbnail && (
+              <img src={book.thumbnail} alt={book.title} className="w-10 h-14 object-cover rounded-md flex-shrink-0" />
+            )}
             <div className="flex-1 min-w-0">
               <h3 className="font-display text-base font-semibold text-foreground truncate">{book.title}</h3>
               <p className="font-body text-sm text-muted-foreground">{book.author}</p>
               <div className="flex flex-wrap gap-1.5 mt-2">
-                {book.tags.slice(0, 2).map((tag) => (
+                {book.tags.slice(0, 3).map((tag) => (
                   <span key={tag} className="px-2 py-0.5 rounded-full bg-secondary text-muted-foreground text-xs font-body">
                     {tag}
                   </span>
                 ))}
+                {book.source === 'manual' && (
+                  <span className="px-2 py-0.5 rounded-full bg-accent/10 text-accent text-xs font-body font-medium">
+                    Manual
+                  </span>
+                )}
               </div>
             </div>
             <button

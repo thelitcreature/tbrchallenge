@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion';
-import type { Book } from '@/data/books';
+import type { UnifiedBook } from '@/data/bookTypes';
 import { Heart, RotateCcw } from 'lucide-react';
 
 interface BookCardProps {
-  book: Book;
+  book: UnifiedBook;
   onPullAgain: () => void;
-  onAddToTBR?: (book: Book) => void;
+  onAddToTBR?: (book: UnifiedBook) => void;
   isInTBR?: boolean;
 }
 
@@ -18,6 +18,14 @@ export function BookCard({ book, onPullAgain, onAddToTBR, isInTBR }: BookCardPro
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
       className="w-full max-w-md bg-card rounded-2xl p-8 shadow-elevated text-center space-y-5"
     >
+      {book.thumbnail && (
+        <img
+          src={book.thumbnail}
+          alt={book.title}
+          className="w-24 h-36 object-cover rounded-lg mx-auto shadow-card"
+        />
+      )}
+
       <div className="space-y-1">
         <h2 className="font-display text-2xl font-bold text-foreground leading-tight">
           {book.title}
