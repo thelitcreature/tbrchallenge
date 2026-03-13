@@ -152,28 +152,52 @@ const Index = () => {
             </label>
           )}
 
-          {/* Language filter */}
-          {!tbrMode && (
-            <div className="space-y-2 w-full">
-              <p className="text-sm font-body font-medium text-muted-foreground text-center">Book Language</p>
-              <LanguageFilter
-                selected={discoverLang}
-                onChange={(l) => {
-                  setDiscoverLang(l);
-                  setRevealedBook(null);
-                }}
-              />
-            </div>
-          )}
+          {/* Filter toggle */}
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center gap-2 font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {showFilters ? <ChevronUp className="w-4 h-4" /> : <SlidersHorizontal className="w-4 h-4" />}
+            {showFilters ? "Hide filters" : "Add filters"}
+            {(selectedGenres.length > 0 || selectedMoods.length > 0 || discoverLang) && (
+              <span className="bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold">
+                {selectedGenres.length + selectedMoods.length + (discoverLang ? 1 : 0)}
+              </span>
+            )}
+          </button>
 
-          {/* Filters */}
-          <FilterChips label="Genres" options={GENRES} selected={selectedGenres} onToggle={toggleGenre} />
-          <FilterChips
-            label="I'm in the mood for something…"
-            options={MOODS}
-            selected={selectedMoods}
-            onToggle={toggleMood}
-          />
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden w-full space-y-6"
+              >
+                {/* Language filter */}
+                {!tbrMode && (
+                  <div className="space-y-2 w-full">
+                    <p className="text-sm font-body font-medium text-muted-foreground text-center">Book Language</p>
+                    <LanguageFilter
+                      selected={discoverLang}
+                      onChange={(l) => {
+                        setDiscoverLang(l);
+                        setRevealedBook(null);
+                      }}
+                    />
+                  </div>
+                )}
+
+                <FilterChips label="Genres" options={GENRES} selected={selectedGenres} onToggle={toggleGenre} />
+                <FilterChips
+                  label="I'm in the mood for something…"
+                  options={MOODS}
+                  selected={selectedMoods}
+                  onToggle={toggleMood}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Main interaction */}
           <div className="py-8 flex flex-col items-center min-h-[280px] justify-center">
