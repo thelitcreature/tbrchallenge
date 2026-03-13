@@ -285,7 +285,7 @@ export const books: Book[] = [
     title: 'The Body Keeps the Score',
     author: 'Bessel van der Kolk',
     description: 'A pioneering researcher transforms our understanding of traumatic stress, revealing how it literally reshapes the body and brain.',
-    genres: ['Non-Fiction', 'Self-Help'],
+    genres: ['Non-Fiction'],
     moods: ['Thought-Provoking', 'Empowering'],
     tags: ['Psychology', 'Trauma', 'Healing'],
     year: 2014,
