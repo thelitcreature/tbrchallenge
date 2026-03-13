@@ -117,9 +117,9 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center px-4 py-10 sm:py-16">
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8 flex flex-col items-center">
         <h1 className="font-display text-5xl sm:text-6xl font-bold text-foreground tracking-tight">Plot Twist</h1>
-        <p className="font-body text-sm text-muted-foreground mt-2 uppercase tracking-[0.35em]">Let the book choose you</p>
+        <p className="font-body text-sm text-muted-foreground mt-2 uppercase tracking-[0.35em] pr-[0.35em]">Let the book choose you</p>
       </motion.div>
 
       {/* Mode Toggle */}
