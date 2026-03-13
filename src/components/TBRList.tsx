@@ -195,7 +195,7 @@ export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdat
             {!book.isRead && onMarkAsRead && (
               <button
                 onClick={() => onMarkAsRead(book.id)}
-                className="p-1.5 rounded-full hover:bg-green-500/10 text-muted-foreground hover:text-green-700 transition-colors"
+                className="p-1.5 rounded-full hover:bg-accent/10 text-muted-foreground hover:text-accent transition-colors"
                 title="Mark as read"
               >
                 <Check className="w-4 h-4" />
