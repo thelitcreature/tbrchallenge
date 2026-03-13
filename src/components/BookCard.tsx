@@ -162,14 +162,26 @@ export function BookCard({ book, onPullAgain, onDismiss, onAddToWantToRead, onMa
         )}
 
         {onNotInterested && (
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowConfirm(true)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-body font-medium bg-secondary text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-          >
-            <ThumbsDown className="w-4 h-4" />
-            Not interested
-          </motion.button>
+          <div className="flex items-center gap-1.5">
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowConfirm(true)}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-body font-medium bg-secondary text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+            >
+              <ThumbsDown className="w-4 h-4" />
+              Not interested
+            </motion.button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="w-5 h-5 rounded-full bg-muted flex items-center justify-center text-muted-foreground text-xs font-bold cursor-help select-none shrink-0">
+                  i
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-[200px] text-center">
+                <p className="text-xs">This will permanently hide this book from your recommendations.</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
         )}
       </div>
 
