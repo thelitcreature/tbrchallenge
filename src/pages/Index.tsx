@@ -172,7 +172,7 @@ const Index = () => {
           // Fallback to Google Books if AI returns nothing
           const { books } = await searchGoogleBooks(
             "subject:fiction bestseller 2024",
-            discoverLang,
+            discoverLangs[0] || "en",
             40,
             0
           );
