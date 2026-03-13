@@ -11,7 +11,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { genres, moods, language, excludeIds } = await req.json();
+    const { genres, moods, languages, excludeIds } = await req.json();
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -21,11 +21,30 @@ Deno.serve(async (req) => {
       );
     }
 
+    const langs: string[] = languages || ['en'];
     const isClassics = (genres || []).includes('Classics');
-    const langLabel = language === 'cs' ? 'Czech' : language === 'sk' ? 'Slovak' : 'English';
-    const langInstruction = language === 'cs' || language === 'sk'
-      ? `Books should be available in ${langLabel} translation or originally written in ${langLabel}. Provide titles in ${langLabel} if a known translation exists, otherwise use the original title.`
-      : 'Provide titles in English.';
+
+    // Build language instruction
+    const hasCzech = langs.includes('cs');
+    const hasSlovak = langs.includes('sk');
+    const hasEnglish = langs.includes('en');
+
+    let langInstruction = '';
+    if (hasCzech && hasSlovak && hasEnglish) {
+      langInstruction = 'Include a mix of: English-language books, books by Czech authors, books by Slovak authors, and books that have been translated to Czech or Slovak. Provide titles in their original language.';
+    } else if (hasCzech && hasSlovak) {
+      langInstruction = 'Focus on books by Czech and Slovak authors, and books that have been translated to Czech or Slovak. Include both Czech and Slovak literature. Provide titles in Czech or Slovak if a known translation exists, otherwise use the original title.';
+    } else if (hasCzech && hasEnglish) {
+      langInstruction = 'Include a mix of English-language books and books by Czech authors or books translated to Czech. Provide titles in Czech if a known translation exists, otherwise use the original English title.';
+    } else if (hasSlovak && hasEnglish) {
+      langInstruction = 'Include a mix of English-language books and books by Slovak authors or books translated to Slovak. Provide titles in Slovak if a known translation exists, otherwise use the original English title.';
+    } else if (hasCzech) {
+      langInstruction = 'Focus on books by Czech authors and books available in Czech translation. Provide titles in Czech if a known translation exists, otherwise use the original title.';
+    } else if (hasSlovak) {
+      langInstruction = 'Focus on books by Slovak authors and books available in Slovak translation. Provide titles in Slovak if a known translation exists, otherwise use the original title.';
+    } else {
+      langInstruction = 'Provide titles in English.';
+    }
 
     const yearConstraint = isClassics
       ? 'Focus on classic literature from any era.'
