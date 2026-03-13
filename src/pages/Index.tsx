@@ -280,7 +280,7 @@ const Index = () => {
 
       {/* Mode Toggle */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }} className="mb-8 mt-4">
-        <ModeToggle mode={mode} onModeChange={setMode} tbrCount={ownedBooks.length} wishlistCount={0} />
+        <ModeToggle mode={mode} onModeChange={setMode} tbrCount={ownedBooks.length} />
       </motion.div>
 
       {mode === "discover" ?
