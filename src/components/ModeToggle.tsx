@@ -14,7 +14,7 @@ const TABS: { key: Mode; label: string }[] = [
   { key: 'challenges', label: 'Challenges' },
 ];
 
-export function ModeToggle({ mode, onModeChange, tbrCount, wishlistCount }: ModeToggleProps) {
+export function ModeToggle({ mode, onModeChange, tbrCount }: ModeToggleProps) {
   const activeIndex = TABS.findIndex((t) => t.key === mode);
   const count = (key: Mode) => key === 'tbr' ? tbrCount : 0;
 
