@@ -1,13 +1,24 @@
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { UnifiedBook } from '@/data/bookTypes';
-import { X, BookOpen, BookOpenText, Book, Headphones, Tablet } from 'lucide-react';
+import type { UnifiedBook, BookFormat } from '@/data/bookTypes';
+import { X, BookOpen, BookOpenText, Book, Headphones, Tablet, ChevronDown } from 'lucide-react';
+
+const FORMATS: { value: BookFormat; label: string; icon: React.ReactNode }[] = [
+  { value: 'paperback', label: 'Paperback', icon: <BookOpen className="w-3 h-3" /> },
+  { value: 'hardback', label: 'Hardback', icon: <Book className="w-3 h-3" /> },
+  { value: 'ebook', label: 'E-book', icon: <Tablet className="w-3 h-3" /> },
+  { value: 'audiobook', label: 'Audiobook', icon: <Headphones className="w-3 h-3" /> },
+];
 
 interface TBRListProps {
   books: UnifiedBook[];
   onRemove: (id: string) => void;
+  onUpdateFormat?: (id: string, format: BookFormat | undefined) => void;
 }
 
-export function TBRList({ books, onRemove }: TBRListProps) {
+export function TBRList({ books, onRemove, onUpdateFormat }: TBRListProps) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+
   if (books.length === 0) {
     return (
       <div className="text-center py-16 space-y-3">
@@ -30,46 +41,87 @@ export function TBRList({ books, onRemove }: TBRListProps) {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20, scale: 0.9 }}
-            className="bg-card rounded-xl p-4 shadow-card flex items-start gap-3"
+            className="bg-card rounded-xl p-4 shadow-card space-y-2"
           >
-            {book.thumbnail ? (
-              <img src={book.thumbnail} alt={book.title} className="w-10 h-14 object-cover rounded-md flex-shrink-0" />
-            ) : (
-              <div className="w-10 h-14 rounded-md bg-secondary flex items-center justify-center flex-shrink-0">
-                <BookOpenText className="w-4 h-4 text-muted-foreground/40" />
-              </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <h4 className="font-display text-base font-semibold text-foreground truncate">{book.title}</h4>
-              <p className="font-body text-sm text-muted-foreground">{book.author}</p>
-              <div className="flex flex-wrap gap-1.5 mt-2">
-                {book.tags.slice(0, 3).map((tag) => (
-                  <span key={tag} className="px-2 py-0.5 rounded-full bg-secondary text-muted-foreground text-xs font-body">
-                    {tag}
-                  </span>
-                ))}
-                {book.source === 'manual' && (
-                  <span className="px-2 py-0.5 rounded-full bg-accent/10 text-accent text-xs font-body font-medium">
-                    Manual
-                  </span>
-                )}
-                {book.format && (
-                  <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-body font-medium flex items-center gap-1">
+            <div className="flex items-start gap-3">
+              {book.thumbnail ? (
+                <img src={book.thumbnail} alt={book.title} className="w-10 h-14 object-cover rounded-md flex-shrink-0" />
+              ) : (
+                <div className="w-10 h-14 rounded-md bg-secondary flex items-center justify-center flex-shrink-0">
+                  <BookOpenText className="w-4 h-4 text-muted-foreground/40" />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <h4 className="font-display text-base font-semibold text-foreground truncate">{book.title}</h4>
+                <p className="font-body text-sm text-muted-foreground">{book.author}</p>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {book.tags.slice(0, 3).map((tag) => (
+                    <span key={tag} className="px-2 py-0.5 rounded-full bg-secondary text-muted-foreground text-xs font-body">
+                      {tag}
+                    </span>
+                  ))}
+                  {book.source === 'manual' && (
+                    <span className="px-2 py-0.5 rounded-full bg-accent/10 text-accent text-xs font-body font-medium">
+                      Manual
+                    </span>
+                  )}
+                  {/* Format badge - clickable to edit */}
+                  <button
+                    onClick={() => setEditingId(editingId === book.id ? null : book.id)}
+                    className={`px-2 py-0.5 rounded-full text-xs font-body font-medium flex items-center gap-1 transition-colors ${
+                      book.format
+                        ? 'bg-primary/10 text-primary hover:bg-primary/20'
+                        : 'bg-secondary text-muted-foreground hover:bg-secondary/80'
+                    }`}
+                  >
                     {book.format === 'hardback' && <Book className="w-3 h-3" />}
                     {book.format === 'paperback' && <BookOpen className="w-3 h-3" />}
                     {book.format === 'ebook' && <Tablet className="w-3 h-3" />}
                     {book.format === 'audiobook' && <Headphones className="w-3 h-3" />}
-                    {book.format.charAt(0).toUpperCase() + book.format.slice(1)}
-                  </span>
-                )}
+                    {book.format ? book.format.charAt(0).toUpperCase() + book.format.slice(1) : 'Set format'}
+                    <ChevronDown className={`w-3 h-3 transition-transform ${editingId === book.id ? 'rotate-180' : ''}`} />
+                  </button>
+                </div>
               </div>
+              <button
+                onClick={() => onRemove(book.id)}
+                className="p-1.5 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
-            <button
-              onClick={() => onRemove(book.id)}
-              className="p-1.5 rounded-full hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
-            >
-              <X className="w-4 h-4" />
-            </button>
+
+            {/* Format picker */}
+            <AnimatePresence>
+              {editingId === book.id && onUpdateFormat && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="flex gap-1.5 flex-wrap pt-1 pl-[52px]">
+                    {FORMATS.map((f) => (
+                      <button
+                        key={f.value}
+                        onClick={() => {
+                          onUpdateFormat(book.id, book.format === f.value ? undefined : f.value);
+                          setEditingId(null);
+                        }}
+                        className={`flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-body font-medium transition-colors ${
+                          book.format === f.value
+                            ? 'bg-primary/15 text-primary ring-1 ring-primary/30'
+                            : 'bg-secondary/70 text-muted-foreground hover:text-foreground hover:bg-secondary'
+                        }`}
+                      >
+                        {f.icon}
+                        {f.label}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         ))}
       </AnimatePresence>
