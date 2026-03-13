@@ -61,6 +61,7 @@ const Index = () => {
   }, [selectedGenres, selectedMoods, tbrMode, ownedBooks]);
 
   const pullBook = async () => {
+    setHasPulled(true);
     if (!tbrMode) {
       setIsRevealing(true);
       setRevealedBook(null);
@@ -133,6 +134,16 @@ const Index = () => {
       setIsRevealing(false);
     }, 600);
   };
+
+  // Auto-pull when filters change after the user has already pulled
+  const pullBookRef = useRef(pullBook);
+  pullBookRef.current = pullBook;
+  
+  useEffect(() => {
+    if (filterChangeKey > 0) {
+      pullBookRef.current();
+    }
+  }, [filterChangeKey]);
 
   const addToOwned = (book: UnifiedBook) => {
     if (!shelvedBooks.find((b) => b.id === book.id)) {
