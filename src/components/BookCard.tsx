@@ -46,7 +46,6 @@ interface BookCardProps {
   book: UnifiedBook;
   onPullAgain: () => void;
   onDismiss: () => void;
-  onAddToWantToRead?: (book: UnifiedBook) => void;
   onMarkAsRead?: (book: UnifiedBook) => void;
   onNotInterested?: (book: UnifiedBook) => void;
   isInWantToRead?: boolean;
