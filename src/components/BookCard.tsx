@@ -1,6 +1,45 @@
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import type { UnifiedBook } from '@/data/bookTypes';
 import { Heart, RotateCcw, BookCheck, BookOpenText, X } from 'lucide-react';
+
+interface SparkleProps {
+  count?: number;
+}
+
+function Sparkles({ count = 14 }: SparkleProps) {
+  const [particles] = useState(() =>
+    Array.from({ length: count }, (_, i) => ({
+      id: i,
+      angle: (360 / count) * i + Math.random() * 20,
+      distance: 80 + Math.random() * 60,
+      size: 4 + Math.random() * 6,
+      delay: Math.random() * 0.15,
+      emoji: ['✨', '⭐', '🌟', '💫'][Math.floor(Math.random() * 4)],
+    }))
+  );
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-visible flex items-center justify-center">
+      {particles.map((p) => {
+        const rad = (p.angle * Math.PI) / 180;
+        const x = Math.cos(rad) * p.distance;
+        const y = Math.sin(rad) * p.distance;
+        return (
+          <motion.span
+            key={p.id}
+            className="absolute text-sm"
+            initial={{ opacity: 1, x: 0, y: 0, scale: 0 }}
+            animate={{ opacity: [1, 1, 0], x, y, scale: [0, 1.2, 0.6] }}
+            transition={{ duration: 0.7, delay: p.delay, ease: 'easeOut' }}
+          >
+            {p.emoji}
+          </motion.span>
+        );
+      })}
+    </div>
+  );
+}
 
 interface BookCardProps {
   book: UnifiedBook;
@@ -13,14 +52,22 @@ interface BookCardProps {
 }
 
 export function BookCard({ book, onPullAgain, onDismiss, onAddToWantToRead, onMarkAsRead, isInWantToRead, isRead }: BookCardProps) {
+  const [showSparkles, setShowSparkles] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSparkles(false), 900);
+    return () => clearTimeout(timer);
+  }, [book.id]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 40, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -20, scale: 0.95 }}
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-      className="w-full max-w-md bg-card rounded-2xl p-8 shadow-elevated text-center space-y-5 relative"
+      className="w-full max-w-md bg-card rounded-2xl p-8 shadow-elevated text-center space-y-5 relative overflow-visible"
     >
+      {showSparkles && <Sparkles />}
       {/* Dismiss button */}
       <button
         onClick={onDismiss}
