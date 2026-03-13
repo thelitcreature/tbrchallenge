@@ -1,9 +1,9 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import type { BookFormat, ReasonForAdding } from "@/data/bookTypes";
+import type { BookFormat, ReasonForAdding, UnifiedBook } from "@/data/bookTypes";
 import { SlidersHorizontal, ChevronUp, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { books as curatedBooks, GENRES, MOODS, type Genre, type Mood } from "@/data/books";
-import type { UnifiedBook } from "@/data/bookTypes";
+import type { TBRBook } from "@/components/TBRList";
 import { getAIRecommendations } from "@/lib/api/recommendations";
 import { aiBookToUnified } from "@/data/bookTypes";
 import { FilterChips } from "@/components/FilterChips";
@@ -34,7 +34,7 @@ const Index = () => {
   const [selectedMoods, setSelectedMoods] = useState<Mood[]>([]);
   const [revealedBook, setRevealedBook] = useState<UnifiedBook | null>(null);
   const [isRevealing, setIsRevealing] = useState(false);
-  const [shelvedBooks, setShelvedBooks] = useState<(UnifiedBook & {shelf: 'owned' | 'want-to-read' | 'read';})[]>([]);
+  const [shelvedBooks, setShelvedBooks] = useState<TBRBook[]>([]);
   const [tbrMode, setTbrMode] = useState(false);
   const [discoverLangs, setDiscoverLangs] = useState<BookLanguage[]>(["en"]);
   const [showFilters, setShowFilters] = useState(false);
@@ -81,9 +81,9 @@ const Index = () => {
     }
   }, [bookHistory, selectedGenres, selectedMoods, discoverLangs, dismissedIds]);
 
-  const ownedBooks = shelvedBooks.filter((b) => b.shelf === "owned");
+  const ownedBooks = shelvedBooks.filter((b) => !b.isRead);
   
-  const readBooks = shelvedBooks.filter((b) => b.shelf === "read");
+  const readBooks = shelvedBooks.filter((b) => b.isRead);
 
   const revealNewBook = (book: UnifiedBook) => {
     setBookHistory((prev) => {
@@ -241,13 +241,13 @@ const Index = () => {
   };
 
   const confirmAddWithReason = (book: UnifiedBook, reason: ReasonForAdding) => {
-    setShelvedBooks((prev) => [...prev, { ...book, shelf: "owned", reasonForAdding: reason }]);
+    setShelvedBooks((prev) => [...prev, { ...book, reasonForAdding: reason, dateAdded: new Date().toISOString(), isRead: false }]);
     setPendingBook(null);
     setShowAddTools(false);
   };
 
   const skipReason = (book: UnifiedBook) => {
-    setShelvedBooks((prev) => [...prev, { ...book, shelf: "owned" }]);
+    setShelvedBooks((prev) => [...prev, { ...book, dateAdded: new Date().toISOString(), isRead: false }]);
     setPendingBook(null);
     setShowAddTools(false);
   };
@@ -256,10 +256,18 @@ const Index = () => {
     setShelvedBooks((prev) => {
       const existing = prev.find((b) => b.id === book.id);
       if (existing) {
-        return prev.map((b) => b.id === book.id ? { ...b, shelf: "read" as const } : b);
+        return prev.map((b) => b.id === book.id ? { ...b, isRead: true } : b);
       }
-      return [...prev, { ...book, shelf: "read" as const }];
+      return [...prev, { ...book, dateAdded: new Date().toISOString(), isRead: true }];
     });
+  };
+
+  const markAsReadById = (id: string) => {
+    setShelvedBooks((prev) => prev.map((b) => b.id === id ? { ...b, isRead: true } : b));
+  };
+
+  const updateDateAdded = (id: string, date: string) => {
+    setShelvedBooks((prev) => prev.map((b) => b.id === id ? { ...b, dateAdded: date } : b));
   };
 
   const removeFromShelves = (id: string) => {
@@ -295,7 +303,7 @@ const Index = () => {
 
       {/* Mode Toggle */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }} className="mb-8 mt-4">
-        <ModeToggle mode={mode} onModeChange={setMode} tbrCount={ownedBooks.length} />
+        <ModeToggle mode={mode} onModeChange={setMode} tbrCount={shelvedBooks.filter(b => !b.isRead).length} />
       </motion.div>
 
       {mode === "discover" ?
@@ -463,7 +471,7 @@ const Index = () => {
               </motion.div>
             )}
           </AnimatePresence>
-          <TBRList books={ownedBooks} onRemove={removeFromShelves} onUpdateFormat={updateBookFormat} />
+          <TBRList books={shelvedBooks} onRemove={removeFromShelves} onUpdateFormat={updateBookFormat} onMarkAsRead={markAsReadById} onUpdateDateAdded={updateDateAdded} />
         </motion.div> :
 
       <motion.div
