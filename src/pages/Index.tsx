@@ -344,7 +344,7 @@ const Index = () => {
                   </div>
             }
 
-                <FilterChips label="Genres" options={GENRES} selected={selectedGenres} onToggle={toggleGenre} />
+                <FilterChips label="I want to read..." options={GENRES} selected={selectedGenres} onToggle={toggleGenre} />
                 <FilterChips
               label="I'm in the mood for something…"
               options={MOODS}
