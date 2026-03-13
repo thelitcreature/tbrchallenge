@@ -267,7 +267,7 @@ const Index = () => {
   };
 
   const shelvedIds = new Set(shelvedBooks.map((b) => b.id));
-  const wantToReadIds = new Set(wantToReadBooks.map((b) => b.id));
+  
   const readIds = new Set(readBooks.map((b) => b.id));
 
   return (
