@@ -200,7 +200,14 @@ const Index = () => {
           </AnimatePresence>
 
           {/* Main interaction */}
-          <div className="py-8 flex flex-col items-center min-h-[280px] justify-center">
+          <div
+            className="py-8 flex flex-col items-center min-h-[280px] justify-center w-full"
+            onClick={(e) => {
+              if (revealedBook && e.target === e.currentTarget) {
+                setRevealedBook(null);
+              }
+            }}
+          >
             <AnimatePresence mode="wait">
               {revealedBook && !isRevealing ? (
                 <BookCard
