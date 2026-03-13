@@ -48,7 +48,7 @@ export function PullLever({ onPull, isRevealing }: PullLeverProps) {
           >
             <BookOpen className="w-10 h-10 text-accent/70 group-hover:text-accent transition-colors duration-300" strokeWidth={1.5} />
           </motion.div>
-        </div>
+        </motion.div>
       </motion.button>
 
       <motion.p
