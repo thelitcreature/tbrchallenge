@@ -84,12 +84,14 @@ const Index = () => {
 
   const toggleGenre = (g: Genre) => {
     setSelectedGenres((prev) => prev.includes(g) ? [] : [g]);
+    setAiPool([]); setAiPoolIndex(0);
     if (hasPulled) setFilterChangeKey((k) => k + 1);
     else setRevealedBook(null);
   };
 
   const toggleMood = (m: Mood) => {
     setSelectedMoods((prev) => prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]);
+    setAiPool([]); setAiPoolIndex(0);
     if (hasPulled) setFilterChangeKey((k) => k + 1);
     else setRevealedBook(null);
   };
