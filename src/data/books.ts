@@ -436,7 +436,7 @@ export const books: Book[] = [
     title: 'Kmotr Mrázek',
     author: 'Jaroslav Kmenta',
     description: 'Investigativní kniha o jednom z nejmocnějších českých podsvětních bossů a jeho propojení s politikou a byznysem.',
-    genres: ['Non-Fiction', 'Biography'],
+    genres: ['Non-Fiction'],
     moods: ['Tense', 'Informative', 'Dark'],
     tags: ['Česká non-fiction', 'True Crime', 'Investigace'],
     year: 2007,
