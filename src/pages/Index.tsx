@@ -53,14 +53,15 @@ const Index = () => {
   }, [selectedGenres, selectedMoods, tbrMode, ownedBooks]);
 
   const pullBook = async () => {
-    if (discoverLang && !tbrMode) {
+    if (!tbrMode) {
       setIsRevealing(true);
       setRevealedBook(null);
       try {
-        const genreQuery = selectedGenres.length > 0 ? selectedGenres.join(" OR ") : "knihy";
+        const lang = discoverLang || "en";
+        const genreQuery = selectedGenres.length > 0 ? selectedGenres.join(" OR ") : (lang === "en" ? "books" : "knihy");
         const moodQuery = selectedMoods.length > 0 ? ` ${selectedMoods[0]}` : "";
         const query = `${genreQuery}${moodQuery}`;
-        const { books } = await searchGoogleBooks(query, discoverLang, 20);
+        const { books } = await searchGoogleBooks(query, lang, 20);
         if (books.length > 0) {
           const randomBook = books[Math.floor(Math.random() * books.length)];
           setRevealedBook(googleBookToUnified(randomBook));
