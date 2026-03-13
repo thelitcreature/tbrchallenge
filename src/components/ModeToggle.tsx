@@ -12,7 +12,7 @@ interface ModeToggleProps {
 const TABS: { key: Mode; label: string }[] = [
   { key: 'discover', label: 'Discover' },
   { key: 'tbr', label: 'Choose from my TBR' },
-  { key: 'wishlist', label: 'Want to Read' },
+  { key: 'challenges', label: 'Challenges' },
 ];
 
 export function ModeToggle({ mode, onModeChange, tbrCount, wishlistCount }: ModeToggleProps) {
