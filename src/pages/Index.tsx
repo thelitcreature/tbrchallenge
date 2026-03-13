@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import { SlidersHorizontal, ChevronUp } from "lucide-react";
+import { SlidersHorizontal, ChevronUp, ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { books as curatedBooks, GENRES, MOODS, type Genre, type Mood } from "@/data/books";
 import type { UnifiedBook } from "@/data/bookTypes";
@@ -40,10 +40,42 @@ const Index = () => {
       return stored ? new Set(JSON.parse(stored)) : new Set();
     } catch { return new Set(); }
   });
+  const [bookHistory, setBookHistory] = useState<UnifiedBook[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
 
   const ownedBooks = shelvedBooks.filter((b) => b.shelf === "owned");
   const wantToReadBooks = shelvedBooks.filter((b) => b.shelf === "want-to-read");
   const readBooks = shelvedBooks.filter((b) => b.shelf === "read");
+
+  const revealNewBook = (book: UnifiedBook) => {
+    setBookHistory((prev) => {
+      const trimmed = prev.slice(0, historyIndex + 1);
+      return [...trimmed, book];
+    });
+    setHistoryIndex((prev) => prev + 1);
+    setRevealedBook(book);
+  };
+
+  const goBack = () => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      setRevealedBook(bookHistory[newIndex]);
+    }
+  };
+
+  const goForward = () => {
+    if (historyIndex < bookHistory.length - 1) {
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      setRevealedBook(bookHistory[newIndex]);
+    } else {
+      pullBook();
+    }
+  };
+
+  const canGoBack = historyIndex > 0;
+  const canGoForward = historyIndex < bookHistory.length - 1;
 
   const toggleGenre = (g: Genre) => {
     setSelectedGenres((prev) => prev.includes(g) ? [] : [g]);
@@ -193,7 +225,7 @@ const Index = () => {
         if (pool.length > 0) {
           const weightedIndex = Math.floor(Math.pow(Math.random(), 1.5) * pool.length);
           const picked = pool[weightedIndex];
-          setRevealedBook(googleBookToUnified(picked));
+          revealNewBook(googleBookToUnified(picked));
         }
       } catch (err) {
         console.error("Discovery fetch error:", err);
@@ -209,7 +241,7 @@ const Index = () => {
     setRevealedBook(null);
     setTimeout(() => {
       const randomBook = filtered[Math.floor(Math.random() * filtered.length)];
-      setRevealedBook(randomBook);
+      revealNewBook(randomBook);
       setIsRevealing(false);
     }, 600);
   };
@@ -353,28 +385,56 @@ const Index = () => {
           </AnimatePresence>
 
           {/* Main interaction */}
-          <div
-          className="py-8 flex flex-col items-center min-h-[280px] justify-center w-full">
-          
-            <AnimatePresence mode="wait">
-              {revealedBook && !isRevealing ?
-            <BookCard
-              key={revealedBook.id}
-              book={revealedBook}
-              onPullAgain={pullBook}
-              onDismiss={() => setRevealedBook(null)}
-              onAddToWantToRead={addToWantToRead}
-              onMarkAsRead={markAsRead}
-              onNotInterested={dismissBook}
-              isInWantToRead={wantToReadIds.has(revealedBook.id)}
-              isRead={readIds.has(revealedBook.id)} /> :
+          <div className="py-8 flex items-center min-h-[280px] justify-center w-full gap-2">
+            {/* Left arrow - go back */}
+            {revealedBook && !isRevealing && (
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: canGoBack ? 1 : 0.25 }}
+                whileTap={canGoBack ? { scale: 0.9 } : {}}
+                onClick={goBack}
+                disabled={!canGoBack}
+                className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors shrink-0 disabled:cursor-default"
+                aria-label="Previous book"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </motion.button>
+            )}
 
+            <div className="flex flex-col items-center justify-center flex-1 min-w-0">
+              <AnimatePresence mode="wait">
+                {revealedBook && !isRevealing ?
+              <BookCard
+                key={revealedBook.id}
+                book={revealedBook}
+                onPullAgain={pullBook}
+                onDismiss={() => setRevealedBook(null)}
+                onAddToWantToRead={addToWantToRead}
+                onMarkAsRead={markAsRead}
+                onNotInterested={dismissBook}
+                isInWantToRead={wantToReadIds.has(revealedBook.id)}
+                isRead={readIds.has(revealedBook.id)} /> :
 
-            <motion.div key="lever" exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.2 }}>
-                  <PullLever onPull={pullBook} isRevealing={isRevealing} />
-                </motion.div>
-            }
-            </AnimatePresence>
+              <motion.div key="lever" exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.2 }}>
+                    <PullLever onPull={pullBook} isRevealing={isRevealing} />
+                  </motion.div>
+              }
+              </AnimatePresence>
+            </div>
+
+            {/* Right arrow - next / pull new */}
+            {revealedBook && !isRevealing && (
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={goForward}
+                className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors shrink-0"
+                aria-label={canGoForward ? "Next book" : "Pull new book"}
+              >
+                <ChevronRight className="w-6 h-6" />
+              </motion.button>
+            )}
           </div>
         </motion.div> :
       mode === "tbr" ?
