@@ -34,6 +34,12 @@ const Index = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [hasPulled, setHasPulled] = useState(false);
   const [filterChangeKey, setFilterChangeKey] = useState(0);
+  const [dismissedIds, setDismissedIds] = useState<Set<string>>(() => {
+    try {
+      const stored = localStorage.getItem("plottwist-dismissed");
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch { return new Set(); }
+  });
 
   const ownedBooks = shelvedBooks.filter((b) => b.shelf === "owned");
   const wantToReadBooks = shelvedBooks.filter((b) => b.shelf === "want-to-read");
