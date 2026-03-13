@@ -430,7 +430,7 @@ const Index = () => {
           <BookSearch onAddBook={addToOwned} existingIds={shelvedIds} />
           <PhotoBookAdd onAddBook={addToOwned} existingIds={shelvedIds} />
           <ManualEntry onAdd={addToOwned} />
-          <TBRList books={ownedBooks} onRemove={removeFromShelves} />
+          <TBRList books={ownedBooks} onRemove={removeFromShelves} onUpdateFormat={updateBookFormat} />
         </motion.div> :
 
       <motion.div
