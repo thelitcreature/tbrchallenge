@@ -111,6 +111,7 @@ export function PhotoBookAdd({ onAddBook, existingIds }: PhotoBookAddProps) {
       pageCount: book.pageCount,
       categories: book.categories,
       isbn: book.isbn,
+      format: null,
     });
   };
 

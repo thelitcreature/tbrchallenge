@@ -96,7 +96,7 @@ export function BookSearch({ onAddBook, existingIds }: BookSearchProps) {
             {results.map((book) => {
               const unifiedId = `google-${book.id}`;
               const isAdded = existingIds.has(unifiedId);
-              const chosenFormat = selectedFormats[book.id];
+              const chosenFormat = selectedFormats[book.id] || (book.format as BookFormat | undefined);
               return (
                 <motion.div
                   key={book.id}
