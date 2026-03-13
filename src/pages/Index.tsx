@@ -37,8 +37,10 @@ const Index = () => {
   const wantToReadBooks = shelvedBooks.filter((b) => b.shelf === "want-to-read");
   const readBooks = shelvedBooks.filter((b) => b.shelf === "read");
 
-  const toggleGenre = (g: Genre) =>
-  setSelectedGenres((prev) => prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]);
+  const toggleGenre = (g: Genre) => {
+    setSelectedGenres((prev) => prev.includes(g) ? [] : [g]);
+    setRevealedBook(null);
+  };
 
   const toggleMood = (m: Mood) =>
   setSelectedMoods((prev) => prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]);
