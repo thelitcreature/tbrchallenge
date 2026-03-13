@@ -31,6 +31,7 @@ const Index = () => {
   const [shelvedBooks, setShelvedBooks] = useState<(UnifiedBook & { shelf: 'owned' | 'want-to-read' | 'read' })[]>([]);
   const [tbrMode, setTbrMode] = useState(false);
   const [discoverLang, setDiscoverLang] = useState<BookLanguage>("");
+  const [showFilters, setShowFilters] = useState(false);
 
   const ownedBooks = shelvedBooks.filter((b) => b.shelf === "owned");
   const wantToReadBooks = shelvedBooks.filter((b) => b.shelf === "want-to-read");
