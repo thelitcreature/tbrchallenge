@@ -15,7 +15,7 @@ import type { Mode } from "@/components/ModeToggle";
 import { ModeToggle } from "@/components/ModeToggle";
 import { BookSearch } from "@/components/BookSearch";
 import { ManualEntry } from "@/components/ManualEntry";
-import { Wishlist } from "@/components/Wishlist";
+import { Challenges } from "@/components/Challenges";
 import { PhotoBookAdd } from "@/components/PhotoBookAdd";
 import { searchGoogleBooks } from "@/lib/api/googleBooks";
 import { googleBookToUnified } from "@/data/bookTypes";
