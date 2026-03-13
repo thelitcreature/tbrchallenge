@@ -256,6 +256,10 @@ const Index = () => {
     setShelvedBooks((prev) => prev.filter((b) => b.id !== id));
   };
 
+  const updateBookFormat = (id: string, format: BookFormat | undefined) => {
+    setShelvedBooks((prev) => prev.map((b) => b.id === id ? { ...b, format } : b));
+  };
+
   const dismissBook = (book: UnifiedBook) => {
     setDismissedIds((prev) => {
       const next = new Set(prev);
