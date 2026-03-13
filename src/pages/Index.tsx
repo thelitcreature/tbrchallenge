@@ -146,6 +146,8 @@ const Index = () => {
           setAiPoolIndex((prev) => prev + 1);
           revealNewBook(picked);
           setIsRevealing(false);
+          // Trigger background prefetch if pool is running low
+          prefetchIfNeeded(remainingPool, aiPoolIndex + 1);
           return;
         }
 
