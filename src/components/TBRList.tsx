@@ -65,6 +65,13 @@ export function TBRList({ books, onRemove, onUpdateFormat }: TBRListProps) {
                       Manual
                     </span>
                 }
+                  {book.reasonForAdding &&
+                <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-body" title={book.reasonForAdding.customText || book.reasonForAdding.reason}>
+                      {book.reasonForAdding.reason === 'Other' && book.reasonForAdding.customText
+                        ? book.reasonForAdding.customText
+                        : book.reasonForAdding.reason}
+                    </span>
+                }
                   {/* Format badge - clickable to edit */}
                   <button
                   onClick={() => setEditingId(editingId === book.id ? null : book.id)}
