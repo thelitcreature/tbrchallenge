@@ -59,7 +59,7 @@ const Index = () => {
         const { books: aiBooks } = await getAIRecommendations(
           selectedGenres,
           selectedMoods,
-          discoverLang,
+          discoverLangs,
           shownIds
         );
         const unified = aiBooks
