@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import type { BookFormat } from "@/data/bookTypes";
+import type { BookFormat, ReasonForAdding } from "@/data/bookTypes";
 import { SlidersHorizontal, ChevronUp, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { books as curatedBooks, GENRES, MOODS, type Genre, type Mood } from "@/data/books";
@@ -16,6 +16,7 @@ import { ModeToggle } from "@/components/ModeToggle";
 import { BookSearch } from "@/components/BookSearch";
 import { ManualEntry } from "@/components/ManualEntry";
 import { Challenges } from "@/components/Challenges";
+import { ReasonPicker } from "@/components/ReasonPicker";
 import { PhotoBookAdd } from "@/components/PhotoBookAdd";
 import { searchGoogleBooks } from "@/lib/api/googleBooks";
 import { googleBookToUnified } from "@/data/bookTypes";
@@ -47,6 +48,7 @@ const Index = () => {
   });
   const [bookHistory, setBookHistory] = useState<UnifiedBook[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+  const [pendingBook, setPendingBook] = useState<UnifiedBook | null>(null);
 
   const [aiPool, setAiPool] = useState<UnifiedBook[]>([]);
   const [aiPoolIndex, setAiPoolIndex] = useState(0);
@@ -233,8 +235,21 @@ const Index = () => {
 
   const addToOwned = (book: UnifiedBook) => {
     if (!shelvedBooks.find((b) => b.id === book.id)) {
-      setShelvedBooks((prev) => [...prev, { ...book, shelf: "owned" }]);
+      // Queue the book and show the reason picker
+      setPendingBook(book);
     }
+  };
+
+  const confirmAddWithReason = (book: UnifiedBook, reason: ReasonForAdding) => {
+    setShelvedBooks((prev) => [...prev, { ...book, shelf: "owned", reasonForAdding: reason }]);
+    setPendingBook(null);
+    setShowAddTools(false);
+  };
+
+  const skipReason = (book: UnifiedBook) => {
+    setShelvedBooks((prev) => [...prev, { ...book, shelf: "owned" }]);
+    setPendingBook(null);
+    setShowAddTools(false);
   };
 
   const markAsRead = (book: UnifiedBook) => {
@@ -442,13 +457,12 @@ const Index = () => {
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden space-y-6"
               >
-                <BookSearch onAddBook={(book) => { addToOwned(book); setShowAddTools(false); }} existingIds={shelvedIds} />
-                <PhotoBookAdd onAddBook={(book) => { addToOwned(book); setShowAddTools(false); }} existingIds={shelvedIds} />
-                <ManualEntry onAdd={(book) => { addToOwned(book); setShowAddTools(false); }} />
+                <BookSearch onAddBook={addToOwned} existingIds={shelvedIds} />
+                <PhotoBookAdd onAddBook={addToOwned} existingIds={shelvedIds} />
+                <ManualEntry onAdd={addToOwned} />
               </motion.div>
             )}
           </AnimatePresence>
-          <TBRList books={ownedBooks} onRemove={removeFromShelves} onUpdateFormat={updateBookFormat} />
           <TBRList books={ownedBooks} onRemove={removeFromShelves} onUpdateFormat={updateBookFormat} />
         </motion.div> :
 
@@ -461,6 +475,18 @@ const Index = () => {
           <Challenges />
         </motion.div>
       }
+
+      {/* Reason picker modal */}
+      <AnimatePresence>
+        {pendingBook && (
+          <ReasonPicker
+            book={pendingBook}
+            onConfirm={confirmAddWithReason}
+            onSkip={skipReason}
+            onCancel={() => setPendingBook(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>);
 
 };
