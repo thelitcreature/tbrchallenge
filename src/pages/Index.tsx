@@ -6,10 +6,12 @@ import { FilterChips } from "@/components/FilterChips";
 import { LanguageFilter, type BookLanguage } from "@/components/LanguageFilter";
 import { PullLever } from "@/components/PullLever";
 import { BookCard } from "@/components/BookCard";
-import { TBRList, type ShelvedBook } from "@/components/TBRList";
+import { TBRList } from "@/components/TBRList";
+import type { Mode } from "@/components/ModeToggle";
 import { ModeToggle } from "@/components/ModeToggle";
 import { BookSearch } from "@/components/BookSearch";
 import { ManualEntry } from "@/components/ManualEntry";
+import { Wishlist } from "@/components/Wishlist";
 import { searchGoogleBooks } from "@/lib/api/googleBooks";
 import { googleBookToUnified } from "@/data/bookTypes";
 
@@ -20,12 +22,12 @@ const curatedUnified: UnifiedBook[] = curatedBooks.map((b) => ({
 }));
 
 const Index = () => {
-  const [mode, setMode] = useState<"discover" | "tbr">("discover");
+  const [mode, setMode] = useState<Mode>("discover");
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
   const [selectedMoods, setSelectedMoods] = useState<Mood[]>([]);
   const [revealedBook, setRevealedBook] = useState<UnifiedBook | null>(null);
   const [isRevealing, setIsRevealing] = useState(false);
-  const [shelvedBooks, setShelvedBooks] = useState<ShelvedBook[]>([]);
+  const [shelvedBooks, setShelvedBooks] = useState<(UnifiedBook & { shelf: 'owned' | 'want-to-read' | 'read' })[]>([]);
   const [tbrMode, setTbrMode] = useState(false);
   const [discoverLang, setDiscoverLang] = useState<BookLanguage>("");
 
@@ -120,7 +122,7 @@ const Index = () => {
 
       {/* Mode Toggle */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }} className="mb-8">
-        <ModeToggle mode={mode} onModeChange={setMode} tbrCount={shelvedBooks.length} />
+        <ModeToggle mode={mode} onModeChange={setMode} tbrCount={ownedBooks.length} wishlistCount={wantToReadBooks.length + readBooks.length} />
       </motion.div>
 
       {mode === "discover" ? (
@@ -191,7 +193,7 @@ const Index = () => {
             </AnimatePresence>
           </div>
         </motion.div>
-      ) : (
+      ) : mode === "tbr" ? (
         <motion.div
           key="tbr"
           initial={{ opacity: 0 }}
@@ -199,18 +201,23 @@ const Index = () => {
           exit={{ opacity: 0 }}
           className="w-full max-w-lg space-y-6"
         >
-          {/* Search to add (goes to owned) */}
           <BookSearch onAddBook={addToOwned} existingIds={shelvedIds} />
-
-          {/* Manual entry (goes to owned) */}
           <ManualEntry onAdd={addToOwned} />
-
-          {/* Shelved books */}
-          <TBRList
-            ownedBooks={ownedBooks}
+          <TBRList books={ownedBooks} onRemove={removeFromShelves} />
+        </motion.div>
+      ) : (
+        <motion.div
+          key="wishlist"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="w-full max-w-lg space-y-6"
+        >
+          <Wishlist
             wantToReadBooks={wantToReadBooks}
             readBooks={readBooks}
             onRemove={removeFromShelves}
+            onMarkAsRead={markAsRead}
           />
         </motion.div>
       )}
