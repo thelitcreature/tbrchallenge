@@ -455,18 +455,12 @@ const Index = () => {
         </motion.div> :
 
       <motion.div
-        key="wishlist"
+        key="challenges"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="w-full max-w-lg space-y-6">
-        
-          <Wishlist
-          wantToReadBooks={wantToReadBooks}
-          readBooks={readBooks}
-          onRemove={removeFromShelves}
-          onMarkAsRead={markAsRead} />
-        
+          <Challenges />
         </motion.div>
       }
     </div>);

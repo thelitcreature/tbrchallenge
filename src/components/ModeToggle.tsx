@@ -17,7 +17,7 @@ const TABS: { key: Mode; label: string }[] = [
 
 export function ModeToggle({ mode, onModeChange, tbrCount, wishlistCount }: ModeToggleProps) {
   const activeIndex = TABS.findIndex((t) => t.key === mode);
-  const count = (key: Mode) => key === 'tbr' ? tbrCount : key === 'wishlist' ? wishlistCount : 0;
+  const count = (key: Mode) => key === 'tbr' ? tbrCount : 0;
 
   return (
     <div className="relative inline-flex bg-secondary rounded-full p-1 min-w-[560px]">

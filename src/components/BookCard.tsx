@@ -127,22 +127,6 @@ export function BookCard({ book, onPullAgain, onDismiss, onMarkAsRead, onNotInte
           Choose again
         </motion.button>
 
-        {onAddToWantToRead && (
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => onAddToWantToRead(book)}
-            disabled={isInWantToRead}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-body font-medium transition-colors ${
-              isInWantToRead
-                ? 'bg-primary/10 text-primary cursor-default'
-                : 'bg-primary text-primary-foreground hover:bg-primary/90'
-            }`}
-          >
-            <Heart className={`w-4 h-4 ${isInWantToRead ? 'fill-current' : ''}`} />
-            {isInWantToRead ? 'Saved' : 'Want to Read'}
-          </motion.button>
-        )}
-
         {onMarkAsRead && (
           <motion.button
             whileTap={{ scale: 0.95 }}
