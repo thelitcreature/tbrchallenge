@@ -50,19 +50,25 @@ export function BookSearch({ onAddBook, existingIds }: BookSearchProps) {
   return (
     <div className="w-full max-w-md mx-auto space-y-4">
       {/* Search input */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Title, author, or ISBN…"
-          maxLength={200}
-          className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-card border border-border font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
-        />
-        {isLoading && (
-          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-muted-foreground" />
-        )}
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Title, author, or ISBN…"
+            maxLength={200}
+            className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-card border border-border font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/30"
+          />
+        </div>
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          disabled={isLoading || !query.trim()}
+          className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-body text-sm font-medium disabled:opacity-50 transition-opacity"
+        >
+          {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Search'}
+        </motion.button>
       </div>
 
       {/* Results */}
