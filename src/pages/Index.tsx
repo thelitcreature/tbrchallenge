@@ -418,6 +418,7 @@ const Index = () => {
         className="w-full max-w-lg space-y-6">
         
           <BookSearch onAddBook={addToOwned} existingIds={shelvedIds} />
+          <PhotoBookAdd onAddBook={addToOwned} existingIds={shelvedIds} />
           <ManualEntry onAdd={addToOwned} />
           <TBRList books={ownedBooks} onRemove={removeFromShelves} />
         </motion.div> :
