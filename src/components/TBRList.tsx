@@ -125,7 +125,7 @@ export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdat
               <Popover>
                 <PopoverTrigger asChild>
                   <button className="font-body text-[11px] text-muted-foreground hover:text-foreground transition-colors underline-offset-2 hover:underline">
-                    Added {format(new Date(book.dateAdded), 'MMM d, yyyy')}
+                    On TBR since {format(new Date(book.dateAdded), 'MMM d, yyyy')}
                   </button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
