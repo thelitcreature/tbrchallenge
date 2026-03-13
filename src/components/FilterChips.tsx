@@ -49,7 +49,7 @@ export function FilterChips<T extends string>({ label, options, selected, onTogg
           onClick={() => setExpanded(!expanded)}
           className="flex items-center gap-1 mx-auto text-xs font-body text-muted-foreground hover:text-foreground transition-colors"
         >
-          {expanded ? 'Show less' : `Show all (${options.length})`}
+          {expanded ? 'Show less' : 'Show all'}
           {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
         </button>
       )}
