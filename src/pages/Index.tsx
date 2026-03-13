@@ -150,28 +150,28 @@ const Index = () => {
             </label>
           )}
 
-          {/* Filters in columns */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
-            {!tbrMode && (
-              <div className="space-y-2">
-                <p className="text-sm font-body font-medium text-muted-foreground">Book Language</p>
-                <LanguageFilter
-                  selected={discoverLang}
-                  onChange={(l) => {
-                    setDiscoverLang(l);
-                    setRevealedBook(null);
-                  }}
-                />
-              </div>
-            )}
-            <FilterChips label="Genres" options={GENRES} selected={selectedGenres} onToggle={toggleGenre} />
-            <FilterChips
-              label="I'm in the mood for…"
-              options={MOODS}
-              selected={selectedMoods}
-              onToggle={toggleMood}
-            />
-          </div>
+          {/* Language filter */}
+          {!tbrMode && (
+            <div className="space-y-2 w-full">
+              <p className="text-sm font-body font-medium text-muted-foreground text-center">Book Language</p>
+              <LanguageFilter
+                selected={discoverLang}
+                onChange={(l) => {
+                  setDiscoverLang(l);
+                  setRevealedBook(null);
+                }}
+              />
+            </div>
+          )}
+
+          {/* Filters */}
+          <FilterChips label="Genres" options={GENRES} selected={selectedGenres} onToggle={toggleGenre} />
+          <FilterChips
+            label="I'm in the mood for something…"
+            options={MOODS}
+            selected={selectedMoods}
+            onToggle={toggleMood}
+          />
 
           {/* Main interaction */}
           <div className="py-8 flex flex-col items-center min-h-[280px] justify-center">
