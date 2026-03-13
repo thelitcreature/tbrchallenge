@@ -457,13 +457,12 @@ const Index = () => {
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden space-y-6"
               >
-                <BookSearch onAddBook={(book) => { addToOwned(book); setShowAddTools(false); }} existingIds={shelvedIds} />
-                <PhotoBookAdd onAddBook={(book) => { addToOwned(book); setShowAddTools(false); }} existingIds={shelvedIds} />
-                <ManualEntry onAdd={(book) => { addToOwned(book); setShowAddTools(false); }} />
+                <BookSearch onAddBook={addToOwned} existingIds={shelvedIds} />
+                <PhotoBookAdd onAddBook={addToOwned} existingIds={shelvedIds} />
+                <ManualEntry onAdd={addToOwned} />
               </motion.div>
             )}
           </AnimatePresence>
-          <TBRList books={ownedBooks} onRemove={removeFromShelves} onUpdateFormat={updateBookFormat} />
           <TBRList books={ownedBooks} onRemove={removeFromShelves} onUpdateFormat={updateBookFormat} />
         </motion.div> :
 
