@@ -57,7 +57,7 @@ export function PullLever({ onPull, isRevealing }: PullLeverProps) {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
       >
-        {isRevealing ? 'Finding your next read…' : 'Tap to discover'}
+        {isRevealing ? 'The pages are turning…' : 'Tap to meet your next obsession'}
       </motion.p>
     </motion.div>
   );
