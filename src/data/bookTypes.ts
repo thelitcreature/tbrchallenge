@@ -16,6 +16,23 @@ export interface GoogleBook {
 
 export type BookFormat = 'paperback' | 'hardback' | 'ebook' | 'audiobook';
 
+export const READING_REASONS = [
+  'Recommended by a friend',
+  'BookTok / social media',
+  'I love the author',
+  'Interesting topic',
+  'Mood / vibe',
+  'Bought it on impulse',
+  'Other',
+] as const;
+
+export type ReadingReason = (typeof READING_REASONS)[number];
+
+export interface ReasonForAdding {
+  reason: ReadingReason;
+  customText?: string;
+}
+
 export interface UnifiedBook {
   id: string;
   title: string;
