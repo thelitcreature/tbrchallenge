@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion';
 import { Globe } from 'lucide-react';
 
-export type BookLanguage = '' | 'cs' | 'sk';
+export type BookLanguage = 'en' | 'cs' | 'sk';
 
 const LANGUAGES: { code: BookLanguage; label: string; flag?: string }[] = [
-  { code: '', label: 'All' },
+  { code: 'en', label: 'English', flag: '🇬🇧' },
   { code: 'cs', label: 'Čeština', flag: '🇨🇿' },
   { code: 'sk', label: 'Slovenčina', flag: '🇸🇰' },
 ];
