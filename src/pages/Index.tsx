@@ -237,12 +237,6 @@ const Index = () => {
     }
   };
 
-  const addToWantToRead = (book: UnifiedBook) => {
-    if (!shelvedBooks.find((b) => b.id === book.id)) {
-      setShelvedBooks((prev) => [...prev, { ...book, shelf: "want-to-read" }]);
-    }
-  };
-
   const markAsRead = (book: UnifiedBook) => {
     setShelvedBooks((prev) => {
       const existing = prev.find((b) => b.id === book.id);
