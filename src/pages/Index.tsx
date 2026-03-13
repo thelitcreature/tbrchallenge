@@ -225,7 +225,7 @@ const Index = () => {
         if (pool.length > 0) {
           const weightedIndex = Math.floor(Math.pow(Math.random(), 1.5) * pool.length);
           const picked = pool[weightedIndex];
-          setRevealedBook(googleBookToUnified(picked));
+          revealNewBook(googleBookToUnified(picked));
         }
       } catch (err) {
         console.error("Discovery fetch error:", err);
