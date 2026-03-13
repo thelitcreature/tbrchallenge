@@ -275,7 +275,7 @@ export const books: Book[] = [
     title: 'Becoming',
     author: 'Michelle Obama',
     description: 'An intimate and powerful memoir by the former First Lady of the United States, reflecting on her roots and her time in the White House.',
-    genres: ['Memoir', 'Biography', 'Non-Fiction'],
+    genres: ['Non-Fiction'],
     moods: ['Empowering', 'Heartwarming', 'Reflective'],
     tags: ['Politics', 'Inspiration', 'Family'],
     year: 2018,
