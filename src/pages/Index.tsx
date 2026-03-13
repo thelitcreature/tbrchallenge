@@ -475,6 +475,18 @@ const Index = () => {
           <Challenges />
         </motion.div>
       }
+
+      {/* Reason picker modal */}
+      <AnimatePresence>
+        {pendingBook && (
+          <ReasonPicker
+            book={pendingBook}
+            onConfirm={confirmAddWithReason}
+            onSkip={skipReason}
+            onCancel={() => setPendingBook(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>);
 
 };
