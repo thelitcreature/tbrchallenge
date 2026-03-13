@@ -295,7 +295,7 @@ export const books: Book[] = [
     title: 'Milk and Honey',
     author: 'Rupi Kaur',
     description: 'A collection of poetry and prose about survival, the experience of violence, abuse, love, loss, and femininity.',
-    genres: ['Poetry'],
+    genres: ['Literary Fiction', 'Romance'],
     moods: ['Reflective', 'Intense', 'Empowering'],
     tags: ['Feminism', 'Healing', 'Modern Poetry'],
     year: 2014,
