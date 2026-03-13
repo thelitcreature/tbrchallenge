@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import type { UnifiedBook } from '@/data/bookTypes';
-import { X, BookOpen, BookOpenText } from 'lucide-react';
+import { X, BookOpen, BookOpenText, Book, Headphones, Tablet } from 'lucide-react';
 
 interface TBRListProps {
   books: UnifiedBook[];
