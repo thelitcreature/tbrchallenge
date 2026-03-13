@@ -104,7 +104,7 @@ export const books: Book[] = [
     title: 'The Silent Patient',
     author: 'Alex Michaelides',
     description: "A woman shoots her husband five times and then never speaks another word. A criminal psychotherapist becomes obsessed with uncovering her motive.",
-    genres: ['Thriller', 'Mystery'],
+    genres: ['Thriller', 'Crime'],
     moods: ['Dark', 'Suspenseful', 'Intense'],
     tags: ['Psychological', 'Plot Twist', 'Unreliable Narrator'],
     year: 2019,
