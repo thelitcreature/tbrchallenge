@@ -152,7 +152,9 @@ const Index = () => {
   
   useEffect(() => {
     if (filterChangeKey > 0) {
-      pullBookRef.current();
+      // Defer to ensure state updates (genre/mood) have been committed
+      const timer = setTimeout(() => pullBookRef.current(), 50);
+      return () => clearTimeout(timer);
     }
   }, [filterChangeKey]);
 
