@@ -303,11 +303,11 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center px-4 py-10 sm:py-16">
+    <div className="min-h-screen bg-background flex flex-col items-center px-3 sm:px-4 py-6 sm:py-16">
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8 flex-col flex items-center justify-center gap-[10px]">
-        <h1 className="font-display text-5xl sm:text-6xl font-bold text-foreground tracking-tight">Plot Twist</h1>
-        <p className="font-body text-sm text-muted-foreground mt-2 uppercase w-full" style={{ letterSpacing: '0.65em', paddingRight: '0.65em' }}>Let the book choose you</p>
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6 sm:mb-8 flex-col flex items-center justify-center gap-[10px]">
+        <h1 className="font-display text-4xl sm:text-6xl font-bold text-foreground tracking-tight">Plot Twist</h1>
+        <p className="font-body text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2 uppercase w-full" style={{ letterSpacing: '0.45em', paddingRight: '0.45em' }}>Let the book choose you</p>
       </motion.div>
 
       {/* Mode Toggle */}
