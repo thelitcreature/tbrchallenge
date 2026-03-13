@@ -234,7 +234,7 @@ const Index = () => {
             {showFilters ? "Hide filters" : "Add filters"}
             {(selectedGenres.length > 0 || selectedMoods.length > 0 || discoverLang) &&
           <span className="bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold">
-                {selectedGenres.length + selectedMoods.length + (discoverLang ? 1 : 0)}
+                {selectedGenres.length + selectedMoods.length + (discoverLang !== "en" ? 1 : 0)}
               </span>
           }
           </button>
