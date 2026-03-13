@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Plus, Loader2, Book, Headphones, Tablet, BookOpen } from 'lucide-react';
 import { searchGoogleBooks } from '@/lib/api/googleBooks';
 import { googleBookToUnified, type UnifiedBook, type GoogleBook, type BookFormat } from '@/data/bookTypes';
 
 const ALLOWED_LANGS = new Set(['en', 'cs', 'sk']);
+const PAGE_SIZE = 12;
 
 const FORMATS: { value: BookFormat; label: string; icon: React.ReactNode }[] = [
   { value: 'paperback', label: 'Paperback', icon: <BookOpen className="w-3 h-3" /> },
@@ -22,10 +23,16 @@ export function BookSearch({ onAddBook, existingIds }: BookSearchProps) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<GoogleBook[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [searched, setSearched] = useState(false);
   const [selectedFormats, setSelectedFormats] = useState<Record<string, BookFormat>>({});
+  const [totalItems, setTotalItems] = useState(0);
+  const [startIndex, setStartIndex] = useState(0);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const activeQueryRef = useRef('');
 
+  // Initial search on query change
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
@@ -33,19 +40,27 @@ export function BookSearch({ onAddBook, existingIds }: BookSearchProps) {
     if (!trimmed || trimmed.length < 3) {
       setResults([]);
       setSearched(false);
+      setTotalItems(0);
+      setStartIndex(0);
+      activeQueryRef.current = '';
       return;
     }
 
     debounceRef.current = setTimeout(async () => {
       setIsLoading(true);
       setSearched(true);
+      setStartIndex(0);
+      activeQueryRef.current = trimmed;
       try {
-        const { books } = await searchGoogleBooks(trimmed, undefined, 12);
+        const { books, totalItems: total } = await searchGoogleBooks(trimmed, undefined, PAGE_SIZE, 0);
         const filtered = books.filter(b => b.language && ALLOWED_LANGS.has(b.language));
         setResults(filtered);
+        setTotalItems(total);
+        setStartIndex(PAGE_SIZE);
       } catch (err) {
         console.error('Search error:', err);
         setResults([]);
+        setTotalItems(0);
       } finally {
         setIsLoading(false);
       }
@@ -53,6 +68,46 @@ export function BookSearch({ onAddBook, existingIds }: BookSearchProps) {
 
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [query]);
+
+  const hasMore = startIndex < totalItems && startIndex < 100;
+
+  const loadMore = useCallback(async () => {
+    if (isLoadingMore || !hasMore || !activeQueryRef.current) return;
+    setIsLoadingMore(true);
+    try {
+      const { books } = await searchGoogleBooks(activeQueryRef.current, undefined, PAGE_SIZE, startIndex);
+      const filtered = books.filter(b => b.language && ALLOWED_LANGS.has(b.language));
+      setResults(prev => {
+        const existingIds = new Set(prev.map(b => b.id));
+        const newBooks = filtered.filter(b => !existingIds.has(b.id));
+        return [...prev, ...newBooks];
+      });
+      setStartIndex(prev => prev + PAGE_SIZE);
+    } catch (err) {
+      console.error('Load more error:', err);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [isLoadingMore, hasMore, startIndex]);
+
+  // Infinite scroll observer
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
+          loadMore();
+        }
+      },
+      { root: scrollRef.current, threshold: 0.1 }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, isLoadingMore, loadMore]);
 
   const handleAdd = (book: GoogleBook) => {
     const unified = googleBookToUnified(book);
@@ -63,6 +118,8 @@ export function BookSearch({ onAddBook, existingIds }: BookSearchProps) {
     setResults([]);
     setSearched(false);
     setSelectedFormats({});
+    setTotalItems(0);
+    setStartIndex(0);
   };
 
   return (
@@ -92,7 +149,14 @@ export function BookSearch({ onAddBook, existingIds }: BookSearchProps) {
       {/* Results */}
       <AnimatePresence mode="wait">
         {results.length > 0 ? (
-          <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
+          <motion.div
+            key="results"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            ref={scrollRef}
+            className="space-y-2 max-h-[400px] overflow-y-auto pr-1"
+          >
             {results.map((book) => {
               const unifiedId = `google-${book.id}`;
               const isAdded = existingIds.has(unifiedId);
@@ -175,6 +239,16 @@ export function BookSearch({ onAddBook, existingIds }: BookSearchProps) {
                 </motion.div>
               );
             })}
+
+            {/* Infinite scroll sentinel */}
+            <div ref={sentinelRef} className="py-2 flex justify-center">
+              {isLoadingMore && (
+                <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+              )}
+              {!hasMore && results.length > PAGE_SIZE && (
+                <p className="font-body text-xs text-muted-foreground">No more results</p>
+              )}
+            </div>
           </motion.div>
         ) : searched && !isLoading ? (
           <motion.p key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center font-body text-sm text-muted-foreground py-6">
