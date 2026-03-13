@@ -1,19 +1,28 @@
 import { useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { books as allBooks, GENRES, MOODS, type Book, type Genre, type Mood } from '@/data/books';
+import { books as curatedBooks, GENRES, MOODS, type Genre, type Mood } from '@/data/books';
+import type { UnifiedBook } from '@/data/bookTypes';
 import { FilterChips } from '@/components/FilterChips';
 import { PullLever } from '@/components/PullLever';
 import { BookCard } from '@/components/BookCard';
 import { TBRList } from '@/components/TBRList';
 import { ModeToggle } from '@/components/ModeToggle';
+import { BookSearch } from '@/components/BookSearch';
+import { ManualEntry } from '@/components/ManualEntry';
+
+// Convert curated books to UnifiedBook format
+const curatedUnified: UnifiedBook[] = curatedBooks.map((b) => ({
+  ...b,
+  source: 'curated' as const,
+}));
 
 const Index = () => {
   const [mode, setMode] = useState<'discover' | 'tbr'>('discover');
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
   const [selectedMoods, setSelectedMoods] = useState<Mood[]>([]);
-  const [revealedBook, setRevealedBook] = useState<Book | null>(null);
+  const [revealedBook, setRevealedBook] = useState<UnifiedBook | null>(null);
   const [isRevealing, setIsRevealing] = useState(false);
-  const [tbrBooks, setTbrBooks] = useState<Book[]>([]);
+  const [tbrBooks, setTbrBooks] = useState<UnifiedBook[]>([]);
   const [tbrMode, setTbrMode] = useState(false);
 
   const toggleGenre = (g: Genre) =>
@@ -23,7 +32,7 @@ const Index = () => {
     setSelectedMoods((prev) => (prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]));
 
   const getFilteredBooks = useCallback(() => {
-    const source = tbrMode ? tbrBooks : allBooks;
+    const source = tbrMode ? tbrBooks : curatedUnified;
     return source.filter((book) => {
       const genreMatch = selectedGenres.length === 0 || book.genres.some((g) => selectedGenres.includes(g));
       const moodMatch = selectedMoods.length === 0 || book.moods.some((m) => selectedMoods.includes(m));
@@ -43,7 +52,7 @@ const Index = () => {
     }, 600);
   };
 
-  const addToTBR = (book: Book) => {
+  const addToTBR = (book: UnifiedBook) => {
     if (!tbrBooks.find((b) => b.id === book.id)) {
       setTbrBooks((prev) => [...prev, book]);
     }
@@ -52,6 +61,8 @@ const Index = () => {
   const removeFromTBR = (id: string) => {
     setTbrBooks((prev) => prev.filter((b) => b.id !== id));
   };
+
+  const tbrIds = new Set(tbrBooks.map((b) => b.id));
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center px-4 py-10 sm:py-16">
@@ -113,7 +124,7 @@ const Index = () => {
                   book={revealedBook}
                   onPullAgain={pullBook}
                   onAddToTBR={addToTBR}
-                  isInTBR={tbrBooks.some((b) => b.id === revealedBook.id)}
+                  isInTBR={tbrIds.has(revealedBook.id)}
                 />
               ) : (
                 <motion.div key="lever" exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.2 }}>
@@ -129,8 +140,15 @@ const Index = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="w-full max-w-lg"
+          className="w-full max-w-lg space-y-6"
         >
+          {/* Search to add */}
+          <BookSearch onAddBook={addToTBR} existingIds={tbrIds} />
+
+          {/* Manual entry */}
+          <ManualEntry onAdd={addToTBR} />
+
+          {/* TBR list */}
           <TBRList books={tbrBooks} onRemove={removeFromTBR} />
         </motion.div>
       )}
