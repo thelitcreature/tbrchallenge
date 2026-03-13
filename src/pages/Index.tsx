@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
+import type { BookFormat } from "@/data/bookTypes";
 import { SlidersHorizontal, ChevronUp, ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { books as curatedBooks, GENRES, MOODS, type Genre, type Mood } from "@/data/books";
@@ -255,6 +256,10 @@ const Index = () => {
     setShelvedBooks((prev) => prev.filter((b) => b.id !== id));
   };
 
+  const updateBookFormat = (id: string, format: BookFormat | undefined) => {
+    setShelvedBooks((prev) => prev.map((b) => b.id === id ? { ...b, format } : b));
+  };
+
   const dismissBook = (book: UnifiedBook) => {
     setDismissedIds((prev) => {
       const next = new Set(prev);
@@ -425,7 +430,7 @@ const Index = () => {
           <BookSearch onAddBook={addToOwned} existingIds={shelvedIds} />
           <PhotoBookAdd onAddBook={addToOwned} existingIds={shelvedIds} />
           <ManualEntry onAdd={addToOwned} />
-          <TBRList books={ownedBooks} onRemove={removeFromShelves} />
+          <TBRList books={ownedBooks} onRemove={removeFromShelves} onUpdateFormat={updateBookFormat} />
         </motion.div> :
 
       <motion.div
