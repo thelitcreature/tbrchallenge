@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { SlidersHorizontal, ChevronUp } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { books as curatedBooks, GENRES, MOODS, type Genre, type Mood } from "@/data/books";
 import type { UnifiedBook } from "@/data/bookTypes";
