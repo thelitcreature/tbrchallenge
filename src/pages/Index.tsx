@@ -187,7 +187,7 @@ const Index = () => {
         try {
           const { books } = await searchGoogleBooks(
             "subject:fiction popular novels bestseller",
-            discoverLang,
+            discoverLangs[0] || "en",
             40,
             Math.floor(Math.random() * 10)
           );
