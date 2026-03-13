@@ -325,7 +325,7 @@ export const books: Book[] = [
     title: 'Thinking, Fast and Slow',
     author: 'Daniel Kahneman',
     description: 'Nobel laureate Daniel Kahneman reveals the two systems that drive the way we think—and the biases that shape our decisions.',
-    genres: ['Non-Fiction', 'Self-Help'],
+    genres: ['Non-Fiction'],
     moods: ['Thought-Provoking', 'Calming'],
     tags: ['Psychology', 'Decision Making', 'Nobel Prize'],
     year: 2011,
