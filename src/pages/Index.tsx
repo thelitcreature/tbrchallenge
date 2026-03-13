@@ -156,6 +156,7 @@ const Index = () => {
         const NON_FICTION_CATS = ["periodicals", "education", "history", "science", "business", "reference", "law", "mathematics", "technology", "medical", "computers"];
         const TITLE_BLACKLIST = ["best american", "anthology", "collected stories", "selected stories", "complete stories", "complete works", "collected poems", "encyclopedia", "handbook", "guide to", "introduction to", "textbook", "workbook", "study guide", "short stories", "year's best", "best of the year"];
         const filtered = (isNonFiction ? books : books.filter((b) => {
+          if (dismissedIds.has(b.id)) return false;
           const cats = (b.categories || []).join(" ").toLowerCase();
           const titleLower = b.title.toLowerCase();
           const isBlacklisted = TITLE_BLACKLIST.some((bl) => titleLower.includes(bl));
