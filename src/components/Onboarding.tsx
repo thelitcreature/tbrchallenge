@@ -47,18 +47,25 @@ export function Onboarding({ onComplete }: OnboardingProps) {
 
   const [direction, setDirection] = useState(1);
 
+  const goNext = () => {
+    setDirection(1);
+    if (isLast) {
+      localStorage.setItem('plottwist-onboarded', '1');
+      onComplete();
+    } else {
+      setStep((s) => s + 1);
+    }
+  };
+
   const handleDragEnd = (_: any, info: { offset: { x: number }; velocity: { x: number } }) => {
     const swipe = Math.abs(info.offset.x) * info.velocity.x;
     if (info.offset.x < -50 || swipe < -500) {
-      next();
+      goNext();
     } else if ((info.offset.x > 50 || swipe > 500) && step > 0) {
       setDirection(-1);
       setStep((s) => s - 1);
     }
   };
-
-  const originalNext = next;
-  const wrappedNext = () => { setDirection(1); originalNext(); };
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 py-12 overflow-hidden">
