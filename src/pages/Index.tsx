@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import type { BookFormat, ReasonForAdding, UnifiedBook } from "@/data/bookTypes";
-import { SlidersHorizontal, ChevronUp, ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { SlidersHorizontal, ChevronUp, ChevronLeft, ChevronRight, Plus, LogOut } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { books as curatedBooks, GENRES, MOODS, type Genre, type Mood } from "@/data/books";
 import type { TBRBook } from "@/components/TBRList";
@@ -21,6 +21,8 @@ import { PhotoBookAdd } from "@/components/PhotoBookAdd";
 import { Onboarding } from "@/components/Onboarding";
 import { searchGoogleBooks } from "@/lib/api/googleBooks";
 import { googleBookToUnified } from "@/data/bookTypes";
+import { useAuth } from "@/contexts/AuthContext";
+import { useBookSync } from "@/hooks/useBookSync";
 
 // Convert curated books to UnifiedBook format
 const curatedUnified: UnifiedBook[] = curatedBooks.map((b) => ({
@@ -29,6 +31,7 @@ const curatedUnified: UnifiedBook[] = curatedBooks.map((b) => ({
 }));
 
 const Index = () => {
+  const { user, signOut } = useAuth();
   const [hasOnboarded, setHasOnboarded] = useState(() => localStorage.getItem('plottwist-onboarded') === '1');
   const [showAddTools, setShowAddTools] = useState(false);
   const [mode, setMode] = useState<Mode>("tbr");
@@ -42,19 +45,25 @@ const Index = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [hasPulled, setHasPulled] = useState(false);
   const [filterChangeKey, setFilterChangeKey] = useState(0);
-  const [dismissedIds, setDismissedIds] = useState<Set<string>>(() => {
-    try {
-      const stored = localStorage.getItem("plottwist-dismissed");
-      return stored ? new Set(JSON.parse(stored)) : new Set();
-    } catch { return new Set(); }
-  });
+  const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
   const [bookHistory, setBookHistory] = useState<UnifiedBook[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [pendingBook, setPendingBook] = useState<UnifiedBook | null>(null);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   const [aiPool, setAiPool] = useState<UnifiedBook[]>([]);
   const [aiPoolIndex, setAiPoolIndex] = useState(0);
   const prefetchingRef = useRef(false);
+
+  // Database sync
+  const { addBook, removeBook, updateBook, dismissBook: dismissBookDb } = useBookSync({
+    userId: user?.id,
+    onBooksLoaded: (books) => {
+      setShelvedBooks(books);
+      setDataLoaded(true);
+    },
+    onDismissedLoaded: (ids) => setDismissedIds(ids),
+  });
 
   // Pre-fetch next batch when pool is running low
   const prefetchIfNeeded = useCallback(async (currentPool: UnifiedBook[], currentIndex: number) => {
@@ -64,17 +73,10 @@ const Index = () => {
       try {
         const shownIds = bookHistory.map((b) => b.title);
         const { books: aiBooks } = await getAIRecommendations(
-          selectedGenres,
-          selectedMoods,
-          discoverLangs,
-          shownIds
+          selectedGenres, selectedMoods, discoverLangs, shownIds
         );
-        const unified = aiBooks
-          .map(aiBookToUnified)
-          .filter((b) => !dismissedIds.has(b.id));
-        if (unified.length > 0) {
-          setAiPool((prev) => [...prev, ...unified]);
-        }
+        const unified = aiBooks.map(aiBookToUnified).filter((b) => !dismissedIds.has(b.id));
+        if (unified.length > 0) setAiPool((prev) => [...prev, ...unified]);
       } catch (err) {
         console.error("Prefetch error:", err);
       } finally {
@@ -84,7 +86,6 @@ const Index = () => {
   }, [bookHistory, selectedGenres, selectedMoods, discoverLangs, dismissedIds]);
 
   const ownedBooks = shelvedBooks.filter((b) => !b.isRead);
-  
   const readBooks = shelvedBooks.filter((b) => b.isRead);
 
   const revealNewBook = (book: UnifiedBook) => {
@@ -146,43 +147,28 @@ const Index = () => {
       setIsRevealing(true);
       setRevealedBook(null);
       try {
-        // Try to serve from existing AI pool first
         const remainingPool = aiPool.filter((b) => !dismissedIds.has(b.id));
         if (remainingPool.length > aiPoolIndex && aiPoolIndex < remainingPool.length) {
           const picked = remainingPool[aiPoolIndex];
           setAiPoolIndex((prev) => prev + 1);
           revealNewBook(picked);
           setIsRevealing(false);
-          // Trigger background prefetch if pool is running low
           prefetchIfNeeded(remainingPool, aiPoolIndex + 1);
           return;
         }
 
-        // Fetch new AI recommendations
         const shownIds = bookHistory.map((b) => b.title);
         const { books: aiBooks } = await getAIRecommendations(
-          selectedGenres,
-          selectedMoods,
-          discoverLangs,
-          shownIds
+          selectedGenres, selectedMoods, discoverLangs, shownIds
         );
-
-        const unified = aiBooks
-          .map(aiBookToUnified)
-          .filter((b) => !dismissedIds.has(b.id));
+        const unified = aiBooks.map(aiBookToUnified).filter((b) => !dismissedIds.has(b.id));
 
         if (unified.length > 0) {
           setAiPool(unified);
           setAiPoolIndex(1);
           revealNewBook(unified[0]);
         } else {
-          // Fallback to Google Books if AI returns nothing
-          const { books } = await searchGoogleBooks(
-            "subject:fiction bestseller 2024",
-            discoverLangs[0] || "en",
-            40,
-            0
-          );
+          const { books } = await searchGoogleBooks("subject:fiction bestseller 2024", discoverLangs[0] || "en", 40, 0);
           if (books.length > 0) {
             const picked = books[Math.floor(Math.random() * books.length)];
             revealNewBook(googleBookToUnified(picked));
@@ -190,14 +176,8 @@ const Index = () => {
         }
       } catch (err) {
         console.error("Discovery fetch error:", err);
-        // Fallback to Google Books on AI failure
         try {
-          const { books } = await searchGoogleBooks(
-            "subject:fiction popular novels bestseller",
-            discoverLangs[0] || "en",
-            40,
-            Math.floor(Math.random() * 10)
-          );
+          const { books } = await searchGoogleBooks("subject:fiction popular novels bestseller", discoverLangs[0] || "en", 40, Math.floor(Math.random() * 10));
           const filtered = books.filter((b) => !dismissedIds.has(`google-${b.id}`) && b.author !== "Unknown Author" && (b.description?.length || 0) > 20);
           if (filtered.length > 0) {
             const picked = filtered[Math.floor(Math.random() * filtered.length)];
@@ -223,13 +203,11 @@ const Index = () => {
     }, 600);
   };
 
-  // Auto-pull when filters change after the user has already pulled
   const pullBookRef = useRef(pullBook);
   pullBookRef.current = pullBook;
-  
+
   useEffect(() => {
     if (filterChangeKey > 0) {
-      // Defer to ensure state updates (genre/mood) have been committed
       const timer = setTimeout(() => pullBookRef.current(), 50);
       return () => clearTimeout(timer);
     }
@@ -237,18 +215,21 @@ const Index = () => {
 
   const addToOwned = (book: UnifiedBook) => {
     if (!shelvedBooks.find((b) => b.id === book.id)) {
-      // Queue the book and show the reason picker
       setPendingBook(book);
     }
   };
 
   const confirmAddWithReason = (book: UnifiedBook, reason: ReasonForAdding) => {
-    setShelvedBooks((prev) => [...prev, { ...book, reasonForAdding: reason, dateAdded: new Date().toISOString(), isRead: false }]);
+    const tbrBook: TBRBook = { ...book, reasonForAdding: reason, dateAdded: new Date().toISOString(), isRead: false };
+    setShelvedBooks((prev) => [...prev, tbrBook]);
+    addBook(tbrBook);
     setPendingBook(null);
   };
 
   const skipReason = (book: UnifiedBook) => {
-    setShelvedBooks((prev) => [...prev, { ...book, dateAdded: new Date().toISOString(), isRead: false }]);
+    const tbrBook: TBRBook = { ...book, dateAdded: new Date().toISOString(), isRead: false };
+    setShelvedBooks((prev) => [...prev, tbrBook]);
+    addBook(tbrBook);
     setPendingBook(null);
   };
 
@@ -260,37 +241,40 @@ const Index = () => {
       }
       return [...prev, { ...book, dateAdded: new Date().toISOString(), isRead: true }];
     });
+    updateBook(book.id, { is_read: true });
   };
 
   const markAsReadById = (id: string) => {
     setShelvedBooks((prev) => prev.map((b) => b.id === id ? { ...b, isRead: true } : b));
+    updateBook(id, { is_read: true });
   };
 
   const updateDateAdded = (id: string, date: string) => {
     setShelvedBooks((prev) => prev.map((b) => b.id === id ? { ...b, dateAdded: date } : b));
+    updateBook(id, { date_added: date });
   };
 
   const removeFromShelves = (id: string) => {
     setShelvedBooks((prev) => prev.filter((b) => b.id !== id));
+    removeBook(id);
   };
 
   const updateBookFormat = (id: string, format: BookFormat | undefined) => {
     setShelvedBooks((prev) => prev.map((b) => b.id === id ? { ...b, format } : b));
+    updateBook(id, { format: format || null });
   };
 
-  const dismissBook = (book: UnifiedBook) => {
+  const handleDismissBook = (book: UnifiedBook) => {
     setDismissedIds((prev) => {
       const next = new Set(prev);
       next.add(book.id);
-      localStorage.setItem("plottwist-dismissed", JSON.stringify([...next]));
       return next;
     });
-    // Auto-pull next book
+    dismissBookDb(book.id);
     pullBook();
   };
 
   const shelvedIds = new Set(shelvedBooks.map((b) => b.id));
-  
   const readIds = new Set(readBooks.map((b) => b.id));
 
   if (!hasOnboarded) {
@@ -305,7 +289,14 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center px-3 sm:px-4 py-6 sm:py-16">
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6 sm:mb-8 flex-col flex items-center justify-center gap-[10px]">
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6 sm:mb-8 flex-col flex items-center justify-center gap-[10px] relative w-full max-w-lg">
+        <button
+          onClick={signOut}
+          className="absolute right-0 top-0 p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+          title="Sign out"
+        >
+          <LogOut className="w-4 h-4" />
+        </button>
         <h1 className="font-display text-4xl sm:text-6xl font-bold text-foreground tracking-tight">Plot Twist</h1>
         <p className="font-body text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2 uppercase w-full" style={{ letterSpacing: '0.45em', paddingRight: '0.45em' }}>Let the book choose you</p>
       </motion.div>
@@ -323,7 +314,6 @@ const Index = () => {
         exit={{ opacity: 0 }}
         className="flex flex-col items-center w-full max-w-lg space-y-6 relative z-50">
         
-          {/* TBR-only toggle */}
           {ownedBooks.length > 0 &&
         <label className="flex items-center gap-2 font-body text-sm text-muted-foreground cursor-pointer select-none">
               <input
@@ -334,16 +324,13 @@ const Index = () => {
               setRevealedBook(null);
             }}
             className="w-4 h-4 accent-primary rounded" />
-          
               Pick from My Books only
             </label>
         }
 
-          {/* Filter toggle */}
           <button
           onClick={() => setShowFilters(!showFilters)}
           className="flex items-center gap-2 font-body text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-          
             {showFilters ? <ChevronUp className="w-4 h-4" /> : <SlidersHorizontal className="w-4 h-4" />}
             {showFilters ? "Hide filters" : "Add filters"}
             {(selectedGenres.length > 0 || selectedMoods.length > 0 || discoverLangs.length > 1 || !discoverLangs.includes("en")) &&
@@ -360,8 +347,6 @@ const Index = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden w-full space-y-6">
-            
-                {/* Language filter */}
                 {!tbrMode &&
             <div className="space-y-2 w-full">
                     <p className="text-sm font-body font-medium text-muted-foreground text-center">Book Language</p>
@@ -373,29 +358,24 @@ const Index = () => {
                   if (hasPulled) setFilterChangeKey((k) => k + 1);
                   else setRevealedBook(null);
                 }} />
-              
                   </div>
             }
-
                 <FilterChips label="I want to read..." options={GENRES} selected={selectedGenres} onToggle={toggleGenre} />
                 <FilterChips
               label="I'm in the mood for something…"
               options={MOODS}
               selected={selectedMoods}
               onToggle={toggleMood} />
-            
               </motion.div>
           }
           </AnimatePresence>
 
-          {/* Main interaction */}
           <div
             className="py-8 flex items-center min-h-[280px] justify-center w-full gap-2"
             onClick={(e) => {
               if (revealedBook && e.target === e.currentTarget) setRevealedBook(null);
             }}
           >
-            {/* Left arrow - go back */}
             {revealedBook && !isRevealing && (
               <motion.button
                 initial={{ opacity: 0 }}
@@ -419,9 +399,8 @@ const Index = () => {
                 onPullAgain={pullBook}
                 onDismiss={() => setRevealedBook(null)}
                 onMarkAsRead={markAsRead}
-                onNotInterested={dismissBook}
+                onNotInterested={handleDismissBook}
                 isRead={readIds.has(revealedBook.id)} /> :
-
               <motion.div key="lever" exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.2 }}>
                     <PullLever onPull={pullBook} isRevealing={isRevealing} />
                   </motion.div>
@@ -429,7 +408,6 @@ const Index = () => {
               </AnimatePresence>
             </div>
 
-            {/* Right arrow - next / pull new */}
             {revealedBook && !isRevealing && (
               <motion.button
                 initial={{ opacity: 0 }}
@@ -451,7 +429,6 @@ const Index = () => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="w-full max-w-lg space-y-6">
-        
           <div className="flex justify-center">
             <motion.button
               whileTap={{ scale: 0.95 }}
@@ -493,7 +470,6 @@ const Index = () => {
         </motion.div>
       }
 
-      {/* Reason picker modal */}
       <AnimatePresence>
         {pendingBook && (
           <ReasonPicker
@@ -505,7 +481,6 @@ const Index = () => {
         )}
       </AnimatePresence>
     </div>);
-
 };
 
 export default Index;
