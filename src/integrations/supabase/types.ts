@@ -14,7 +14,126 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      dismissed_books: {
+        Row: {
+          book_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          book_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          book_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tbr_books: {
+        Row: {
+          author: string
+          book_id: string
+          created_at: string
+          date_added: string
+          description: string | null
+          format: string | null
+          genres: string[] | null
+          id: string
+          is_read: boolean
+          isbn: string | null
+          language: string | null
+          moods: string[] | null
+          published_date: string | null
+          publisher: string | null
+          reason_for_adding: Json | null
+          source: string | null
+          tags: string[] | null
+          thumbnail: string | null
+          title: string
+          user_id: string
+          why_trending: string | null
+          year: number | null
+        }
+        Insert: {
+          author: string
+          book_id: string
+          created_at?: string
+          date_added?: string
+          description?: string | null
+          format?: string | null
+          genres?: string[] | null
+          id?: string
+          is_read?: boolean
+          isbn?: string | null
+          language?: string | null
+          moods?: string[] | null
+          published_date?: string | null
+          publisher?: string | null
+          reason_for_adding?: Json | null
+          source?: string | null
+          tags?: string[] | null
+          thumbnail?: string | null
+          title: string
+          user_id: string
+          why_trending?: string | null
+          year?: number | null
+        }
+        Update: {
+          author?: string
+          book_id?: string
+          created_at?: string
+          date_added?: string
+          description?: string | null
+          format?: string | null
+          genres?: string[] | null
+          id?: string
+          is_read?: boolean
+          isbn?: string | null
+          language?: string | null
+          moods?: string[] | null
+          published_date?: string | null
+          publisher?: string | null
+          reason_for_adding?: Json | null
+          source?: string | null
+          tags?: string[] | null
+          thumbnail?: string | null
+          title?: string
+          user_id?: string
+          why_trending?: string | null
+          year?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
