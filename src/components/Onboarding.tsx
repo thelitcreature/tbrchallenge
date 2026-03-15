@@ -65,10 +65,9 @@ export function Onboarding({ onComplete }: OnboardingProps) {
       <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={step}
-          custom={direction}
-          initial={{ opacity: 0, x: (d: number) => (typeof d === 'number' ? d : 1) * 60 }}
+          initial={{ opacity: 0, x: direction * 60 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: (d: number) => (typeof d === 'number' ? d : 1) * -60 }}
+          exit={{ opacity: 0, x: direction * -60 }}
           transition={{ duration: 0.35, ease: 'easeInOut' }}
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
