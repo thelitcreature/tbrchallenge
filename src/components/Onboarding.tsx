@@ -45,16 +45,36 @@ export function Onboarding({ onComplete }: OnboardingProps) {
     onComplete();
   };
 
+  const [direction, setDirection] = useState(1);
+
+  const handleDragEnd = (_: any, info: { offset: { x: number }; velocity: { x: number } }) => {
+    const swipe = Math.abs(info.offset.x) * info.velocity.x;
+    if (info.offset.x < -50 || swipe < -500) {
+      next();
+    } else if ((info.offset.x > 50 || swipe > 500) && step > 0) {
+      setDirection(-1);
+      setStep((s) => s - 1);
+    }
+  };
+
+  const originalNext = next;
+  const wrappedNext = () => { setDirection(1); originalNext(); };
+
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 py-12">
-      <AnimatePresence mode="wait">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 py-12 overflow-hidden">
+      <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={step}
-          initial={{ opacity: 0, x: 60 }}
+          custom={direction}
+          initial={{ opacity: 0, x: (d: number) => (typeof d === 'number' ? d : 1) * 60 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -60 }}
+          exit={{ opacity: 0, x: (d: number) => (typeof d === 'number' ? d : 1) * -60 }}
           transition={{ duration: 0.35, ease: 'easeInOut' }}
-          className="flex flex-col items-center text-center max-w-sm w-full"
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.3}
+          onDragEnd={handleDragEnd}
+          className="flex flex-col items-center text-center max-w-sm w-full cursor-grab active:cursor-grabbing touch-pan-y"
         >
           {/* Illustration */}
           <motion.img
