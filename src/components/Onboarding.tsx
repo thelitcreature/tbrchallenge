@@ -123,7 +123,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
         {/* CTA */}
         <motion.button
           whileTap={{ scale: 0.96 }}
-          onClick={next}
+          onClick={goNext}
           className="w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-body text-base font-semibold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-colors"
         >
           {isLast ? 'Start my TBR' : 'Next'}
