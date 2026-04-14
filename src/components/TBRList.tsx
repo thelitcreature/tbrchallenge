@@ -39,7 +39,7 @@ interface TBRListProps {
   onToggleNightstand?: (id: string) => void;
 }
 
-export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdateDateAdded }: TBRListProps) {
+export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdateDateAdded, nightstandIds, onToggleNightstand }: TBRListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortKey>('dateAdded');
   const [sortAsc, setSortAsc] = useState(false);
