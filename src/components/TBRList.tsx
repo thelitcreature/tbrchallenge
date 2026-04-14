@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import type { UnifiedBook, BookFormat } from '@/data/bookTypes';
 import {
   X, BookOpen, BookOpenText, Book, Headphones, Tablet,
-  ChevronDown, Check, ArrowUpDown, CalendarIcon, BookMarked
+  ChevronDown, Check, ArrowUpDown, CalendarIcon, BookMarked, Bookmark
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
