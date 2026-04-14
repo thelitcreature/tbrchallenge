@@ -335,6 +335,7 @@ interface BookRowProps {
 function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, onUpdateStatus, onUpdateReason, nightstandIds, onToggleNightstand, customLists, onAddToList, onRemoveFromList, activeTab, onOpenDetail }: BookRowProps) {
   const isNightstand = nightstandIds?.has(book.id) ?? false;
   const status = getBookStatus(book);
+  const [reasonPopoverOpen, setReasonPopoverOpen] = useState(false);
 
   const reasonText = useMemo(() => {
     if (!book.reasonForAdding) return null;
@@ -377,11 +378,37 @@ function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, onUpdateStatus,
           <p className="font-body text-xs text-muted-foreground/70 leading-relaxed">
             Added {format(new Date(book.dateAdded), 'MMM d, yyyy')}
           </p>
-          {reasonText && (
-            <p className="font-body text-xs text-muted-foreground leading-relaxed truncate">
-              Because: {reasonText}
-            </p>
-          )}
+          <Popover open={reasonPopoverOpen} onOpenChange={setReasonPopoverOpen}>
+            <PopoverTrigger asChild>
+              <button
+                className="font-body text-xs text-muted-foreground leading-relaxed truncate hover:text-foreground transition-colors text-left"
+                onClick={(e) => { e.stopPropagation(); }}
+              >
+                {reasonText ? `Why this book: ${reasonText}` : <span className="italic text-muted-foreground/50">Why this book: tap to add</span>}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-56 p-1.5" align="start" onClick={(e) => e.stopPropagation()}>
+              <div className="space-y-0.5">
+                {READING_REASONS.map(r => (
+                  <button
+                    key={r}
+                    onClick={() => {
+                      onUpdateReason?.(book.id, { reason: r });
+                      setReasonPopoverOpen(false);
+                    }}
+                    className={cn(
+                      "w-full text-left px-3 py-1.5 rounded-md text-xs font-body transition-colors",
+                      book.reasonForAdding?.reason === r
+                        ? "bg-primary/10 text-primary font-medium"
+                        : "text-foreground hover:bg-secondary"
+                    )}
+                  >
+                    {r}
+                  </button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
           {/* Status + tags row */}
           <div className="flex flex-wrap gap-1 mt-1">
             {status === 'currently_reading' && (
