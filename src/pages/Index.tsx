@@ -3,7 +3,7 @@ import type { BookFormat, ReasonForAdding, UnifiedBook } from "@/data/bookTypes"
 import { SlidersHorizontal, ChevronUp, ChevronLeft, ChevronRight, Plus, LogOut } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { books as curatedBooks, GENRES, MOODS, type Genre, type Mood } from "@/data/books";
-import type { TBRBook } from "@/components/TBRList";
+import type { TBRBook, BookStatus } from "@/components/TBRList";
 import { getAIRecommendations } from "@/lib/api/recommendations";
 import { aiBookToUnified } from "@/data/bookTypes";
 import { FilterChips } from "@/components/FilterChips";
@@ -252,8 +252,13 @@ const Index = () => {
   };
 
   const markAsReadById = (id: string) => {
-    setShelvedBooks((prev) => prev.map((b) => b.id === id ? { ...b, isRead: true } : b));
-    updateBook(id, { is_read: true });
+    setShelvedBooks((prev) => prev.map((b) => b.id === id ? { ...b, isRead: true, status: 'read' as BookStatus } : b));
+    updateBook(id, { is_read: true, status: 'read' });
+  };
+
+  const updateBookStatus = (id: string, status: BookStatus) => {
+    setShelvedBooks((prev) => prev.map((b) => b.id === id ? { ...b, status, isRead: status === 'read' } : b));
+    updateBook(id, { status, is_read: status === 'read' });
   };
 
   const updateDateAdded = (id: string, date: string) => {
@@ -500,7 +505,7 @@ const Index = () => {
               </motion.div>
             )}
           </AnimatePresence>
-          <TBRList books={shelvedBooks} onRemove={removeFromShelves} onUpdateFormat={updateBookFormat} onMarkAsRead={markAsReadById} onUpdateDateAdded={updateDateAdded} onUpdateGenres={updateBookGenres} onUpdateMoods={updateBookMoods} nightstandIds={nightstandIds} onToggleNightstand={toggleNightstand} />
+          <TBRList books={shelvedBooks} onRemove={removeFromShelves} onUpdateFormat={updateBookFormat} onMarkAsRead={markAsReadById} onUpdateStatus={updateBookStatus} onUpdateDateAdded={updateDateAdded} onUpdateGenres={updateBookGenres} onUpdateMoods={updateBookMoods} nightstandIds={nightstandIds} onToggleNightstand={toggleNightstand} />
         </motion.div> :
 
       <motion.div

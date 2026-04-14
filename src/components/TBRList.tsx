@@ -5,7 +5,8 @@ import type { UnifiedBook, BookFormat } from '@/data/bookTypes';
 import type { Genre, Mood } from '@/data/books';
 import {
   BookOpenText, Book, BookOpen, Headphones, Tablet,
-  MoreHorizontal, Check, Bookmark, Trash2, BookMarked, ArrowUpDown
+  MoreHorizontal, Check, Bookmark, Trash2, BookMarked, ArrowUpDown,
+  PlayCircle, Ban
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -34,9 +35,17 @@ const FORMATS: { value: BookFormat; label: string; icon: React.ReactNode }[] = [
 
 type SortKey = 'dateAdded' | 'title';
 
+export type BookStatus = 'tbr' | 'currently_reading' | 'read' | 'dnf';
+
 export interface TBRBook extends UnifiedBook {
   dateAdded: string;
   isRead: boolean;
+  status?: BookStatus;
+}
+
+export function getBookStatus(book: TBRBook): BookStatus {
+  if (book.status) return book.status;
+  return book.isRead ? 'read' : 'tbr';
 }
 
 interface CustomList {
@@ -45,13 +54,14 @@ interface CustomList {
   bookIds: string[];
 }
 
-type TabValue = 'all' | 'nightstand' | 'read' | string;
+type TabValue = 'all' | 'nightstand' | 'currently_reading' | 'dnf' | 'read' | string;
 
 interface TBRListProps {
   books: TBRBook[];
   onRemove: (id: string) => void;
   onUpdateFormat?: (id: string, format: BookFormat | undefined) => void;
   onMarkAsRead?: (id: string) => void;
+  onUpdateStatus?: (id: string, status: BookStatus) => void;
   onUpdateDateAdded?: (id: string, date: string) => void;
   onUpdateGenres?: (id: string, genres: Genre[]) => void;
   onUpdateMoods?: (id: string, moods: Mood[]) => void;
@@ -70,7 +80,7 @@ function saveCustomLists(lists: CustomList[]) {
   localStorage.setItem('pt-custom-lists', JSON.stringify(lists));
 }
 
-export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdateDateAdded, onUpdateGenres, onUpdateMoods, nightstandIds, onToggleNightstand }: TBRListProps) {
+export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdateStatus, onUpdateDateAdded, onUpdateGenres, onUpdateMoods, nightstandIds, onToggleNightstand }: TBRListProps) {
   const [sortBy, setSortBy] = useState<SortKey>('dateAdded');
   const [sortAsc, setSortAsc] = useState(false);
   const [activeTab, setActiveTab] = useState<TabValue>('all');
@@ -81,20 +91,25 @@ export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdat
 
   useEffect(() => { saveCustomLists(customLists); }, [customLists]);
 
-  const unreadBooks = books.filter(b => !b.isRead);
-  const readBooks = books.filter(b => b.isRead);
+  const tbrBooks = books.filter(b => getBookStatus(b) === 'tbr');
+  const currentlyReadingBooks = books.filter(b => getBookStatus(b) === 'currently_reading');
+  const readBooks = books.filter(b => getBookStatus(b) === 'read');
+  const dnfBooks = books.filter(b => getBookStatus(b) === 'dnf');
+  const unreadBooks = books.filter(b => !b.isRead && getBookStatus(b) !== 'dnf');
 
   const oldestBook = useMemo(() => {
-    if (unreadBooks.length === 0) return null;
-    return unreadBooks.reduce((oldest, b) =>
+    if (tbrBooks.length === 0) return null;
+    return tbrBooks.reduce((oldest, b) =>
       new Date(b.dateAdded) < new Date(oldest.dateAdded) ? b : oldest
     );
-  }, [unreadBooks]);
+  }, [tbrBooks]);
 
   const filteredBooks = useMemo(() => {
     let source: TBRBook[];
-    if (activeTab === 'all') source = unreadBooks;
+    if (activeTab === 'all') source = [...currentlyReadingBooks, ...tbrBooks];
     else if (activeTab === 'nightstand') source = unreadBooks.filter(b => nightstandIds?.has(b.id));
+    else if (activeTab === 'currently_reading') source = currentlyReadingBooks;
+    else if (activeTab === 'dnf') source = dnfBooks;
     else if (activeTab === 'read') source = readBooks;
     else {
       const list = customLists.find(l => l.id === activeTab);
@@ -106,9 +121,8 @@ export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdat
       return a.title.localeCompare(b.title);
     });
     return sortAsc ? sorted : sorted.reverse();
-  }, [activeTab, unreadBooks, readBooks, nightstandIds, customLists, sortBy, sortAsc]);
+  }, [activeTab, tbrBooks, currentlyReadingBooks, readBooks, dnfBooks, unreadBooks, nightstandIds, customLists, sortBy, sortAsc]);
 
-  // Keep detail book in sync with latest data
   const activeDetailBook = useMemo(() => {
     if (!detailBook) return null;
     return books.find(b => b.id === detailBook.id) || detailBook;
@@ -143,8 +157,10 @@ export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdat
   };
 
   const tabs: { value: TabValue; label: string }[] = [
-    { value: 'all', label: `All (${unreadBooks.length})` },
+    { value: 'all', label: `All (${tbrBooks.length + currentlyReadingBooks.length})` },
     { value: 'nightstand', label: '🕯️ Nightstand' },
+    { value: 'currently_reading', label: `📖 Reading (${currentlyReadingBooks.length})` },
+    { value: 'dnf', label: `🚫 DNF (${dnfBooks.length})` },
     { value: 'read', label: `✓ Read (${readBooks.length})` },
     ...customLists.map(l => ({ value: l.id, label: l.name })),
   ];
@@ -172,7 +188,7 @@ export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdat
         <div className="flex items-center gap-2">
           <BookMarked className="w-4 h-4 text-primary" />
           <span className="font-display text-sm font-semibold text-foreground">
-            {unreadBooks.length} book{unreadBooks.length !== 1 ? 's' : ''} to read
+            {tbrBooks.length + currentlyReadingBooks.length} book{(tbrBooks.length + currentlyReadingBooks.length) !== 1 ? 's' : ''} to read
           </span>
         </div>
         {oldestBook && (
@@ -238,6 +254,7 @@ export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdat
               onRemove={onRemove}
               onUpdateFormat={onUpdateFormat}
               onMarkAsRead={onMarkAsRead}
+              onUpdateStatus={onUpdateStatus}
               nightstandIds={nightstandIds}
               onToggleNightstand={onToggleNightstand}
               customLists={customLists}
@@ -257,6 +274,7 @@ export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdat
         onClose={() => setDetailBook(null)}
         onRemove={onRemove}
         onMarkAsRead={onMarkAsRead}
+        onUpdateStatus={onUpdateStatus}
         onUpdateFormat={onUpdateFormat}
         onUpdateGenres={onUpdateGenres}
         onUpdateMoods={onUpdateMoods}
@@ -298,6 +316,7 @@ interface BookRowProps {
   onRemove: (id: string) => void;
   onUpdateFormat?: (id: string, format: BookFormat | undefined) => void;
   onMarkAsRead?: (id: string) => void;
+  onUpdateStatus?: (id: string, status: BookStatus) => void;
   nightstandIds?: Set<string>;
   onToggleNightstand?: (id: string) => void;
   customLists: CustomList[];
@@ -307,8 +326,9 @@ interface BookRowProps {
   onOpenDetail: (book: TBRBook) => void;
 }
 
-function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, nightstandIds, onToggleNightstand, customLists, onAddToList, onRemoveFromList, activeTab, onOpenDetail }: BookRowProps) {
+function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, onUpdateStatus, nightstandIds, onToggleNightstand, customLists, onAddToList, onRemoveFromList, activeTab, onOpenDetail }: BookRowProps) {
   const isNightstand = nightstandIds?.has(book.id) ?? false;
+  const status = getBookStatus(book);
 
   const reasonText = useMemo(() => {
     if (!book.reasonForAdding) return null;
@@ -316,7 +336,6 @@ function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, nightstandIds, 
     return r.reason === 'Other' && r.customText ? r.customText : r.reason;
   }, [book.reasonForAdding]);
 
-  // Combine genre + mood tags (no language)
   const allTags = [...book.genres, ...book.moods];
 
   return (
@@ -325,20 +344,16 @@ function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, nightstandIds, 
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className={cn("flex items-center gap-3.5 py-3.5", book.isRead && "opacity-50")}
+      className={cn("flex items-center gap-3.5 py-3.5", (status === 'read' || status === 'dnf') && "opacity-50")}
     >
-      {/* Clickable area: cover + info */}
+      {/* Clickable area */}
       <div
         className="flex items-center gap-3.5 flex-1 min-w-0 cursor-pointer"
         onClick={() => onOpenDetail(book)}
       >
         {/* Cover */}
         {book.thumbnail ? (
-          <img
-            src={book.thumbnail}
-            alt={book.title}
-            className="w-[60px] h-[88px] object-cover rounded-lg shadow-sm flex-shrink-0"
-          />
+          <img src={book.thumbnail} alt={book.title} className="w-[60px] h-[88px] object-cover rounded-lg shadow-sm flex-shrink-0" />
         ) : (
           <div className="w-[60px] h-[88px] rounded-lg bg-secondary flex items-center justify-center flex-shrink-0">
             <BookOpenText className="w-6 h-6 text-muted-foreground/30" />
@@ -347,36 +362,35 @@ function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, nightstandIds, 
 
         {/* Info */}
         <div className="flex-1 min-w-0 space-y-0.5">
-          <h4 className="font-display text-[15px] font-semibold text-foreground leading-snug truncate">
-            {book.title}
-          </h4>
+          <div className="flex items-center gap-1.5">
+            <h4 className="font-display text-[15px] font-semibold text-foreground leading-snug truncate">
+              {book.title}
+            </h4>
+          </div>
           <p className="font-body text-sm text-muted-foreground truncate">{book.author}</p>
           <p className="font-body text-xs text-muted-foreground/70 leading-relaxed">
             Added {format(new Date(book.dateAdded), 'MMM d, yyyy')}
           </p>
           {reasonText && (
-            <p className="font-body text-xs text-muted-foreground/70 leading-relaxed truncate">
+            <p className="font-body text-xs text-muted-foreground leading-relaxed truncate">
               Because: {reasonText}
             </p>
           )}
-          {/* Genre + mood tags */}
-          {allTags.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-1">
-              {allTags.slice(0, 4).map(tag => (
-                <span
-                  key={tag}
-                  className="px-2 py-0.5 rounded-full bg-secondary text-muted-foreground text-[10px] font-body"
-                >
-                  {tag}
-                </span>
-              ))}
-              {allTags.length > 4 && (
-                <span className="px-2 py-0.5 rounded-full bg-secondary/50 text-muted-foreground/60 text-[10px] font-body">
-                  +{allTags.length - 4}
-                </span>
-              )}
-            </div>
-          )}
+          {/* Status + tags row */}
+          <div className="flex flex-wrap gap-1 mt-1">
+            {status === 'currently_reading' && (
+              <span className="px-2 py-0.5 rounded-full bg-primary/15 text-primary text-[10px] font-body font-medium">📖 Reading</span>
+            )}
+            {status === 'dnf' && (
+              <span className="px-2 py-0.5 rounded-full bg-destructive/10 text-destructive text-[10px] font-body font-medium">🚫 DNF</span>
+            )}
+            {allTags.slice(0, 3).map(tag => (
+              <span key={tag} className="px-2 py-0.5 rounded-full bg-secondary text-muted-foreground text-[10px] font-body">{tag}</span>
+            ))}
+            {allTags.length > 3 && (
+              <span className="px-2 py-0.5 rounded-full bg-secondary/50 text-muted-foreground/60 text-[10px] font-body">+{allTags.length - 3}</span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -388,11 +402,27 @@ function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, nightstandIds, 
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48 font-body">
-          {!book.isRead && onMarkAsRead && (
+          {status === 'tbr' && onUpdateStatus && (
+            <DropdownMenuItem onClick={() => onUpdateStatus(book.id, 'currently_reading')}>
+              <PlayCircle className="w-3.5 h-3.5 mr-2" /> Start reading
+            </DropdownMenuItem>
+          )}
+          {status !== 'read' && onMarkAsRead && (
             <DropdownMenuItem onClick={() => onMarkAsRead(book.id)}>
               <Check className="w-3.5 h-3.5 mr-2" /> Mark as read
             </DropdownMenuItem>
           )}
+          {status !== 'dnf' && status !== 'read' && onUpdateStatus && (
+            <DropdownMenuItem onClick={() => onUpdateStatus(book.id, 'dnf')}>
+              <Ban className="w-3.5 h-3.5 mr-2" /> Mark as DNF
+            </DropdownMenuItem>
+          )}
+          {(status === 'read' || status === 'dnf' || status === 'currently_reading') && onUpdateStatus && (
+            <DropdownMenuItem onClick={() => onUpdateStatus(book.id, 'tbr')}>
+              <BookMarked className="w-3.5 h-3.5 mr-2" /> Move back to TBR
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuSeparator />
           {!book.isRead && onToggleNightstand && (
             <DropdownMenuItem onClick={() => onToggleNightstand(book.id)}>
               <Bookmark className="w-3.5 h-3.5 mr-2" />
@@ -406,10 +436,7 @@ function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, nightstandIds, 
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent className="font-body">
                 {FORMATS.map(f => (
-                  <DropdownMenuItem
-                    key={f.value}
-                    onClick={() => onUpdateFormat(book.id, book.format === f.value ? undefined : f.value)}
-                  >
+                  <DropdownMenuItem key={f.value} onClick={() => onUpdateFormat(book.id, book.format === f.value ? undefined : f.value)}>
                     <span className="mr-2">{f.icon}</span>
                     {f.label}
                     {book.format === f.value && <Check className="w-3 h-3 ml-auto text-primary" />}
@@ -427,10 +454,7 @@ function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, nightstandIds, 
                 {customLists.map(list => {
                   const inList = list.bookIds.includes(book.id);
                   return (
-                    <DropdownMenuItem
-                      key={list.id}
-                      onClick={() => inList ? onRemoveFromList(book.id, list.id) : onAddToList(book.id, list.id)}
-                    >
+                    <DropdownMenuItem key={list.id} onClick={() => inList ? onRemoveFromList(book.id, list.id) : onAddToList(book.id, list.id)}>
                       {list.name}
                       {inList && <Check className="w-3 h-3 ml-auto text-primary" />}
                     </DropdownMenuItem>

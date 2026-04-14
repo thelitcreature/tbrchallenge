@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import type { TBRBook } from "@/components/TBRList";
+import type { TBRBook, BookStatus } from "@/components/TBRList";
 import type { UnifiedBook, BookFormat, ReasonForAdding } from "@/data/bookTypes";
 import type { Genre, Mood } from "@/data/books";
 
@@ -31,6 +31,7 @@ function rowToTBRBook(row: any): TBRBook {
     reasonForAdding: row.reason_for_adding as ReasonForAdding | undefined,
     dateAdded: row.date_added,
     isRead: row.is_read,
+    status: (row.status as BookStatus) || (row.is_read ? 'read' : 'tbr'),
   };
 }
 
@@ -82,6 +83,7 @@ export function useBookSync({ userId, onBooksLoaded, onDismissedLoaded }: UseBoo
       reason_for_adding: book.reasonForAdding as any,
       date_added: book.dateAdded,
       is_read: book.isRead,
+      status: book.status || (book.isRead ? 'read' : 'tbr'),
     }, { onConflict: "user_id,book_id" });
   }, [userId]);
 

@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { BookOpenText, Clock, Trophy } from 'lucide-react';
 import type { TBRBook } from '@/components/TBRList';
+import { getBookStatus } from '@/components/TBRList';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
@@ -41,24 +42,19 @@ const anim = (delay = 0) => ({
 });
 
 // ---------- Currently Reading ----------
-function CurrentlyReading({ ownedBooks, readBooks, onMarkAsRead }: Pick<HomeProps, 'ownedBooks' | 'readBooks' | 'onMarkAsRead'>) {
-  const challenge = loadJSON<ShelfChallenge | null>('pt-shelf-challenge', null);
+function CurrentlyReading({ allBooks, onMarkAsRead }: { allBooks: TBRBook[]; onMarkAsRead: (id: string) => void }) {
+  const readingBooks = useMemo(
+    () => allBooks.filter(b => getBookStatus(b) === 'currently_reading'),
+    [allBooks]
+  );
 
-  const book = challenge
-    ? ownedBooks.find(b => b.id === challenge.bookId) || readBooks.find(b => b.id === challenge.bookId)
-    : null;
-
-  const daysLeft = challenge
-    ? Math.max(0, Math.ceil((new Date(challenge.deadline).getTime() - Date.now()) / 86400000))
-    : 0;
-
-  if (!challenge || !book) {
+  if (readingBooks.length === 0) {
     return (
       <motion.div {...anim(0)}>
         <Card className="rounded-xl shadow-card border-0">
           <CardContent className="p-5">
             <h2 className="font-display text-base font-semibold text-foreground mb-2">📖 Currently Reading</h2>
-            <p className="font-body text-sm text-muted-foreground">No active reading challenge. Start one in Challenges!</p>
+            <p className="font-body text-sm text-muted-foreground">No books currently being read. Start reading one from your TBR!</p>
           </CardContent>
         </Card>
       </motion.div>
@@ -68,30 +64,33 @@ function CurrentlyReading({ ownedBooks, readBooks, onMarkAsRead }: Pick<HomeProp
   return (
     <motion.div {...anim(0)}>
       <Card className="rounded-xl shadow-card border-0 overflow-hidden">
-        <CardContent className="p-5">
-          <h2 className="font-display text-base font-semibold text-foreground mb-3">📖 Currently Reading</h2>
-          <div className="flex gap-3">
-            {book.thumbnail ? (
-              <img src={book.thumbnail} alt={book.title} className="w-14 h-20 object-cover rounded-lg flex-shrink-0 shadow-sm" />
-            ) : (
-              <div className="w-14 h-20 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0">
-                <BookOpenText className="w-6 h-6 text-muted-foreground/40" />
+        <CardContent className="p-5 space-y-3">
+          <h2 className="font-display text-base font-semibold text-foreground">📖 Currently Reading</h2>
+          {readingBooks.map(book => {
+            const daysAgo = Math.floor((Date.now() - new Date(book.dateAdded).getTime()) / 86400000);
+            return (
+              <div key={book.id} className="flex gap-3">
+                {book.thumbnail ? (
+                  <img src={book.thumbnail} alt={book.title} className="w-14 h-20 object-cover rounded-lg flex-shrink-0 shadow-sm" />
+                ) : (
+                  <div className="w-14 h-20 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0">
+                    <BookOpenText className="w-6 h-6 text-muted-foreground/40" />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0 space-y-1">
+                  <p className="font-display text-sm font-semibold text-foreground truncate">{book.title}</p>
+                  <p className="font-body text-xs text-muted-foreground">{book.author}</p>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <Clock className="w-3.5 h-3.5 text-primary" />
+                    <span className="font-body text-xs text-primary font-semibold">Started {daysAgo} day{daysAgo !== 1 ? 's' : ''} ago</span>
+                  </div>
+                  <Button size="sm" className="mt-2 h-7 text-xs" onClick={() => onMarkAsRead(book.id)}>
+                    Mark as read
+                  </Button>
+                </div>
               </div>
-            )}
-            <div className="flex-1 min-w-0 space-y-1">
-              <p className="font-display text-sm font-semibold text-foreground truncate">{book.title}</p>
-              <p className="font-body text-xs text-muted-foreground">{book.author}</p>
-              <div className="flex items-center gap-1.5 mt-1">
-                <Clock className="w-3.5 h-3.5 text-primary" />
-                <span className="font-body text-xs text-primary font-semibold">{daysLeft} days left</span>
-              </div>
-              {!book.isRead && (
-                <Button size="sm" className="mt-2 h-7 text-xs" onClick={() => onMarkAsRead(book.id)}>
-                  Mark as read
-                </Button>
-              )}
-            </div>
-          </div>
+            );
+          })}
         </CardContent>
       </Card>
     </motion.div>
@@ -221,7 +220,7 @@ function TBRIntervention({ count }: { count: number }) {
 export function Home({ ownedBooks, readBooks, allBooks, onMarkAsRead, onSwitchToChallenges, nightstandIds, onToggleNightstand }: HomeProps) {
   return (
     <div className="space-y-5">
-      <CurrentlyReading ownedBooks={ownedBooks} readBooks={readBooks} onMarkAsRead={onMarkAsRead} />
+      <CurrentlyReading allBooks={allBooks} onMarkAsRead={onMarkAsRead} />
       <MonthlyStats readBooks={readBooks} ownedCount={ownedBooks.length} />
       <ActiveChallenges onSwitchToChallenges={onSwitchToChallenges} />
       <Nightstand ownedBooks={ownedBooks} nightstandIds={nightstandIds} />

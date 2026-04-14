@@ -77,6 +77,7 @@ export type Database = {
           publisher: string | null
           reason_for_adding: Json | null
           source: string | null
+          status: string
           tags: string[] | null
           thumbnail: string | null
           title: string
@@ -101,6 +102,7 @@ export type Database = {
           publisher?: string | null
           reason_for_adding?: Json | null
           source?: string | null
+          status?: string
           tags?: string[] | null
           thumbnail?: string | null
           title: string
@@ -125,6 +127,7 @@ export type Database = {
           publisher?: string | null
           reason_for_adding?: Json | null
           source?: string | null
+          status?: string
           tags?: string[] | null
           thumbnail?: string | null
           title?: string
