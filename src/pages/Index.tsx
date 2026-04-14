@@ -490,7 +490,7 @@ const Index = () => {
               </motion.div>
             )}
           </AnimatePresence>
-          <TBRList books={shelvedBooks} onRemove={removeFromShelves} onUpdateFormat={updateBookFormat} onMarkAsRead={markAsReadById} onUpdateDateAdded={updateDateAdded} />
+          <TBRList books={shelvedBooks} onRemove={removeFromShelves} onUpdateFormat={updateBookFormat} onMarkAsRead={markAsReadById} onUpdateDateAdded={updateDateAdded} nightstandIds={nightstandIds} onToggleNightstand={toggleNightstand} />
         </motion.div> :
 
       <motion.div
