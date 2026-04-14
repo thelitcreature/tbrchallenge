@@ -1,7 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
-import type { UnifiedBook, BookFormat } from '@/data/bookTypes';
+import type { UnifiedBook, BookFormat, ReasonForAdding } from '@/data/bookTypes';
+import { READING_REASONS } from '@/data/bookTypes';
 import type { Genre, Mood } from '@/data/books';
 import {
   BookOpenText, Book, BookOpen, Headphones, Tablet,
@@ -22,6 +23,7 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from '@/components/ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { BookDetail } from '@/components/BookDetail';
