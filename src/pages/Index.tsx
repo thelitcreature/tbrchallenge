@@ -286,6 +286,11 @@ const Index = () => {
     updateBook(id, { moods });
   };
 
+  const updateBookReason = (id: string, reason: ReasonForAdding) => {
+    setShelvedBooks((prev) => prev.map((b) => b.id === id ? { ...b, reasonForAdding: reason } : b));
+    updateBook(id, { reason_for_adding: reason as any });
+  };
+
   const handleDismissBook = (book: UnifiedBook) => {
     setDismissedIds((prev) => {
       const next = new Set(prev);
