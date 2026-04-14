@@ -292,9 +292,7 @@ function BookBuyingBan({ readBooks }: { readBooks: TBRBook[] }) {
           ) : isActive ? (
             <div className="bg-secondary/50 rounded-lg p-3 space-y-2">
               <p className="font-body text-sm font-semibold text-foreground">🚫 {daysLeft} {daysLeft === 1 ? 'day' : 'days'} remaining</p>
-              {booksReadDuringBan > 0 && (
-                <p className="font-body text-xs text-muted-foreground">📖 Read {booksReadDuringBan} book{booksReadDuringBan !== 1 ? 's' : ''} so far — keep going!</p>
-              )}
+              <p className="font-body text-sm text-foreground">📚 Read during ban: <span className="font-semibold text-primary">{booksReadDuringBan} {booksReadDuringBan === 1 ? 'book' : 'books'}</span></p>
               <p className="font-body text-xs text-muted-foreground italic">💡 Read a book from your TBR to make the ban worthwhile.</p>
               <Button size="sm" variant="ghost" onClick={() => { setBan(null); localStorage.removeItem('pt-buying-ban'); }}>
                 Break ban
