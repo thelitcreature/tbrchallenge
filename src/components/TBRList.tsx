@@ -322,6 +322,7 @@ interface BookRowProps {
   onUpdateFormat?: (id: string, format: BookFormat | undefined) => void;
   onMarkAsRead?: (id: string) => void;
   onUpdateStatus?: (id: string, status: BookStatus) => void;
+  onUpdateReason?: (id: string, reason: ReasonForAdding) => void;
   nightstandIds?: Set<string>;
   onToggleNightstand?: (id: string) => void;
   customLists: CustomList[];
@@ -331,7 +332,7 @@ interface BookRowProps {
   onOpenDetail: (book: TBRBook) => void;
 }
 
-function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, onUpdateStatus, nightstandIds, onToggleNightstand, customLists, onAddToList, onRemoveFromList, activeTab, onOpenDetail }: BookRowProps) {
+function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, onUpdateStatus, onUpdateReason, nightstandIds, onToggleNightstand, customLists, onAddToList, onRemoveFromList, activeTab, onOpenDetail }: BookRowProps) {
   const isNightstand = nightstandIds?.has(book.id) ?? false;
   const status = getBookStatus(book);
 
