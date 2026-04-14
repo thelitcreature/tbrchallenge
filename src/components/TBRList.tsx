@@ -35,6 +35,8 @@ interface TBRListProps {
   onUpdateFormat?: (id: string, format: BookFormat | undefined) => void;
   onMarkAsRead?: (id: string) => void;
   onUpdateDateAdded?: (id: string, date: string) => void;
+  nightstandIds?: Set<string>;
+  onToggleNightstand?: (id: string) => void;
 }
 
 export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdateDateAdded }: TBRListProps) {
