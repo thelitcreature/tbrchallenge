@@ -83,6 +83,7 @@ export function useBookSync({ userId, onBooksLoaded, onDismissedLoaded }: UseBoo
       reason_for_adding: book.reasonForAdding as any,
       date_added: book.dateAdded,
       is_read: book.isRead,
+      status: book.status || (book.isRead ? 'read' : 'tbr'),
     }, { onConflict: "user_id,book_id" });
   }, [userId]);
 
