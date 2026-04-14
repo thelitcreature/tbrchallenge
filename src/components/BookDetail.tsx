@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import type { BookFormat } from '@/data/bookTypes';
-import type { TBRBook } from '@/components/TBRList';
+import type { TBRBook, BookStatus } from '@/components/TBRList';
+import { getBookStatus } from '@/components/TBRList';
 import { GENRES, MOODS, type Genre, type Mood } from '@/data/books';
 import {
   ArrowLeft, BookOpen, Book, Headphones, Tablet,
-  BookOpenText, Check, Bookmark, Trash2, X, Plus,
+  BookOpenText, Check, Bookmark, Trash2, X, Plus, PlayCircle, Ban, BookMarked,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
@@ -20,12 +20,20 @@ const FORMATS: { value: BookFormat; label: string; icon: React.ReactNode }[] = [
   { value: 'audiobook', label: 'Audiobook', icon: <Headphones className="w-4 h-4" /> },
 ];
 
+const STATUS_LABELS: Record<BookStatus, { label: string; emoji: string; className: string }> = {
+  tbr: { label: 'TBR', emoji: '📚', className: 'bg-secondary text-muted-foreground' },
+  currently_reading: { label: 'Reading', emoji: '📖', className: 'bg-primary/15 text-primary' },
+  read: { label: 'Read', emoji: '✓', className: 'bg-accent/15 text-accent' },
+  dnf: { label: 'DNF', emoji: '🚫', className: 'bg-destructive/10 text-destructive' },
+};
+
 interface BookDetailProps {
   book: TBRBook | null;
   open: boolean;
   onClose: () => void;
   onRemove: (id: string) => void;
   onMarkAsRead?: (id: string) => void;
+  onUpdateStatus?: (id: string, status: BookStatus) => void;
   onUpdateFormat?: (id: string, format: BookFormat | undefined) => void;
   onUpdateGenres?: (id: string, genres: Genre[]) => void;
   onUpdateMoods?: (id: string, moods: Mood[]) => void;
@@ -34,12 +42,14 @@ interface BookDetailProps {
 }
 
 export function BookDetail({
-  book, open, onClose, onRemove, onMarkAsRead,
+  book, open, onClose, onRemove, onMarkAsRead, onUpdateStatus,
   onUpdateFormat, onUpdateGenres, onUpdateMoods,
   nightstandIds, onToggleNightstand,
 }: BookDetailProps) {
   if (!book) return null;
 
+  const status = getBookStatus(book);
+  const statusInfo = STATUS_LABELS[status];
   const isNightstand = nightstandIds?.has(book.id) ?? false;
   const reasonText = book.reasonForAdding
     ? (book.reasonForAdding.reason === 'Other' && book.reasonForAdding.customText
@@ -60,7 +70,6 @@ export function BookDetail({
                 <BookOpenText className="w-16 h-16 text-muted-foreground/20" />
               </div>
             )}
-            {/* Gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
             {/* Back button */}
             <button
@@ -69,6 +78,12 @@ export function BookDetail({
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
+            {/* Status pill */}
+            <div className="absolute top-4 right-4 z-10">
+              <span className={cn("px-2.5 py-1 rounded-full text-xs font-body font-medium", statusInfo.className)}>
+                {statusInfo.emoji} {statusInfo.label}
+              </span>
+            </div>
           </div>
 
           {/* Content */}
@@ -131,12 +146,41 @@ export function BookDetail({
 
             {/* Action buttons */}
             <div className="space-y-2 pt-2">
-              {!book.isRead && onMarkAsRead && (
+              {status === 'tbr' && onUpdateStatus && (
                 <button
-                  onClick={() => { onMarkAsRead(book.id); onClose(); }}
+                  onClick={() => onUpdateStatus(book.id, 'currently_reading')}
                   className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-primary-foreground font-body text-sm font-medium hover:bg-primary/90 transition-colors"
                 >
+                  <PlayCircle className="w-4 h-4" /> Start reading
+                </button>
+              )}
+              {status !== 'read' && onMarkAsRead && (
+                <button
+                  onClick={() => { onMarkAsRead(book.id); onClose(); }}
+                  className={cn(
+                    "w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-body text-sm font-medium transition-colors",
+                    status === 'tbr'
+                      ? "bg-secondary text-foreground hover:bg-secondary/80"
+                      : "bg-primary text-primary-foreground hover:bg-primary/90"
+                  )}
+                >
                   <Check className="w-4 h-4" /> Mark as read
+                </button>
+              )}
+              {status !== 'dnf' && status !== 'read' && onUpdateStatus && (
+                <button
+                  onClick={() => { onUpdateStatus(book.id, 'dnf'); onClose(); }}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-secondary text-muted-foreground font-body text-sm font-medium hover:bg-secondary/80 transition-colors"
+                >
+                  <Ban className="w-4 h-4" /> Mark as DNF
+                </button>
+              )}
+              {(status === 'read' || status === 'dnf' || status === 'currently_reading') && onUpdateStatus && (
+                <button
+                  onClick={() => onUpdateStatus(book.id, 'tbr')}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-secondary text-foreground font-body text-sm font-medium hover:bg-secondary/80 transition-colors"
+                >
+                  <BookMarked className="w-4 h-4" /> Move back to TBR
                 </button>
               )}
               {!book.isRead && onToggleNightstand && (
