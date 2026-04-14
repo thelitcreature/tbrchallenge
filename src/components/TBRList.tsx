@@ -194,6 +194,19 @@ export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdat
 
           {/* Action buttons */}
           <div className="flex flex-col gap-1 flex-shrink-0">
+            {!book.isRead && onToggleNightstand && (
+              <button
+                onClick={() => onToggleNightstand(book.id)}
+                className={`p-1.5 rounded-full transition-colors ${
+                  nightstandIds?.has(book.id)
+                    ? 'text-primary bg-primary/10'
+                    : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                }`}
+                title={nightstandIds?.has(book.id) ? 'Remove from Nightstand' : 'Add to Nightstand'}
+              >
+                <Bookmark className="w-4 h-4" />
+              </button>
+            )}
             {!book.isRead && onMarkAsRead && (
               <button
                 onClick={() => onMarkAsRead(book.id)}
