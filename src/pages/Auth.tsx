@@ -51,11 +51,11 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ backgroundColor: '#FDFAF6' }}>
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
+        className="text-center mb-6"
       >
         <h1 className="font-display text-4xl sm:text-5xl font-bold text-foreground tracking-tight">Overdue</h1>
         <p className="font-body text-xs sm:text-sm text-muted-foreground mt-2 uppercase" style={{ letterSpacing: '0.45em' }}>
@@ -64,12 +64,21 @@ const Auth = () => {
       </motion.div>
 
       <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.05 }}
+        className="text-center mb-8 space-y-1"
+      >
+        <p className="font-body text-sm text-muted-foreground">Track your TBR. Beat the guilt. Read more.</p>
+      </motion.div>
+
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
         className="w-full max-w-sm"
       >
-        <div className="bg-card rounded-2xl p-6 shadow-card space-y-5">
+        <div className="rounded-2xl p-6 space-y-5" style={{ backgroundColor: '#FFFDF9', boxShadow: '0 4px 24px rgba(0,0,0,0.06)' }}>
           <div className="flex rounded-full bg-secondary p-1">
             <button
               onClick={() => setIsLogin(true)}
@@ -137,6 +146,15 @@ const Auth = () => {
           </form>
         </div>
       </motion.div>
+
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        className="font-body text-[11px] text-muted-foreground/60 mt-6 text-center"
+      >
+        Join 1,247 readers tackling their TBR pile
+      </motion.p>
     </div>
   );
 };
