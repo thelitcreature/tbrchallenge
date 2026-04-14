@@ -67,6 +67,7 @@ interface TBRListProps {
   onUpdateDateAdded?: (id: string, date: string) => void;
   onUpdateGenres?: (id: string, genres: Genre[]) => void;
   onUpdateMoods?: (id: string, moods: Mood[]) => void;
+  onUpdateReason?: (id: string, reason: ReasonForAdding) => void;
   nightstandIds?: Set<string>;
   onToggleNightstand?: (id: string) => void;
 }
