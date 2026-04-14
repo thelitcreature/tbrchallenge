@@ -7,7 +7,7 @@ import { getBookStatus } from '@/components/TBRList';
 import { GENRES, MOODS, type Genre, type Mood } from '@/data/books';
 import {
   ArrowLeft, BookOpen, Book, Headphones, Tablet,
-  BookOpenText, Check, Bookmark, Trash2, X, Plus, PlayCircle, Ban, BookMarked, ChevronDown,
+  BookOpenText, Check, Bookmark, Trash2, X, Plus, PlayCircle, Ban, BookMarked, ChevronDown, Pencil,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
@@ -107,11 +107,18 @@ export function BookDetail({
               <p className="font-body text-xs text-muted-foreground uppercase tracking-wider">Why this book</p>
               <Popover open={reasonPopoverOpen} onOpenChange={setReasonPopoverOpen}>
                 <PopoverTrigger asChild>
-                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary/70 hover:bg-secondary transition-colors text-left w-full">
-                    <span className={cn("font-body text-sm flex-1", reasonText ? "text-foreground" : "text-muted-foreground/60 italic")}>
-                      {reasonText || 'Tap to add a reason'}
+                  <button className={cn(
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors text-left w-full",
+                    reasonText
+                      ? "bg-secondary/50 hover:bg-secondary"
+                      : "bg-primary/10 hover:bg-primary/15"
+                  )}>
+                    <span className={cn("font-body text-sm flex-1", reasonText ? "text-foreground/80" : "text-primary font-medium")}>
+                      {reasonText || '+ Add reason'}
                     </span>
-                    <ChevronDown className="w-3.5 h-3.5 text-muted-foreground/50 flex-shrink-0" />
+                    {reasonText ? (
+                      <Pencil className="w-3 h-3 text-muted-foreground/50 flex-shrink-0" />
+                    ) : null}
                   </button>
                 </PopoverTrigger>
                 <PopoverContent className="w-64 p-1.5" align="start">

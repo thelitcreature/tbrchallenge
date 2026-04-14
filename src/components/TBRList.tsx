@@ -7,7 +7,7 @@ import type { Genre, Mood } from '@/data/books';
 import {
   BookOpenText, Book, BookOpen, Headphones, Tablet,
   MoreHorizontal, Check, Bookmark, Trash2, BookMarked, ArrowUpDown,
-  PlayCircle, Ban
+  PlayCircle, Ban, Pencil
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -381,10 +381,22 @@ function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, onUpdateStatus,
           <Popover open={reasonPopoverOpen} onOpenChange={setReasonPopoverOpen}>
             <PopoverTrigger asChild>
               <button
-                className="font-body text-xs text-muted-foreground leading-relaxed truncate hover:text-foreground transition-colors text-left"
+                className={cn(
+                  "inline-flex items-center gap-1 font-body text-xs leading-relaxed text-left rounded-md px-1.5 py-0.5 transition-colors",
+                  reasonText
+                    ? "text-foreground/70 bg-secondary/50 hover:bg-secondary hover:text-foreground"
+                    : "text-primary font-medium hover:text-primary/80"
+                )}
                 onClick={(e) => { e.stopPropagation(); }}
               >
-                {reasonText ? `Why this book: ${reasonText}` : <span className="italic text-muted-foreground/50">Why this book: tap to add</span>}
+                {reasonText ? (
+                  <>
+                    <span>Why this book: {reasonText}</span>
+                    <Pencil className="w-3 h-3 text-muted-foreground/50 flex-shrink-0" />
+                  </>
+                ) : (
+                  <span>+ Add reason</span>
+                )}
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-56 p-1.5" align="start" onClick={(e) => e.stopPropagation()}>
