@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
-import type { BookFormat } from '@/data/bookTypes';
+import type { BookFormat, ReasonForAdding, ReadingReason } from '@/data/bookTypes';
+import { READING_REASONS } from '@/data/bookTypes';
 import type { TBRBook, BookStatus } from '@/components/TBRList';
 import { getBookStatus } from '@/components/TBRList';
 import { GENRES, MOODS, type Genre, type Mood } from '@/data/books';
 import {
   ArrowLeft, BookOpen, Book, Headphones, Tablet,
-  BookOpenText, Check, Bookmark, Trash2, X, Plus, PlayCircle, Ban, BookMarked,
+  BookOpenText, Check, Bookmark, Trash2, X, Plus, PlayCircle, Ban, BookMarked, ChevronDown,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
@@ -37,15 +38,19 @@ interface BookDetailProps {
   onUpdateFormat?: (id: string, format: BookFormat | undefined) => void;
   onUpdateGenres?: (id: string, genres: Genre[]) => void;
   onUpdateMoods?: (id: string, moods: Mood[]) => void;
+  onUpdateReason?: (id: string, reason: ReasonForAdding) => void;
   nightstandIds?: Set<string>;
   onToggleNightstand?: (id: string) => void;
 }
 
 export function BookDetail({
   book, open, onClose, onRemove, onMarkAsRead, onUpdateStatus,
-  onUpdateFormat, onUpdateGenres, onUpdateMoods,
+  onUpdateFormat, onUpdateGenres, onUpdateMoods, onUpdateReason,
   nightstandIds, onToggleNightstand,
 }: BookDetailProps) {
+  const [descExpanded, setDescExpanded] = useState(false);
+  const [reasonPopoverOpen, setReasonPopoverOpen] = useState(false);
+
   if (!book) return null;
 
   const status = getBookStatus(book);
@@ -57,8 +62,10 @@ export function BookDetail({
       : book.reasonForAdding.reason)
     : null;
 
+  const descIsLong = (book.description?.length || 0) > 200;
+
   return (
-    <Sheet open={open} onOpenChange={v => { if (!v) onClose(); }}>
+    <Sheet open={open} onOpenChange={v => { if (!v) { onClose(); setDescExpanded(false); } }}>
       <SheetContent side="right" className="w-full sm:max-w-md p-0 overflow-hidden border-l">
         <ScrollArea className="h-full">
           {/* Cover hero */}
@@ -71,14 +78,12 @@ export function BookDetail({
               </div>
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-            {/* Back button */}
             <button
               onClick={onClose}
               className="absolute top-4 left-4 p-2 rounded-full bg-background/80 backdrop-blur-sm text-foreground hover:bg-background transition-colors z-10"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
-            {/* Status pill */}
             <div className="absolute top-4 right-4 z-10">
               <span className={cn("px-2.5 py-1 rounded-full text-xs font-body font-medium", statusInfo.className)}>
                 {statusInfo.emoji} {statusInfo.label}
@@ -94,8 +99,43 @@ export function BookDetail({
               <p className="font-body text-base text-muted-foreground">{book.author}</p>
               <p className="font-body text-xs text-muted-foreground/70">
                 Added {format(new Date(book.dateAdded), 'MMM d, yyyy')}
-                {reasonText && <> · Because: {reasonText}</>}
               </p>
+            </div>
+
+            {/* Why this book — editable */}
+            <div className="space-y-1">
+              <p className="font-body text-xs text-muted-foreground uppercase tracking-wider">Why this book</p>
+              <Popover open={reasonPopoverOpen} onOpenChange={setReasonPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary/70 hover:bg-secondary transition-colors text-left w-full">
+                    <span className={cn("font-body text-sm flex-1", reasonText ? "text-foreground" : "text-muted-foreground/60 italic")}>
+                      {reasonText || 'Tap to add a reason'}
+                    </span>
+                    <ChevronDown className="w-3.5 h-3.5 text-muted-foreground/50 flex-shrink-0" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64 p-1.5" align="start">
+                  <div className="space-y-0.5">
+                    {READING_REASONS.map(r => (
+                      <button
+                        key={r}
+                        onClick={() => {
+                          onUpdateReason?.(book.id, { reason: r });
+                          setReasonPopoverOpen(false);
+                        }}
+                        className={cn(
+                          "w-full text-left px-3 py-2 rounded-md text-sm font-body transition-colors",
+                          book.reasonForAdding?.reason === r
+                            ? "bg-primary/10 text-primary font-medium"
+                            : "text-foreground hover:bg-secondary"
+                        )}
+                      >
+                        {r}
+                      </button>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
 
             {/* Genre tags */}
@@ -139,8 +179,23 @@ export function BookDetail({
             {/* Description */}
             {book.description && (
               <div className="space-y-2">
-                <p className="font-body text-xs text-muted-foreground uppercase tracking-wider">About</p>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed">{book.description}</p>
+                <p className="font-body text-xs text-muted-foreground uppercase tracking-wider">About this book</p>
+                <div className="relative">
+                  <p className={cn(
+                    "font-body text-sm text-muted-foreground leading-relaxed",
+                    !descExpanded && descIsLong && "line-clamp-3"
+                  )}>
+                    {book.description}
+                  </p>
+                  {descIsLong && (
+                    <button
+                      onClick={() => setDescExpanded(prev => !prev)}
+                      className="font-body text-xs text-primary font-medium mt-1 hover:underline"
+                    >
+                      {descExpanded ? 'Show less' : 'Read more'}
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 
