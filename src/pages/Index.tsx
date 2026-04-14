@@ -33,7 +33,14 @@ const curatedUnified: UnifiedBook[] = curatedBooks.map((b) => ({
 
 const Index = () => {
   const { user, signOut } = useAuth();
-  const [hasOnboarded, setHasOnboarded] = useState(() => localStorage.getItem('plottwist-onboarded') === '1');
+  const [hasOnboarded, setHasOnboarded] = useState(() => {
+    // Migrate old key
+    if (localStorage.getItem('plottwist-onboarded') === '1') {
+      localStorage.setItem('overdue-onboarded', '1');
+      localStorage.removeItem('plottwist-onboarded');
+    }
+    return localStorage.getItem('overdue-onboarded') === '1';
+  });
   const [showAddTools, setShowAddTools] = useState(false);
   const [mode, setMode] = useState<Mode>("home");
   const [nightstandIds, setNightstandIds] = useState<Set<string>>(() => {
@@ -333,8 +340,8 @@ const Index = () => {
         >
           <LogOut className="w-4 h-4" />
         </button>
-        <h1 className="font-display text-4xl sm:text-6xl font-bold text-foreground tracking-tight">Plot Twist</h1>
-        <p className="font-body text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2 uppercase w-full" style={{ letterSpacing: '0.45em', paddingRight: '0.45em' }}>Let the book choose you</p>
+        <h1 className="font-display text-4xl sm:text-6xl font-bold text-foreground tracking-tight">Overdue</h1>
+        <p className="font-body text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2 uppercase w-full" style={{ letterSpacing: '0.45em', paddingRight: '0.45em' }}>Your books have been waiting long enough</p>
       </motion.div>
 
       {/* Mode Toggle */}

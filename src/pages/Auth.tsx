@@ -57,9 +57,9 @@ const Auth = () => {
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-8"
       >
-        <h1 className="font-display text-4xl sm:text-5xl font-bold text-foreground tracking-tight">Plot Twist</h1>
+        <h1 className="font-display text-4xl sm:text-5xl font-bold text-foreground tracking-tight">Overdue</h1>
         <p className="font-body text-xs sm:text-sm text-muted-foreground mt-2 uppercase" style={{ letterSpacing: '0.45em' }}>
-          Let the book choose you
+          Your books have been waiting long enough
         </p>
       </motion.div>
 

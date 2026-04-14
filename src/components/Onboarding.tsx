@@ -33,7 +33,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
 
   const next = () => {
     if (isLast) {
-      localStorage.setItem('plottwist-onboarded', '1');
+      localStorage.setItem('overdue-onboarded', '1');
       onComplete();
     } else {
       setStep((s) => s + 1);
@@ -41,7 +41,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
   };
 
   const skip = () => {
-    localStorage.setItem('plottwist-onboarded', '1');
+    localStorage.setItem('overdue-onboarded', '1');
     onComplete();
   };
 
@@ -50,7 +50,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
   const goNext = () => {
     setDirection(1);
     if (isLast) {
-      localStorage.setItem('plottwist-onboarded', '1');
+      localStorage.setItem('overdue-onboarded', '1');
       onComplete();
     } else {
       setStep((s) => s + 1);
