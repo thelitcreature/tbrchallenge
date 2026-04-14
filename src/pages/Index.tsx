@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import type { BookFormat, ReasonForAdding, UnifiedBook } from "@/data/bookTypes";
-import { SlidersHorizontal, ChevronUp, ChevronLeft, ChevronRight, Plus, LogOut } from "lucide-react";
+import { SlidersHorizontal, ChevronUp, ChevronLeft, ChevronRight, Plus, Menu } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { books as curatedBooks, GENRES, MOODS, type Genre, type Mood } from "@/data/books";
 import type { TBRBook, BookStatus } from "@/components/TBRList";
@@ -19,6 +19,7 @@ import { Challenges } from "@/components/Challenges";
 import { Home } from "@/components/Home";
 import { ReasonPicker } from "@/components/ReasonPicker";
 import { PhotoBookAdd } from "@/components/PhotoBookAdd";
+import { AppMenu } from "@/components/AppMenu";
 import { Onboarding } from "@/components/Onboarding";
 import { searchGoogleBooks } from "@/lib/api/googleBooks";
 import { googleBookToUnified } from "@/data/bookTypes";
