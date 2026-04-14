@@ -63,10 +63,26 @@ interface ShelfChallenge {
   deadline: string;
 }
 
+function formatReasonText(book: TBRBook): string | null {
+  if (!book.reasonForAdding) return null;
+  const reason = typeof book.reasonForAdding === 'object' && 'reason' in (book.reasonForAdding as any)
+    ? (book.reasonForAdding as any).reason
+    : null;
+  if (!reason) return null;
+  const daysAgo = Math.floor((Date.now() - new Date(book.dateAdded).getTime()) / 86400000);
+  return `Added because: ${reason} • ${daysAgo}d ago`;
+}
+
+interface CompletedChallenge {
+  bookId: string;
+  bookTitle: string;
+}
+
 function ShopYourShelf({ books, readBooks }: ChallengesProps) {
   const [challenge, setChallenge] = useState<ShelfChallenge | null>(() => loadJSON('pt-shelf-challenge', null));
   const [pickedBook, setPickedBook] = useState<TBRBook | null>(null);
   const [earned, setEarned] = useState(() => loadJSON<string[]>('pt-shelf-badges', []));
+  const [completed, setCompleted] = useState<CompletedChallenge | null>(null);
 
   const pickRandom = useCallback(() => {
     if (books.length === 0) return;
@@ -75,7 +91,7 @@ function ShopYourShelf({ books, readBooks }: ChallengesProps) {
   }, [books]);
 
   useEffect(() => {
-    if (!pickedBook && !challenge && books.length > 0) pickRandom();
+    if (!pickedBook && !challenge && !completed && books.length > 0) pickRandom();
   }, [books.length]);
 
   const accept = () => {
@@ -87,17 +103,21 @@ function ShopYourShelf({ books, readBooks }: ChallengesProps) {
     saveJSON('pt-shelf-challenge', c);
   };
 
-  // Check completion
+  // Check completion — show completion state instead of auto-clearing
   useEffect(() => {
     if (!challenge) return;
     const isRead = readBooks.some(b => b.id === challenge.bookId);
     const inTime = new Date() <= new Date(challenge.deadline);
-    if (isRead && inTime) {
-      setEarned(prev => {
-        const next = [...new Set([...prev, challenge.bookId])];
-        saveJSON('pt-shelf-badges', next);
-        return next;
-      });
+    if (isRead) {
+      const book = readBooks.find(b => b.id === challenge.bookId);
+      if (inTime) {
+        setEarned(prev => {
+          const next = [...new Set([...prev, challenge.bookId])];
+          saveJSON('pt-shelf-badges', next);
+          return next;
+        });
+        setCompleted({ bookId: challenge.bookId, bookTitle: book?.title || 'Unknown' });
+      }
       setChallenge(null);
       localStorage.removeItem('pt-shelf-challenge');
     } else if (!inTime) {
@@ -106,8 +126,15 @@ function ShopYourShelf({ books, readBooks }: ChallengesProps) {
     }
   }, [challenge, readBooks]);
 
+  const startNew = () => {
+    setCompleted(null);
+    pickRandom();
+  };
+
   const challengeBook = challenge ? books.find(b => b.id === challenge.bookId) || readBooks.find(b => b.id === challenge.bookId) : null;
   const daysLeft = challenge ? Math.max(0, Math.ceil((new Date(challenge.deadline).getTime() - Date.now()) / 86400000)) : 0;
+
+  const reasonText = pickedBook ? formatReasonText(pickedBook) : null;
 
   return (
     <motion.div {...cardAnim} transition={{ ...cardAnim.transition, delay: 0.1 }}>
@@ -120,7 +147,13 @@ function ShopYourShelf({ books, readBooks }: ChallengesProps) {
           </div>
           <p className="font-body text-sm text-muted-foreground">Read a random book from your TBR in 14 days.</p>
 
-          {challenge && challengeBook ? (
+          {completed ? (
+            <div className="bg-secondary/50 rounded-lg p-3 text-center space-y-2">
+              <p className="font-display text-lg font-semibold text-foreground">🏆 Challenge completed!</p>
+              <p className="font-body text-sm text-muted-foreground">You read <span className="font-semibold text-foreground">{completed.bookTitle}</span></p>
+              <Button size="sm" onClick={startNew}>Start new challenge</Button>
+            </div>
+          ) : challenge && challengeBook ? (
             <div className="bg-secondary/50 rounded-lg p-3 space-y-2">
               <p className="font-body text-sm font-medium text-foreground">📖 {challengeBook.title}</p>
               <div className="flex items-center gap-2">
@@ -136,6 +169,9 @@ function ShopYourShelf({ books, readBooks }: ChallengesProps) {
               <div className="bg-secondary/50 rounded-lg p-3">
                 <p className="font-body text-sm font-medium text-foreground">{pickedBook.title}</p>
                 <p className="font-body text-xs text-muted-foreground">{pickedBook.author}</p>
+                {reasonText && (
+                  <p className="font-body text-xs text-muted-foreground/70 mt-1 italic">{reasonText}</p>
+                )}
               </div>
               <div className="flex gap-2 flex-wrap">
                 <Button size="sm" onClick={accept} className="gap-1"><Check className="w-3.5 h-3.5" /> Accept</Button>
