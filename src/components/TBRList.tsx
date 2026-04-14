@@ -258,6 +258,7 @@ export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdat
               onUpdateFormat={onUpdateFormat}
               onMarkAsRead={onMarkAsRead}
               onUpdateStatus={onUpdateStatus}
+              onUpdateReason={onUpdateReason}
               nightstandIds={nightstandIds}
               onToggleNightstand={onToggleNightstand}
               customLists={customLists}
@@ -281,6 +282,7 @@ export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdat
         onUpdateFormat={onUpdateFormat}
         onUpdateGenres={onUpdateGenres}
         onUpdateMoods={onUpdateMoods}
+        onUpdateReason={onUpdateReason}
         nightstandIds={nightstandIds}
         onToggleNightstand={onToggleNightstand}
       />
