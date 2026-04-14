@@ -322,7 +322,24 @@ const Index = () => {
         <ModeToggle mode={mode} onModeChange={setMode} tbrCount={shelvedBooks.filter(b => !b.isRead).length} />
       </motion.div>
 
-      {mode === "discover" ?
+      {mode === "home" ?
+      <motion.div
+        key="home"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="w-full max-w-lg space-y-6">
+          <Home
+            ownedBooks={ownedBooks}
+            readBooks={readBooks}
+            allBooks={shelvedBooks}
+            onMarkAsRead={markAsReadById}
+            onSwitchToChallenges={() => setMode('challenges')}
+            nightstandIds={nightstandIds}
+            onToggleNightstand={toggleNightstand}
+          />
+        </motion.div> :
+      mode === "discover" ?
       <motion.div
         key="discover"
         initial={{ opacity: 0 }}
