@@ -342,12 +342,27 @@ const Index = () => {
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6 sm:mb-8 flex-col flex items-center justify-center gap-[10px] relative w-full max-w-lg">
         <button
-          onClick={signOut}
+          onClick={() => setMenuOpen(true)}
           className="absolute right-0 top-0 p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-          title="Sign out"
+          title="Menu"
         >
-          <LogOut className="w-4 h-4" />
+          <Menu className="w-5 h-5" />
         </button>
+        <AppMenu
+          open={menuOpen}
+          onOpenChange={setMenuOpen}
+          onSignOut={signOut}
+          defaultTab={defaultTab}
+          onDefaultTabChange={(tab) => {
+            setDefaultTab(tab);
+            localStorage.setItem('overdue-default-tab', tab);
+          }}
+          listDensity={listDensity}
+          onListDensityChange={(d) => {
+            setListDensity(d);
+            localStorage.setItem('overdue-list-density', d);
+          }}
+        />
         <h1 className="font-display text-4xl sm:text-6xl font-bold text-foreground tracking-tight">Overdue</h1>
         <p className="font-body text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2 uppercase w-full" style={{ letterSpacing: '0.45em', paddingRight: '0.45em' }}>Your books have been waiting long enough</p>
       </motion.div>
