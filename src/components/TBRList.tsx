@@ -1,7 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
-import type { UnifiedBook, BookFormat } from '@/data/bookTypes';
+import type { UnifiedBook, BookFormat, ReasonForAdding } from '@/data/bookTypes';
+import { READING_REASONS } from '@/data/bookTypes';
 import type { Genre, Mood } from '@/data/books';
 import {
   BookOpenText, Book, BookOpen, Headphones, Tablet,
@@ -22,6 +23,7 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from '@/components/ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { BookDetail } from '@/components/BookDetail';
@@ -65,6 +67,7 @@ interface TBRListProps {
   onUpdateDateAdded?: (id: string, date: string) => void;
   onUpdateGenres?: (id: string, genres: Genre[]) => void;
   onUpdateMoods?: (id: string, moods: Mood[]) => void;
+  onUpdateReason?: (id: string, reason: ReasonForAdding) => void;
   nightstandIds?: Set<string>;
   onToggleNightstand?: (id: string) => void;
 }
@@ -80,7 +83,7 @@ function saveCustomLists(lists: CustomList[]) {
   localStorage.setItem('pt-custom-lists', JSON.stringify(lists));
 }
 
-export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdateStatus, onUpdateDateAdded, onUpdateGenres, onUpdateMoods, nightstandIds, onToggleNightstand }: TBRListProps) {
+export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdateStatus, onUpdateDateAdded, onUpdateGenres, onUpdateMoods, onUpdateReason, nightstandIds, onToggleNightstand }: TBRListProps) {
   const [sortBy, setSortBy] = useState<SortKey>('dateAdded');
   const [sortAsc, setSortAsc] = useState(false);
   const [activeTab, setActiveTab] = useState<TabValue>('all');
@@ -255,6 +258,7 @@ export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdat
               onUpdateFormat={onUpdateFormat}
               onMarkAsRead={onMarkAsRead}
               onUpdateStatus={onUpdateStatus}
+              onUpdateReason={onUpdateReason}
               nightstandIds={nightstandIds}
               onToggleNightstand={onToggleNightstand}
               customLists={customLists}
@@ -278,6 +282,7 @@ export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdat
         onUpdateFormat={onUpdateFormat}
         onUpdateGenres={onUpdateGenres}
         onUpdateMoods={onUpdateMoods}
+        onUpdateReason={onUpdateReason}
         nightstandIds={nightstandIds}
         onToggleNightstand={onToggleNightstand}
       />
@@ -317,6 +322,7 @@ interface BookRowProps {
   onUpdateFormat?: (id: string, format: BookFormat | undefined) => void;
   onMarkAsRead?: (id: string) => void;
   onUpdateStatus?: (id: string, status: BookStatus) => void;
+  onUpdateReason?: (id: string, reason: ReasonForAdding) => void;
   nightstandIds?: Set<string>;
   onToggleNightstand?: (id: string) => void;
   customLists: CustomList[];
@@ -326,9 +332,10 @@ interface BookRowProps {
   onOpenDetail: (book: TBRBook) => void;
 }
 
-function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, onUpdateStatus, nightstandIds, onToggleNightstand, customLists, onAddToList, onRemoveFromList, activeTab, onOpenDetail }: BookRowProps) {
+function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, onUpdateStatus, onUpdateReason, nightstandIds, onToggleNightstand, customLists, onAddToList, onRemoveFromList, activeTab, onOpenDetail }: BookRowProps) {
   const isNightstand = nightstandIds?.has(book.id) ?? false;
   const status = getBookStatus(book);
+  const [reasonPopoverOpen, setReasonPopoverOpen] = useState(false);
 
   const reasonText = useMemo(() => {
     if (!book.reasonForAdding) return null;
@@ -371,11 +378,37 @@ function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, onUpdateStatus,
           <p className="font-body text-xs text-muted-foreground/70 leading-relaxed">
             Added {format(new Date(book.dateAdded), 'MMM d, yyyy')}
           </p>
-          {reasonText && (
-            <p className="font-body text-xs text-muted-foreground leading-relaxed truncate">
-              Because: {reasonText}
-            </p>
-          )}
+          <Popover open={reasonPopoverOpen} onOpenChange={setReasonPopoverOpen}>
+            <PopoverTrigger asChild>
+              <button
+                className="font-body text-xs text-muted-foreground leading-relaxed truncate hover:text-foreground transition-colors text-left"
+                onClick={(e) => { e.stopPropagation(); }}
+              >
+                {reasonText ? `Why this book: ${reasonText}` : <span className="italic text-muted-foreground/50">Why this book: tap to add</span>}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-56 p-1.5" align="start" onClick={(e) => e.stopPropagation()}>
+              <div className="space-y-0.5">
+                {READING_REASONS.map(r => (
+                  <button
+                    key={r}
+                    onClick={() => {
+                      onUpdateReason?.(book.id, { reason: r });
+                      setReasonPopoverOpen(false);
+                    }}
+                    className={cn(
+                      "w-full text-left px-3 py-1.5 rounded-md text-xs font-body transition-colors",
+                      book.reasonForAdding?.reason === r
+                        ? "bg-primary/10 text-primary font-medium"
+                        : "text-foreground hover:bg-secondary"
+                    )}
+                  >
+                    {r}
+                  </button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
           {/* Status + tags row */}
           <div className="flex flex-wrap gap-1 mt-1">
             {status === 'currently_reading' && (

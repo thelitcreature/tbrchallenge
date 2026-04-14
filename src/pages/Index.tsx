@@ -286,6 +286,11 @@ const Index = () => {
     updateBook(id, { moods });
   };
 
+  const updateBookReason = (id: string, reason: ReasonForAdding) => {
+    setShelvedBooks((prev) => prev.map((b) => b.id === id ? { ...b, reasonForAdding: reason } : b));
+    updateBook(id, { reason_for_adding: reason as any });
+  };
+
   const handleDismissBook = (book: UnifiedBook) => {
     setDismissedIds((prev) => {
       const next = new Set(prev);
@@ -505,7 +510,7 @@ const Index = () => {
               </motion.div>
             )}
           </AnimatePresence>
-          <TBRList books={shelvedBooks} onRemove={removeFromShelves} onUpdateFormat={updateBookFormat} onMarkAsRead={markAsReadById} onUpdateStatus={updateBookStatus} onUpdateDateAdded={updateDateAdded} onUpdateGenres={updateBookGenres} onUpdateMoods={updateBookMoods} nightstandIds={nightstandIds} onToggleNightstand={toggleNightstand} />
+          <TBRList books={shelvedBooks} onRemove={removeFromShelves} onUpdateFormat={updateBookFormat} onMarkAsRead={markAsReadById} onUpdateStatus={updateBookStatus} onUpdateDateAdded={updateDateAdded} onUpdateGenres={updateBookGenres} onUpdateMoods={updateBookMoods} onUpdateReason={updateBookReason} nightstandIds={nightstandIds} onToggleNightstand={toggleNightstand} />
         </motion.div> :
 
       <motion.div
