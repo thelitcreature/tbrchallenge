@@ -16,6 +16,7 @@ import { ModeToggle } from "@/components/ModeToggle";
 import { BookSearch } from "@/components/BookSearch";
 import { ManualEntry } from "@/components/ManualEntry";
 import { Challenges } from "@/components/Challenges";
+import { Home } from "@/components/Home";
 import { ReasonPicker } from "@/components/ReasonPicker";
 import { PhotoBookAdd } from "@/components/PhotoBookAdd";
 import { Onboarding } from "@/components/Onboarding";
@@ -34,7 +35,13 @@ const Index = () => {
   const { user, signOut } = useAuth();
   const [hasOnboarded, setHasOnboarded] = useState(() => localStorage.getItem('plottwist-onboarded') === '1');
   const [showAddTools, setShowAddTools] = useState(false);
-  const [mode, setMode] = useState<Mode>("tbr");
+  const [mode, setMode] = useState<Mode>("home");
+  const [nightstandIds, setNightstandIds] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem('pt-nightstand');
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch { return new Set(); }
+  });
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
   const [selectedMoods, setSelectedMoods] = useState<Mood[]>([]);
   const [revealedBook, setRevealedBook] = useState<UnifiedBook | null>(null);
@@ -274,6 +281,15 @@ const Index = () => {
     pullBook();
   };
 
+  const toggleNightstand = (id: string) => {
+    setNightstandIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      localStorage.setItem('pt-nightstand', JSON.stringify([...next]));
+      return next;
+    });
+  };
+
   const shelvedIds = new Set(shelvedBooks.map((b) => b.id));
   const readIds = new Set(readBooks.map((b) => b.id));
 
@@ -306,7 +322,24 @@ const Index = () => {
         <ModeToggle mode={mode} onModeChange={setMode} tbrCount={shelvedBooks.filter(b => !b.isRead).length} />
       </motion.div>
 
-      {mode === "discover" ?
+      {mode === "home" ?
+      <motion.div
+        key="home"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="w-full max-w-lg space-y-6">
+          <Home
+            ownedBooks={ownedBooks}
+            readBooks={readBooks}
+            allBooks={shelvedBooks}
+            onMarkAsRead={markAsReadById}
+            onSwitchToChallenges={() => setMode('challenges')}
+            nightstandIds={nightstandIds}
+            onToggleNightstand={toggleNightstand}
+          />
+        </motion.div> :
+      mode === "discover" ?
       <motion.div
         key="discover"
         initial={{ opacity: 0 }}
@@ -457,7 +490,7 @@ const Index = () => {
               </motion.div>
             )}
           </AnimatePresence>
-          <TBRList books={shelvedBooks} onRemove={removeFromShelves} onUpdateFormat={updateBookFormat} onMarkAsRead={markAsReadById} onUpdateDateAdded={updateDateAdded} />
+          <TBRList books={shelvedBooks} onRemove={removeFromShelves} onUpdateFormat={updateBookFormat} onMarkAsRead={markAsReadById} onUpdateDateAdded={updateDateAdded} nightstandIds={nightstandIds} onToggleNightstand={toggleNightstand} />
         </motion.div> :
 
       <motion.div

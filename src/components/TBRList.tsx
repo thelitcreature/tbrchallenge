@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import type { UnifiedBook, BookFormat } from '@/data/bookTypes';
 import {
   X, BookOpen, BookOpenText, Book, Headphones, Tablet,
-  ChevronDown, Check, ArrowUpDown, CalendarIcon, BookMarked
+  ChevronDown, Check, ArrowUpDown, CalendarIcon, BookMarked, Bookmark
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -35,9 +35,11 @@ interface TBRListProps {
   onUpdateFormat?: (id: string, format: BookFormat | undefined) => void;
   onMarkAsRead?: (id: string) => void;
   onUpdateDateAdded?: (id: string, date: string) => void;
+  nightstandIds?: Set<string>;
+  onToggleNightstand?: (id: string) => void;
 }
 
-export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdateDateAdded }: TBRListProps) {
+export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdateDateAdded, nightstandIds, onToggleNightstand }: TBRListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortKey>('dateAdded');
   const [sortAsc, setSortAsc] = useState(false);
@@ -192,6 +194,19 @@ export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdat
 
           {/* Action buttons */}
           <div className="flex flex-col gap-1 flex-shrink-0">
+            {!book.isRead && onToggleNightstand && (
+              <button
+                onClick={() => onToggleNightstand(book.id)}
+                className={`p-1.5 rounded-full transition-colors ${
+                  nightstandIds?.has(book.id)
+                    ? 'text-primary bg-primary/10'
+                    : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                }`}
+                title={nightstandIds?.has(book.id) ? 'Remove from Nightstand' : 'Add to Nightstand'}
+              >
+                <Bookmark className="w-4 h-4" />
+              </button>
+            )}
             {!book.isRead && onMarkAsRead && (
               <button
                 onClick={() => onMarkAsRead(book.id)}
