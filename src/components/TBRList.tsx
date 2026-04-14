@@ -83,7 +83,7 @@ function saveCustomLists(lists: CustomList[]) {
   localStorage.setItem('pt-custom-lists', JSON.stringify(lists));
 }
 
-export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdateStatus, onUpdateDateAdded, onUpdateGenres, onUpdateMoods, nightstandIds, onToggleNightstand }: TBRListProps) {
+export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdateStatus, onUpdateDateAdded, onUpdateGenres, onUpdateMoods, onUpdateReason, nightstandIds, onToggleNightstand }: TBRListProps) {
   const [sortBy, setSortBy] = useState<SortKey>('dateAdded');
   const [sortAsc, setSortAsc] = useState(false);
   const [activeTab, setActiveTab] = useState<TabValue>('all');
