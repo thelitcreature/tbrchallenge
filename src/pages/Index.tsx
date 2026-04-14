@@ -43,7 +43,14 @@ const Index = () => {
     return localStorage.getItem('overdue-onboarded') === '1';
   });
   const [showAddTools, setShowAddTools] = useState(false);
-  const [mode, setMode] = useState<Mode>("home");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [defaultTab, setDefaultTab] = useState<'home' | 'tbr' | 'discover'>(() =>
+    (localStorage.getItem('overdue-default-tab') as any) || 'home'
+  );
+  const [listDensity, setListDensity] = useState<'comfortable' | 'compact'>(() =>
+    (localStorage.getItem('overdue-list-density') as any) || 'comfortable'
+  );
+  const [mode, setMode] = useState<Mode>(() => defaultTab as Mode);
   const [nightstandIds, setNightstandIds] = useState<Set<string>>(() => {
     try {
       const saved = localStorage.getItem('pt-nightstand');
