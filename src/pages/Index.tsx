@@ -281,6 +281,15 @@ const Index = () => {
     pullBook();
   };
 
+  const toggleNightstand = (id: string) => {
+    setNightstandIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      localStorage.setItem('pt-nightstand', JSON.stringify([...next]));
+      return next;
+    });
+  };
+
   const shelvedIds = new Set(shelvedBooks.map((b) => b.id));
   const readIds = new Set(readBooks.map((b) => b.id));
 
