@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import type { UnifiedBook, BookFormat } from '@/data/bookTypes';
+import type { Genre, Mood } from '@/data/books';
 import {
   BookOpenText, Book, BookOpen, Headphones, Tablet,
   MoreHorizontal, Check, Bookmark, Trash2, BookMarked, ArrowUpDown
@@ -22,6 +23,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { BookDetail } from '@/components/BookDetail';
 
 const FORMATS: { value: BookFormat; label: string; icon: React.ReactNode }[] = [
   { value: 'paperback', label: 'Paperback', icon: <BookOpen className="w-3.5 h-3.5" /> },
@@ -51,6 +53,8 @@ interface TBRListProps {
   onUpdateFormat?: (id: string, format: BookFormat | undefined) => void;
   onMarkAsRead?: (id: string) => void;
   onUpdateDateAdded?: (id: string, date: string) => void;
+  onUpdateGenres?: (id: string, genres: Genre[]) => void;
+  onUpdateMoods?: (id: string, moods: Mood[]) => void;
   nightstandIds?: Set<string>;
   onToggleNightstand?: (id: string) => void;
 }
@@ -66,13 +70,14 @@ function saveCustomLists(lists: CustomList[]) {
   localStorage.setItem('pt-custom-lists', JSON.stringify(lists));
 }
 
-export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdateDateAdded, nightstandIds, onToggleNightstand }: TBRListProps) {
+export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdateDateAdded, onUpdateGenres, onUpdateMoods, nightstandIds, onToggleNightstand }: TBRListProps) {
   const [sortBy, setSortBy] = useState<SortKey>('dateAdded');
   const [sortAsc, setSortAsc] = useState(false);
   const [activeTab, setActiveTab] = useState<TabValue>('all');
   const [customLists, setCustomLists] = useState<CustomList[]>(loadCustomLists);
   const [newListDialogOpen, setNewListDialogOpen] = useState(false);
   const [newListName, setNewListName] = useState('');
+  const [detailBook, setDetailBook] = useState<TBRBook | null>(null);
 
   useEffect(() => { saveCustomLists(customLists); }, [customLists]);
 
@@ -102,6 +107,12 @@ export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdat
     });
     return sortAsc ? sorted : sorted.reverse();
   }, [activeTab, unreadBooks, readBooks, nightstandIds, customLists, sortBy, sortAsc]);
+
+  // Keep detail book in sync with latest data
+  const activeDetailBook = useMemo(() => {
+    if (!detailBook) return null;
+    return books.find(b => b.id === detailBook.id) || detailBook;
+  }, [detailBook, books]);
 
   const toggleSort = (key: SortKey) => {
     if (sortBy === key) setSortAsc(prev => !prev);
@@ -233,10 +244,25 @@ export function TBRList({ books, onRemove, onUpdateFormat, onMarkAsRead, onUpdat
               onAddToList={addBookToList}
               onRemoveFromList={removeBookFromList}
               activeTab={activeTab}
+              onOpenDetail={setDetailBook}
             />
           ))}
         </AnimatePresence>
       </div>
+
+      {/* Book Detail Sheet */}
+      <BookDetail
+        book={activeDetailBook}
+        open={!!detailBook}
+        onClose={() => setDetailBook(null)}
+        onRemove={onRemove}
+        onMarkAsRead={onMarkAsRead}
+        onUpdateFormat={onUpdateFormat}
+        onUpdateGenres={onUpdateGenres}
+        onUpdateMoods={onUpdateMoods}
+        nightstandIds={nightstandIds}
+        onToggleNightstand={onToggleNightstand}
+      />
 
       {/* New List Dialog */}
       <Dialog open={newListDialogOpen} onOpenChange={setNewListDialogOpen}>
@@ -278,9 +304,10 @@ interface BookRowProps {
   onAddToList: (bookId: string, listId: string) => void;
   onRemoveFromList: (bookId: string, listId: string) => void;
   activeTab: TabValue;
+  onOpenDetail: (book: TBRBook) => void;
 }
 
-function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, nightstandIds, onToggleNightstand, customLists, onAddToList, onRemoveFromList, activeTab }: BookRowProps) {
+function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, nightstandIds, onToggleNightstand, customLists, onAddToList, onRemoveFromList, activeTab, onOpenDetail }: BookRowProps) {
   const isNightstand = nightstandIds?.has(book.id) ?? false;
 
   const reasonText = useMemo(() => {
@@ -288,6 +315,9 @@ function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, nightstandIds, 
     const r = book.reasonForAdding;
     return r.reason === 'Other' && r.customText ? r.customText : r.reason;
   }, [book.reasonForAdding]);
+
+  // Combine genre + mood tags (no language)
+  const allTags = [...book.genres, ...book.moods];
 
   return (
     <motion.div
@@ -297,36 +327,60 @@ function BookRow({ book, onRemove, onUpdateFormat, onMarkAsRead, nightstandIds, 
       exit={{ opacity: 0, y: -8 }}
       className={cn("flex items-center gap-3.5 py-3.5", book.isRead && "opacity-50")}
     >
-      {/* Cover */}
-      {book.thumbnail ? (
-        <img
-          src={book.thumbnail}
-          alt={book.title}
-          className="w-[60px] h-[88px] object-cover rounded-lg shadow-sm flex-shrink-0"
-        />
-      ) : (
-        <div className="w-[60px] h-[88px] rounded-lg bg-secondary flex items-center justify-center flex-shrink-0">
-          <BookOpenText className="w-6 h-6 text-muted-foreground/30" />
-        </div>
-      )}
-
-      {/* Info */}
-      <div className="flex-1 min-w-0 space-y-0.5">
-        <h4 className="font-display text-[15px] font-semibold text-foreground leading-snug truncate">
-          {book.title}
-        </h4>
-        <p className="font-body text-sm text-muted-foreground truncate">{book.author}</p>
-        <p className="font-body text-xs text-muted-foreground/70 leading-relaxed">
-          Added {format(new Date(book.dateAdded), 'MMM d, yyyy')}
-        </p>
-        {reasonText && (
-          <p className="font-body text-xs text-muted-foreground/70 leading-relaxed truncate">
-            Because: {reasonText}
-          </p>
+      {/* Clickable area: cover + info */}
+      <div
+        className="flex items-center gap-3.5 flex-1 min-w-0 cursor-pointer"
+        onClick={() => onOpenDetail(book)}
+      >
+        {/* Cover */}
+        {book.thumbnail ? (
+          <img
+            src={book.thumbnail}
+            alt={book.title}
+            className="w-[60px] h-[88px] object-cover rounded-lg shadow-sm flex-shrink-0"
+          />
+        ) : (
+          <div className="w-[60px] h-[88px] rounded-lg bg-secondary flex items-center justify-center flex-shrink-0">
+            <BookOpenText className="w-6 h-6 text-muted-foreground/30" />
+          </div>
         )}
+
+        {/* Info */}
+        <div className="flex-1 min-w-0 space-y-0.5">
+          <h4 className="font-display text-[15px] font-semibold text-foreground leading-snug truncate">
+            {book.title}
+          </h4>
+          <p className="font-body text-sm text-muted-foreground truncate">{book.author}</p>
+          <p className="font-body text-xs text-muted-foreground/70 leading-relaxed">
+            Added {format(new Date(book.dateAdded), 'MMM d, yyyy')}
+          </p>
+          {reasonText && (
+            <p className="font-body text-xs text-muted-foreground/70 leading-relaxed truncate">
+              Because: {reasonText}
+            </p>
+          )}
+          {/* Genre + mood tags */}
+          {allTags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-1">
+              {allTags.slice(0, 4).map(tag => (
+                <span
+                  key={tag}
+                  className="px-2 py-0.5 rounded-full bg-secondary text-muted-foreground text-[10px] font-body"
+                >
+                  {tag}
+                </span>
+              ))}
+              {allTags.length > 4 && (
+                <span className="px-2 py-0.5 rounded-full bg-secondary/50 text-muted-foreground/60 text-[10px] font-body">
+                  +{allTags.length - 4}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Actions */}
+      {/* Actions menu */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors flex-shrink-0">
