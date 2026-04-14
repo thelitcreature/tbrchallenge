@@ -466,7 +466,7 @@ const Index = () => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="w-full max-w-lg space-y-6">
-          <Challenges />
+          <Challenges books={ownedBooks} readBooks={readBooks} />
         </motion.div>
       }
 

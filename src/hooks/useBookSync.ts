@@ -92,7 +92,7 @@ export function useBookSync({ userId, onBooksLoaded, onDismissedLoaded }: UseBoo
 
   const updateBook = useCallback(async (bookId: string, updates: Record<string, any>) => {
     if (!userId) return;
-    await supabase.from("tbr_books").update(updates).eq("user_id", userId).eq("book_id", bookId);
+    await supabase.from("tbr_books").update(updates as any).eq("user_id", userId).eq("book_id", bookId);
   }, [userId]);
 
   const dismissBook = useCallback(async (bookId: string) => {
