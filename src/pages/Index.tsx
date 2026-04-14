@@ -35,7 +35,13 @@ const Index = () => {
   const { user, signOut } = useAuth();
   const [hasOnboarded, setHasOnboarded] = useState(() => localStorage.getItem('plottwist-onboarded') === '1');
   const [showAddTools, setShowAddTools] = useState(false);
-  const [mode, setMode] = useState<Mode>("tbr");
+  const [mode, setMode] = useState<Mode>("home");
+  const [nightstandIds, setNightstandIds] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem('pt-nightstand');
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch { return new Set(); }
+  });
   const [selectedGenres, setSelectedGenres] = useState<Genre[]>([]);
   const [selectedMoods, setSelectedMoods] = useState<Mood[]>([]);
   const [revealedBook, setRevealedBook] = useState<UnifiedBook | null>(null);
