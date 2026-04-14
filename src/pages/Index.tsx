@@ -271,6 +271,16 @@ const Index = () => {
     updateBook(id, { format: format || null });
   };
 
+  const updateBookGenres = (id: string, genres: Genre[]) => {
+    setShelvedBooks((prev) => prev.map((b) => b.id === id ? { ...b, genres } : b));
+    updateBook(id, { genres });
+  };
+
+  const updateBookMoods = (id: string, moods: Mood[]) => {
+    setShelvedBooks((prev) => prev.map((b) => b.id === id ? { ...b, moods } : b));
+    updateBook(id, { moods });
+  };
+
   const handleDismissBook = (book: UnifiedBook) => {
     setDismissedIds((prev) => {
       const next = new Set(prev);
